@@ -8,4 +8,9 @@ public final class Constants {
   public static class Transfer {
     public static final int TRANSFER_MOTOR_ID = 0;//FILLER
   }
+
+  public static class Climber {
+    public static final int LEFT_MOTOR_ID = 32; // FILLER
+    public static final int RIGHT_MOTOR_ID = 33; // FILLER
+  }
 }
