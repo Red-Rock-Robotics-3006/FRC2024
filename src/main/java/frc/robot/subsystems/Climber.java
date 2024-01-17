@@ -5,19 +5,24 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Climber extends SubsystemBase { 
     
-    // change IDS
+    private static Climber instance = null;
 
-    private CANSparkMax leftClimber = new CANSparkMax(0, MotorType.kBrushless);
-    private CANSparkMax rightClimber = new CANSparkMax(1, MotorType.kBrushless);
+    private CANSparkMax leftClimber = new CANSparkMax(Constants.Climber.LEFT_MOTOR_ID, MotorType.kBrushless);
+    private CANSparkMax rightClimber = new CANSparkMax(Constants.Climber.RIGHT_MOTOR_ID, MotorType.kBrushless);
 
-    // TODO: keep track of where the climber is
+    private Climber() {
+        this.setName("Climber");
+        this.register();
 
-    public Climber() {
         this.leftClimber.restoreFactoryDefaults();
         this.rightClimber.restoreFactoryDefaults();
+
+        this.leftClimber.setInverted(false);
+        this.rightClimber.setInverted(true);
 
         this.leftClimber.setIdleMode(IdleMode.kBrake);
         this.rightClimber.setIdleMode(IdleMode.kBrake);
@@ -34,11 +39,22 @@ public class Climber extends SubsystemBase {
         }
 
         this.leftClimber.set(output);
-        this.rightClimber.set(-output);
+        this.rightClimber.set(output);
     }
 
-    public void setVert() {
-        // TODO: move climber to a certain vertical point
+    public void goTop() {
+        // TODO: move climber to top position
     }
 
+    public void goBottom() {
+        // TODO: move climber to bottom position
+    }
+
+    public static Climber getInstance() {
+        if (Climber.instance == null) {
+            Climber.instance = new Climber();
+        }
+
+        return Climber.instance;
+    }
 }
