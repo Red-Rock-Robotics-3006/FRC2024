@@ -23,8 +23,11 @@ public class Climber extends SubsystemBase {
     private double kI = 0;
     private double kD = 0;
 
+    private double target = 0.0;
+
     // CHANGE THIS TO NUMBER OF MOTOR ROTATIONS FOR CLIMBER TO BE AT TOP
-    private double rotationsAtTop = 5;
+    private static double rotationsAtTop = 5;
+    private static double rotationsAtBottom = 0;
 
     private PIDController controller = new PIDController(kP, kI, kD);
 
@@ -42,53 +45,37 @@ public class Climber extends SubsystemBase {
         this.rightClimber.setIdleMode(IdleMode.kBrake);
 
         this.goBottom();
-        this.goBottom();
     }
 
     public void freeze() {
-        this.leftClimber.set(0);
-        this.rightClimber.set(0);
+        this.target = this.leftClimber.getEncoder().getPosition();
     }
 
-    public void setPower(double output) throws Exception {
-        if (output < 0 || output > 1.0) {
-            throw new Exception("Power parameter needs to be in-between 0.0 and 1.0");
-        }
-
+    private void setPower(double output) {
         this.leftClimber.set(output);
         this.rightClimber.set(output);
     }
 
     public void goTop() {
-        // TODO: move climber to top position
-        
+        this.target = Climber.rotationsAtTop;
     }
 
-    public void goBottom() throws Exception {
-        // get current climber position
-        double leftPos = this.leftClimber.getEncoder().getPosition();
-        double rightPos = this.rightClimber.getEncoder().getPosition();
-
-        // goal position
-        double setPoint = 0.0;
-
-        if (Math.abs(leftPos-rightPos) > 0.00000001) {
-            // climbers are at different positions
-            throw new Exception("Climber arms are in different places");
-        }
-
-        this.controller.setSetpoint(setPoint);
-        // use pid to move climber to bottom position
-        while (!this.controller.atSetpoint()) {
-            this.setPower(this.controller.calculate(this.leftClimber.getEncoder().getPosition()));
-        }
+    public void goBottom() {
+        this.target = Climber.rotationsAtBottom;
     }
 
-    public static Climber getInstance() {
+    public static Climber getInstance() throws Exception {
         if (Climber.instance == null) {
             Climber.instance = new Climber();
         }
 
         return Climber.instance;
+    }
+
+    @Override
+    public void periodic(){
+        double power = controller.calculate(this.leftClimber.getEncoder().getPosition(), this.target);
+
+        this.setPower(power);
     }
 }
