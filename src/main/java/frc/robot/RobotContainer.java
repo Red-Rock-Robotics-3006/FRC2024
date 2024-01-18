@@ -10,8 +10,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
 
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(123);//FILLER
+  private final CommandXboxController m_driverController = new CommandXboxController(123);//FILLER
 
   public RobotContainer() {
     configureBindings();
