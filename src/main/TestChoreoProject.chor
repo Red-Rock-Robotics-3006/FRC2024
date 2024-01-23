@@ -3,14 +3,14 @@
     "robotConfiguration": {
         "mass": 74.08797700309194,
         "rotationalInertia": 6,
-        "motorMaxTorque": 1.162295081967213,
-        "motorMaxVelocity": 4800,
-        "gearing": 6.75,
-        "wheelbase": 0.5778496879611685,
-        "trackWidth": 0.5778496879611685,
-        "bumperLength": 0.8762995267982555,
-        "bumperWidth": 0.8762995267982555,
-        "wheelRadius": 0.050799972568014815
+        "motorMaxTorque": 1.0949416342412452,
+        "motorMaxVelocity": 5104,
+        "gearing": 7.13,
+        "wheelbase": 0.6349996571001851,
+        "trackWidth": 0.6349996571001851,
+        "bumperLength": 0.7111996159522074,
+        "bumperWidth": 0.7111996159522074,
+        "wheelRadius": 0.03809997942601111
     },
     "paths": {
         "NewPath": {
@@ -303,14 +303,14 @@
                         "first"
                     ],
                     "type": "StopPoint",
-                    "uuid": "3f194ec6-9d1c-4a43-9a5b-950d449543fb"
+                    "uuid": "cb55e296-d1c4-4091-8e59-7914fe187d4e"
                 },
                 {
                     "scope": [
                         "last"
                     ],
                     "type": "StopPoint",
-                    "uuid": "03fa238a-fc8f-4553-b918-c0941e8a56dc"
+                    "uuid": "1ab1d126-3bf9-499d-a83b-a84975b26b25"
                 }
             ],
             "usesControlIntervalGuessing": true,
