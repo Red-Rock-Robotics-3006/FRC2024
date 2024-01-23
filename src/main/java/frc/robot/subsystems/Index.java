@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -9,6 +11,7 @@ public class Index extends SubsystemBase{
 
     private final CANSparkMax m_topMotor = new CANSparkMax(Constants.Transfer.TOP_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
     private final CANSparkMax m_bottomMotor = new CANSparkMax(Constants.Transfer.BOTTOM_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+    private DigitalInput beamBrake = new DigitalInput(Constants.Index.SWITCH_CHANNEL_ID);
 
     private static Index instance = null;
 
@@ -26,7 +29,7 @@ public class Index extends SubsystemBase{
     }
 
     public void periodic() {
-        // if beam is broken then stop intake
+        if (this.hasNote())
             this.stopTransfer();
     }
 
@@ -46,5 +49,10 @@ public class Index extends SubsystemBase{
     public static Index getInstance(){
         if (instance == null) instance = new Index();
         return instance;
+    }
+
+    public boolean hasNote() {
+        if (beamBrake.get()) return true;
+        return false;
     }
 }
