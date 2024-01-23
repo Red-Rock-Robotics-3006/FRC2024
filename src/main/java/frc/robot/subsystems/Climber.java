@@ -47,24 +47,41 @@ public class Climber extends SubsystemBase {
         this.goBottom();
     }
 
+    /**
+     * Stops all motors, likely redundant because motors on brake, but a backup
+     */
     public void freeze() {
         this.target = this.leftClimber.getEncoder().getPosition();
     }
 
+    /**
+     * Sets the power of both climber motors
+     * @param output a double from -1.0 to 1.0, the percentage power for the motors
+     */
     private void setPower(double output) {
         this.leftClimber.set(output);
         this.rightClimber.set(output);
     }
 
+    /**
+     * Sets the target of the motors to be the highest elevation possible
+     */
     public void goTop() {
         this.target = Climber.rotationsAtTop;
     }
 
+    /**
+     * Sets the target of the motors to be the lowest elevation possible
+     */
     public void goBottom() {
         this.target = Climber.rotationsAtBottom;
     }
 
-    public static Climber getInstance() throws Exception {
+    /**
+     * @return  a Climber object, that encapsulates the logic to move the climber
+     * @throws Exception
+     */
+    public static Climber getInstance() {
         if (Climber.instance == null) {
             Climber.instance = new Climber();
         }
