@@ -28,11 +28,6 @@ public class Index extends SubsystemBase{
         this.m_bottomMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
-    public void periodic() {
-        if (this.hasNote())
-            this.stopTransfer();
-    }
-
     public void setSpeed(double speed) {
         this.m_topMotor.set(speed);
         this.m_bottomMotor.set(speed);
@@ -46,13 +41,13 @@ public class Index extends SubsystemBase{
         this.setSpeed(0);
     }
 
-    public static Index getInstance(){
-        if (instance == null) instance = new Index();
-        return instance;
-    }
-
     public boolean hasNote() {
         if (beamBrake.get()) return true;
         return false;
+    }
+
+    public static Index getInstance(){
+        if (instance == null) instance = new Index();
+        return instance;
     }
 }
