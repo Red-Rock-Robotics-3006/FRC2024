@@ -8,4 +8,8 @@ public final class Constants {
   public static class Transfer {
     public static final int TRANSFER_MOTOR_ID = 0;//FILLER
   }
+
+  public static class AmpBar {
+    public static final int AMP_BAR_MOTOR_ID = 39019;
+  }
 }
