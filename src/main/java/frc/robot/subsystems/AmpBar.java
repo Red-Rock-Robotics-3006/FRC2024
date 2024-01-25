@@ -40,10 +40,17 @@ public class AmpBar extends SubsystemBase{
         this.ampBarMotor.setIdleMode(IdleMode.kBrake);
     }
 
+    /**
+     * Stops amp bar in place
+     */
     public void freeze() {
         this.ampBarMotor.set(0);
     }
 
+    /**
+     * Get angle of motor currently
+     * @return current angle of motor
+     */
     public double getAngle() {
         double angle;
         double currentTick = encoder.getPosition();
@@ -51,19 +58,34 @@ public class AmpBar extends SubsystemBase{
         return angle;
     }
 
+    /**
+     * Converts angle to ticks
+     * @param angle angle to convert to ticks
+     * @return ticks from given angle
+     */
     public double toTicks(double angle) {
         double ticks = (angle / 6.0645) - 95.63;
         return ticks;
     }
 
+    /**
+     * Sets target angle to stow angle
+     */
     public void goBottom() {
         this.targetAngle = this.bottomAngle;
     }
 
+    /**
+     * Sets target angle to active angle
+     */
     public void goTop() {
         this.targetAngle = this.topAngle;
     }
 
+    /**
+     * Returns an instance of AmpBar if one exists, otherwise creates one
+     * @return AmpBar instance
+     */
     public static AmpBar getInstance() {
         if (AmpBar.instance == null) {
             AmpBar.instance = new AmpBar();
@@ -71,12 +93,12 @@ public class AmpBar extends SubsystemBase{
 
         return AmpBar.instance;
     }
-
+    
     @Override
     public void periodic() {
         this.controller.setPID(this.kP, this.kI, this.kD);
         this.currentAngle = this.getAngle();
         double feedfoward = kF * Math.cos(Math.toRadians(currentAngle));
-        this.ampBarMotor.set(this.controller.calculate(encoder.getPosition(), this.toTicks(this.targetAngle)) + feedfoward);
+        this.ampBarMotor.set(this.controller.calculate(this.encoder.getPosition(), this.toTicks(this.targetAngle)) + feedfoward);
     }
 }
