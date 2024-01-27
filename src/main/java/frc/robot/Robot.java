@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     SmartDashboard.putNumber("heading", m_robotContainer.getDriveHeading());
+    SmartDashboard.putNumber("target heading", m_robotContainer.getTargetHeading());
   }
 
   @Override

@@ -12,15 +12,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.*;;
 
 public class RobotContainer {
+  public final double kDeadBand = 0.01;
   private double MaxSpeed = 1.0; // 6 meters per second desired top speed
   private double MaxAngularRate = 0.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
@@ -29,14 +32,14 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01) // Add a 1% deadband
+      .withDeadband(MaxSpeed * kDeadBand).withRotationalDeadband(MaxAngularRate * kDeadBand) // Add a 1% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   
   private final SwerveRequest.FieldCentricFacingAngle angle = new SwerveRequest.FieldCentricFacingAngle()
-      .withDeadband(MaxSpeed * 0.01).withRotationalDeadband(MaxAngularRate * 0.01)
+      .withDeadband(MaxSpeed * kDeadBand)
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
 
@@ -59,23 +62,41 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(
           () -> {
-                  if (Math.abs(joystick.getRightX()) > 0.01)
+                  if (Math.abs(joystick.getRightX()) > kDeadBand) {
+                    SmartDashboard.putBoolean("facing angle", false);
                     return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed)
                                 .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
-                  else 
+                  }
+                  else {
+                    SmartDashboard.putBoolean("facing angle", true);
                     return angle.withVelocityX(-joystick.getLeftY() * MaxSpeed)
                                 .withVelocityY(-joystick.getLeftX() * MaxSpeed)
-                                .withTargetDirection(new Rotation2d(Math.toRadians(targetHeadingD)));       
+                                .withTargetDirection(new Rotation2d(Math.toRadians(targetHeadingD)));   
+                  }    
           }
         )
     );
 
     new Trigger(
-      () -> Math.abs(joystick.getRightX()) > 0.01
+      () -> Math.abs(joystick.getRightX()) > kDeadBand
     ).onFalse(
       new InstantCommand(() -> targetHeadingD = this.getDriveHeading(), drivetrain)
     );
+    SmartDashboard.putNumber("p value", 4.25);
+    angle.HeadingController.setP(4.25);
+
+    SmartDashboard.putNumber("d value", 0.2);
+    angle.HeadingController.setD(0.2);
+
+    angle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+    // drivetrain.setDefaultCommand(
+    //   drivetrain.applyRequest(() ->
+    //     angle.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+    //          .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+    //          .withTargetDirection(new Rotation2d(Math.toRadians(targetHeadingD)))
+    //   )
+    // );
 
     joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
@@ -83,17 +104,50 @@ public class RobotContainer {
 
     // reset the field-centric heading on left bumper press
     joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+
+    // reset the field centric heading and drivetrain pose heading on y button press
+    // joystick.y().onTrue(
+    //   drivetrain.runOnce(
+    //     () -> drivetrain.seedFieldRelative(
+    //       new Pose2d(
+    //         drivetrain.getState().Pose.getX(),
+    //         drivetrain.getState().Pose.getY(),
+    //         new Rotation2d()
+    //       )
+    //     )
+    //   )
+    // );
+
     joystick.y().onTrue(
-      drivetrain.runOnce(
-        () -> drivetrain.seedFieldRelative(
+      new SequentialCommandGroup(
+        new InstantCommand(() -> drivetrain.seedFieldRelative(
           new Pose2d(
             drivetrain.getState().Pose.getX(),
             drivetrain.getState().Pose.getY(),
             new Rotation2d()
           )
-        )
-      )
+        ), drivetrain
+      ),
+      new InstantCommand(() -> targetHeadingD = 0)
+    ));
+
+    joystick.povLeft().onTrue(
+      new InstantCommand(() -> targetHeadingD = 90)
     );
+
+    joystick.povDown().onTrue(
+      new InstantCommand(() -> targetHeadingD = 180)
+    );
+
+    joystick.povRight().onTrue(
+      new InstantCommand(() -> targetHeadingD = -90)
+    );
+
+    joystick.povUp().onTrue(
+      new InstantCommand(() -> targetHeadingD = 0)
+    );
+
+    
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
@@ -112,6 +166,12 @@ public class RobotContainer {
 
   public double getDriveHeading(){
     return this.drivetrain.getState().Pose.getRotation().getDegrees();
+  }
+
+  public double getTargetHeading(){
+    angle.HeadingController.setP(SmartDashboard.getNumber("p value", 1));
+    angle.HeadingController.setD(SmartDashboard.getNumber("d value", 0.2));
+    return this.targetHeadingD;
   }
 }
 
