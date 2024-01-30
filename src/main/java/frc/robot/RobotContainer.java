@@ -18,14 +18,17 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.*;;
 
 public class RobotContainer {
-  public final double kDeadBand = 0.01;
+  public final double kDeadBand = 0.1;
   private double MaxSpeed = 1.0; // 6 meters per second desired top speed
   private double MaxAngularRate = 0.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
+
+  public final double kTolerance = 0.5;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
@@ -64,19 +67,41 @@ public class RobotContainer {
           () -> {
                   if (Math.abs(joystick.getRightX()) > kDeadBand) {
                     SmartDashboard.putBoolean("facing angle", false);
-                    return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                                .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                    return drive.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
+                                .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
                                 .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
                   }
                   else {
                     SmartDashboard.putBoolean("facing angle", true);
-                    return angle.withVelocityX(-joystick.getLeftY() * MaxSpeed)
-                                .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                    return angle.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
+                                .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
                                 .withTargetDirection(new Rotation2d(Math.toRadians(targetHeadingD)));   
                   }    
           }
         )
     );
+
+    SmartDashboard.putNumber("max speed", 0.5);
+
+
+    // drivetrain.setDefaultCommand(
+    //     drivetrain.applyRequest(
+    //       () -> {
+    //               if (Math.abs(joystick.getRightX()) > kDeadBand) {
+    //                 SmartDashboard.putBoolean("facing angle", false);
+    //                 return drive.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+    //                             .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+    //                             .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+    //               }
+    //               else {
+    //                 SmartDashboard.putBoolean("facing angle", true);
+    //                 return angle.withVelocityX(-joystick.getLeftY() * MaxSpeed)
+    //                             .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+    //                             .withTargetDirection(new Rotation2d(Math.toRadians(targetHeadingD)));   
+    //               }    
+    //       }
+    //     )
+    // );
 
     new Trigger(
       () -> Math.abs(joystick.getRightX()) > kDeadBand
@@ -88,6 +113,7 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("d value", 0.2);
     angle.HeadingController.setD(0.2);
+
 
     angle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
     // drivetrain.setDefaultCommand(
@@ -103,7 +129,7 @@ public class RobotContainer {
         .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     // reset the field-centric heading on left bumper press
-    joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    // joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
     // reset the field centric heading and drivetrain pose heading on y button press
     // joystick.y().onTrue(
@@ -130,7 +156,19 @@ public class RobotContainer {
       ),
       new InstantCommand(() -> targetHeadingD = 0)
     ));
-
+    
+    RobotModeTriggers.teleop().onTrue(
+      new SequentialCommandGroup(
+        new InstantCommand(() -> drivetrain.seedFieldRelative(
+          new Pose2d(
+            drivetrain.getState().Pose.getX(),
+            drivetrain.getState().Pose.getY(),
+            new Rotation2d()
+          )
+        ), drivetrain
+      ),
+      new InstantCommand(() -> targetHeadingD = 0)
+    ));
     joystick.povLeft().onTrue(
       new InstantCommand(() -> targetHeadingD = 90)
     );
@@ -171,7 +209,16 @@ public class RobotContainer {
   public double getTargetHeading(){
     angle.HeadingController.setP(SmartDashboard.getNumber("p value", 1));
     angle.HeadingController.setD(SmartDashboard.getNumber("d value", 0.2));
+
+    this.MaxAngularRate = SmartDashboard.getNumber("max speed", 0.5) * Math.PI;
     return this.targetHeadingD;
+  }
+
+  public static double[] mapJoystick(double x, double y){
+    double m_x = x * Math.sqrt(1 - y * y / 2);
+    double m_y = y * Math.sqrt(1 - x * x / 2);
+    double[] converted = {m_x, m_y};
+    return converted;
   }
 }
 
