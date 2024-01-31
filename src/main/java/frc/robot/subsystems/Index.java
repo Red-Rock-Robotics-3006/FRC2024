@@ -9,9 +9,9 @@ import frc.robot.Constants;
 
 public class Index extends SubsystemBase{
 
-    private final CANSparkMax m_topMotor = new CANSparkMax(Constants.Transfer.TOP_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
-    private final CANSparkMax m_bottomMotor = new CANSparkMax(Constants.Transfer.BOTTOM_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
-    private DigitalInput beamBrake = new DigitalInput(Constants.Index.SWITCH_CHANNEL_ID);
+    private final CANSparkMax m_topMotor = new CANSparkMax(Constants.Index.TOP_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+    private final CANSparkMax m_bottomMotor = new CANSparkMax(Constants.Index.BOTTOM_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+    private final DigitalInput beamBrake = new DigitalInput(Constants.Index.SWITCH_CHANNEL_ID);
 
     private static Index instance = null;
 
@@ -42,7 +42,7 @@ public class Index extends SubsystemBase{
     }
 
     public boolean hasNote() {
-        if (beamBrake.get()) return true;
+        if (this.beamBrake.get()) return true;
         return false;
     }
 
