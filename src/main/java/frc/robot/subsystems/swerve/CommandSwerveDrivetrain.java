@@ -13,10 +13,16 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 import frc.robot.subsystems.swerve.generated.*;
@@ -25,12 +31,21 @@ import frc.robot.subsystems.swerve.generated.*;
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem
  * so it can be used in command-based projects easily.
  */
-public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem {
+public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem, SwerveIO {
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
+
+    private double targetHeadingDegrees = 0;
+
+    private Field2d field = new Field2d();
+
+    public static final double
+        kHeadingP = 4.25,
+        kHeadingI = 0,
+        kHeadingD = 0.2;
 
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
@@ -39,6 +54,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+
+        SmartDashboard.putData("field", this.field);
     }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
@@ -46,6 +63,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        SmartDashboard.putData("field", this.field);
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -93,5 +111,39 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command getAuto(String text){
         return new PathPlannerAuto(text);
+    }
+
+    public Command resetHeading(){
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> this.seedFieldRelative(
+              new Pose2d(
+                this.getState().Pose.getX(),
+                this.getState().Pose.getY(),
+                new Rotation2d()
+              )
+            ), this
+          ),
+          new InstantCommand(() -> this.setTargetHeading(0), this)
+        );
+    }
+
+    @Override
+    public void setTargetHeading(double degrees){
+        this.targetHeadingDegrees = degrees;
+    }
+
+    @Override
+    public double getCurrentHeadingDegrees(){
+        return this.getState().Pose.getRotation().getDegrees();
+    }
+
+    @Override
+    public double getTargetHeading(){
+        return this.targetHeadingDegrees;
+    }
+
+    @Override
+    public void periodic(){
+        this.field.setRobotPose(this.getState().Pose);
     }
 }

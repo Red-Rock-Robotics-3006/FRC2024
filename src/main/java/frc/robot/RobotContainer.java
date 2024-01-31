@@ -25,6 +25,7 @@ import frc.robot.subsystems.swerve.*;;
 
 public class RobotContainer {
   public final double kDeadBand = 0.1;
+  public final double kRotationDeadband = 0.05;
   private double MaxSpeed = 1.0; // 6 meters per second desired top speed
   private double MaxAngularRate = 0.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
@@ -35,7 +36,7 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-      .withDeadband(MaxSpeed * kDeadBand).withRotationalDeadband(MaxAngularRate * kDeadBand) // Add a 1% deadband
+      .withDeadband(MaxSpeed * kDeadBand).withRotationalDeadband(MaxAngularRate * kRotationDeadband) // Add a 1% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -75,13 +76,12 @@ public class RobotContainer {
                     SmartDashboard.putBoolean("facing angle", true);
                     return angle.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
                                 .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
-                                .withTargetDirection(new Rotation2d(Math.toRadians(targetHeadingD)));   
+                                .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
                   }    
           }
         )
     );
 
-    SmartDashboard.putNumber("max speed", 0.5);
 
 
     // drivetrain.setDefaultCommand(
@@ -108,13 +108,9 @@ public class RobotContainer {
     ).onFalse(
       new InstantCommand(() -> targetHeadingD = this.getDriveHeading(), drivetrain)
     );
-    SmartDashboard.putNumber("p value", 4.25);
-    angle.HeadingController.setP(4.25);
-
-    SmartDashboard.putNumber("d value", 0.2);
-    angle.HeadingController.setD(0.2);
 
 
+    angle.HeadingController.setPID(CommandSwerveDrivetrain.kHeadingP, CommandSwerveDrivetrain.kHeadingI, CommandSwerveDrivetrain.kHeadingD);
     angle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
     // drivetrain.setDefaultCommand(
     //   drivetrain.applyRequest(() ->
@@ -144,45 +140,41 @@ public class RobotContainer {
     //   )
     // );
 
+    // joystick.y().onTrue(
+    //   new SequentialCommandGroup(
+    //     new InstantCommand(() -> drivetrain.seedFieldRelative(
+    //       new Pose2d(
+    //         drivetrain.getState().Pose.getX(),
+    //         drivetrain.getState().Pose.getY(),
+    //         new Rotation2d()
+    //       )
+    //     ), drivetrain
+    //   ),
+    //   new InstantCommand(() -> targetHeadingD = 0)
+    // ));
+
     joystick.y().onTrue(
-      new SequentialCommandGroup(
-        new InstantCommand(() -> drivetrain.seedFieldRelative(
-          new Pose2d(
-            drivetrain.getState().Pose.getX(),
-            drivetrain.getState().Pose.getY(),
-            new Rotation2d()
-          )
-        ), drivetrain
-      ),
-      new InstantCommand(() -> targetHeadingD = 0)
-    ));
+      drivetrain.resetHeading()
+    );
     
     RobotModeTriggers.teleop().onTrue(
-      new SequentialCommandGroup(
-        new InstantCommand(() -> drivetrain.seedFieldRelative(
-          new Pose2d(
-            drivetrain.getState().Pose.getX(),
-            drivetrain.getState().Pose.getY(),
-            new Rotation2d()
-          )
-        ), drivetrain
-      ),
-      new InstantCommand(() -> targetHeadingD = 0)
-    ));
+      drivetrain.resetHeading()
+    );
+
     joystick.povLeft().onTrue(
-      new InstantCommand(() -> targetHeadingD = 90)
+      new InstantCommand(() -> drivetrain.setTargetHeading(90), drivetrain)
     );
 
     joystick.povDown().onTrue(
-      new InstantCommand(() -> targetHeadingD = 180)
+      new InstantCommand(() -> drivetrain.setTargetHeading(180), drivetrain)
     );
 
     joystick.povRight().onTrue(
-      new InstantCommand(() -> targetHeadingD = -90)
+      new InstantCommand(() -> drivetrain.setTargetHeading(-90), drivetrain)
     );
 
     joystick.povUp().onTrue(
-      new InstantCommand(() -> targetHeadingD = 0)
+      new InstantCommand(() -> drivetrain.setTargetHeading(0), drivetrain)
     );
 
     
@@ -193,7 +185,16 @@ public class RobotContainer {
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 
+  public void configureDashboard(){
+    SmartDashboard.putNumber("max speed", 0.5);
+    SmartDashboard.putNumber("p value", 4.25);
+    SmartDashboard.putNumber("d value", 0.2);
+
+
+  }
+
   public RobotContainer() {
+    configureDashboard();
     configureBindings();
   }
 
@@ -207,11 +208,15 @@ public class RobotContainer {
   }
 
   public double getTargetHeading(){
+
+    return this.targetHeadingD;
+  }
+
+  public void updateDashboard(){
     angle.HeadingController.setP(SmartDashboard.getNumber("p value", 1));
     angle.HeadingController.setD(SmartDashboard.getNumber("d value", 0.2));
 
     this.MaxAngularRate = SmartDashboard.getNumber("max speed", 0.5) * Math.PI;
-    return this.targetHeadingD;
   }
 
   public static double[] mapJoystick(double x, double y){
