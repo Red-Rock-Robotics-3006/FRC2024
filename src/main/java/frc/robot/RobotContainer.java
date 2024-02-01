@@ -26,7 +26,7 @@ import frc.robot.subsystems.swerve.*;;
 public class RobotContainer {
   public final double kDeadBand = 0.1;
   public final double kRotationDeadband = 0.05;
-  private double MaxSpeed = 1.0; // 6 meters per second desired top speed
+  private double MaxSpeed = 4.5; // 6 meters per second desired top speed
   private double MaxAngularRate = 0.5 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   public final double kTolerance = 0.5;
@@ -51,7 +51,7 @@ public class RobotContainer {
 
   private double targetHeadingD = 0;
 
-  private Command runAuto = drivetrain.getAuto("StraightLineAuto");
+  private Command runAuto = drivetrain.getAuto("fournote");
 
   SendableChooser<String> m_chooser = new SendableChooser<>();
 
@@ -79,7 +79,7 @@ public class RobotContainer {
                                 .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
                   }    
           }
-        )
+        ) 
     );
 
 
@@ -106,7 +106,7 @@ public class RobotContainer {
     new Trigger(
       () -> Math.abs(joystick.getRightX()) > kDeadBand
     ).onFalse(
-      new InstantCommand(() -> targetHeadingD = this.getDriveHeading(), drivetrain)
+      new InstantCommand(() -> drivetrain.setTargetHeading(drivetrain.getCurrentHeadingDegrees()), drivetrain)
     );
 
 
@@ -186,9 +186,9 @@ public class RobotContainer {
   }
 
   public void configureDashboard(){
-    SmartDashboard.putNumber("max speed", 0.5);
-    SmartDashboard.putNumber("p value", 4.25);
-    SmartDashboard.putNumber("d value", 0.2);
+    // SmartDashboard.putNumber("max speed", 0.5);
+    // SmartDashboard.putNumber("p value", 4.25);
+    // SmartDashboard.putNumber("d value", 0.2);
 
 
   }
@@ -213,10 +213,10 @@ public class RobotContainer {
   }
 
   public void updateDashboard(){
-    angle.HeadingController.setP(SmartDashboard.getNumber("p value", 1));
-    angle.HeadingController.setD(SmartDashboard.getNumber("d value", 0.2));
+    // angle.HeadingController.setP(SmartDashboard.getNumber("p value", 1));
+    // angle.HeadingController.setD(SmartDashboard.getNumber("d value", 0.2));
 
-    this.MaxAngularRate = SmartDashboard.getNumber("max speed", 0.5) * Math.PI;
+    // this.MaxAngularRate = SmartDashboard.getNumber("max speed", 0.5) * Math.PI;
   }
 
   public static double[] mapJoystick(double x, double y){
