@@ -69,7 +69,6 @@ public class LED extends SubsystemBase{
         this.homingAprilTagState = !b;
     }
 
-
     /**
      * Sets homingNoteState to specified parameter whilst setting all other state booleans to false
      * @param b user specified boolean which homingNoteState is set to

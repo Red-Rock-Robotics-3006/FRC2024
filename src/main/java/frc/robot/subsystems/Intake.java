@@ -33,26 +33,48 @@ public class Intake extends SubsystemBase{
         this.m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
+    /**
+     * Sets speed of intake motor to specified parameter
+     * @param speed user specified parameter
+     */
     public void setSpeed(double speed) {
         this.m_intakeMotor.set(speed);
     }
 
+    /**
+     * Sets motor speed at a certain speed
+     */
     public void startIntake() {
         this.setSpeed(0.1);//test this when possible. will likely be set high to something like 0.97 or 1
     }
-
+    
+    /**
+     * Stops the motor
+     */
     public void stopIntake() {
         this.setSpeed(0);
     }
 
+    /**
+     * Detects whether or not a note is within the Limelight's POV
+     * @return whether or note a note is detected
+     */
     public boolean noteDetected() {
         return table.getEntry("tv").getDouble(0) > 0;
     }
 
+    /**
+     * Gives the horizontal angular displacement of a detected note in degrees
+     * @return horizontal displacement in degrees
+     */
     public double getNoteDegreeX() {
         return table.getEntry("tx").getDouble(0) + this.boundingBoxOffsetX;
     }
 
+    /**
+     * Gives the vertical angular displacement of a detected note in degrees
+     * @return vertical displacement in degrees
+     */
     public double getNoteDegreeY() {
         return table.getEntry("ty").getDouble(0) + this.boundingBoxOffsetY;
     }
