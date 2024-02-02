@@ -127,6 +127,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         );
     }
 
+    public double getRotationRate(){
+        return this.getPigeon2().getRate();
+    }
+
     @Override
     public void setTargetHeading(double degrees){
         this.targetHeadingDegrees = degrees;
