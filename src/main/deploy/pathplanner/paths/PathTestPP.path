@@ -1,0 +1,97 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.5958427384276868,
+        "y": 7.296506377715305
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.0034069494636886,
+        "y": 7.296506377715305
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.09,
+        "y": 7.17
+      },
+      "prevControl": {
+        "x": 4.09,
+        "y": 7.70869848110595
+      },
+      "nextControl": {
+        "x": 4.09,
+        "y": 6.6802670458688
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.53907857601735,
+        "y": 5.738309907432939
+      },
+      "prevControl": {
+        "x": 4.206596259126896,
+        "y": 5.738309907432939
+      },
+      "nextControl": {
+        "x": 2.914950698631686,
+        "y": 5.738309907432939
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.8292964403332503,
+        "y": 5.738309907432939
+      },
+      "prevControl": {
+        "x": 2.120065438047646,
+        "y": 5.5640703107411875
+      },
+      "nextControl": {
+        "x": 1.5385274426188544,
+        "y": 5.91254950412469
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.5958427384276868,
+        "y": 7.296506377715305
+      },
+      "prevControl": {
+        "x": 1.5958427384276868,
+        "y": 6.148188933028155
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 2.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 85.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}
