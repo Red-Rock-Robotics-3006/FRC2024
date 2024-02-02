@@ -46,6 +46,10 @@ public class Index extends SubsystemBase{
         return false;
     }
 
+    /**
+     * Singleton architecture which returns the singular instance of LED
+     * @return the instance (which is instantiated when first called)
+     */
     public static Index getInstance(){
         if (instance == null) instance = new Index();
         return instance;

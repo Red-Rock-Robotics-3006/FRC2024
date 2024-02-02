@@ -6,6 +6,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.swerve.SwerveIO;
 
 
 public class Intake extends SubsystemBase{
@@ -17,11 +18,11 @@ public class Intake extends SubsystemBase{
     private int periodicControl = 0;
     private double boundingBoxOffsetX = 1.0;
     private double boundingBoxOffsetY = 1.0;
-    private double limelightPoseOffset = 1.0;
+    private double limelightPoseOffset = 13.653;
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    private Swerve swerve = new Swerve();//TODO filler for no ugly red
+    private SwerveIO swerve;//TODO filler for no ugly red
 
-    private double x, y, z, a, b;
+    private double x, y, z, a, b, c;
 
     private Intake() {
         this.setName("Intake");
@@ -44,6 +45,10 @@ public class Intake extends SubsystemBase{
         this.setSpeed(0);
     }
 
+    public boolean noteDetected() {
+        return table.getEntry("tv").getDouble(0) > 0;
+    }
+
     public double getNoteDegreeX() {
         return table.getEntry("tx").getDouble(0) + this.boundingBoxOffsetX;
     }
@@ -57,7 +62,7 @@ public class Intake extends SubsystemBase{
     }
 
     public double calculateX(double boundingBoxWidth) {
-        return 0; //TODO implement this method
+        return 600 / boundingBoxWidth; //TODO implement this method
     }
 
     public double calculateZ(double x, double y, double a) {
@@ -65,7 +70,7 @@ public class Intake extends SubsystemBase{
     }
 
     public double calculateHeading(double x, double y, double z) {
-        return this.swerve.getHeading() + this.radiansToDegrees(Math.acos((x * x - y * y - z * z) / (-1 * 2 * y * z))) * Math.signum(this.getNoteDegreeX());
+        return this.swerve.getCurrentHeadingDegrees() + this.radiansToDegrees(Math.acos((x * x - y * y - z * z) / (-2 * y * z))) * Math.signum(this.getNoteDegreeX());
     }
 
     public double degreesToRadians(double degrees) {
@@ -88,20 +93,29 @@ public class Intake extends SubsystemBase{
         periodicControl++; //will probably remove this since it will lag intake
         if (periodicControl % 500 == 0) { //this does things every second which is probably slow but whatever will change it anyways
             this.periodicControl = 0;
-            this.b = 180 - this.getNoteDegreeX();
-            this.x = this.calculateX(this.getNoteBoundingBoxWidth());
-            this.y = this.limelightPoseOffset;
-            this.z = this.calculateZ(x, y, b);
-            this.a = this.calculateHeading(x, y, z);
+            
+            if (this.noteDetected()) {
+                this.c = this.getNoteDegreeX();
+                this.b = 180 - this.c;
+                this.x = this.calculateX(this.getNoteBoundingBoxWidth());
+                this.y = this.limelightPoseOffset;
+                this.z = this.calculateZ(x, y, b);
+                this.a = this.calculateHeading(x, y, z);
+            }
 
             if (homing) {
-                this.startIntake();
-                this.swerve.setDriveMode("robot centric");
-                this.swerve.setHeading(this.a);
+                if (this.noteDetected()) {
+                    this.startIntake();
+                    this.swerve.setTargetHeading(this.a);
+                    // this.swerve.setDriveMode("robot centric");
+                }
+                else {
+                    this.setHoming(false);
+                }
             }
             else {
                 this.stopIntake();
-                this.swerve.setDriveMode("field centric");
+                // this.swerve.setDriveMode("field centric");
             }
         }
     }

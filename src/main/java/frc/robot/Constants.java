@@ -13,4 +13,8 @@ public final class Constants {
     public static final int TOP_MOTOR_ID = 1000;//FILLER
     public static final int BOTTOM_MOTOR_ID = 1000;//FILLER
   }
+  public static class LED {
+    public static final int NUM_LEDS = 60;//FILLER
+    public static final int LED_CHANNEL_ID = 1000;//FILLER
+  }
 }
