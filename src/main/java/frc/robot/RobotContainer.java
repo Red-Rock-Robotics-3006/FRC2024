@@ -183,4 +183,3 @@ public class RobotContainer {
     return drivetrain.getCurrentHeadingDegrees() - rate * 1;
   }
 }
-
