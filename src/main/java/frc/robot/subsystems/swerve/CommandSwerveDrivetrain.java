@@ -42,6 +42,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private Field2d field = new Field2d();
 
+    public enum DriveState{
+        FIELD_CENTRIC,
+        ROBOT_CENTRIC
+    }
+
+    private DriveState driveState = DriveState.FIELD_CENTRIC;
+
+
     public static final double
         kHeadingP = 4.25,
         kHeadingI = 0,
@@ -130,6 +138,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public double getRotationRate(){
         return this.getPigeon2().getRate();
     }
+
+    @Override
+    public void setDriveState(DriveState state){
+        this.driveState = state;
+    }
+
+    public DriveState getDriveState(){
+        return this.driveState;
+    }
+
+
+    
 
     @Override
     public void setTargetHeading(double degrees){

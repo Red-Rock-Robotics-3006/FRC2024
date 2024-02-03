@@ -7,11 +7,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerve.SwerveIO;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;
+import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 
 public class Intake extends SubsystemBase{
 
-    private final CANSparkMax m_intakeMotor = new CANSparkMax(Constants.Intake.INTAKE_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+    //private final CANSparkMax m_intakeMotor = new CANSparkMax(Constants.Intake.INTAKE_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
 
     private static Intake instance = null;
     private static boolean homing = false;
@@ -20,7 +22,7 @@ public class Intake extends SubsystemBase{
     private double boundingBoxOffsetY = 1.0;
     private double limelightPoseOffset = 13.653;
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    private SwerveIO swerve;//TODO filler for no ugly red
+    private SwerveIO swerve = TunerConstants.DriveTrain;//TODO filler for no ugly red
 
     private double x, y, z, a, b, c;
 
@@ -28,32 +30,32 @@ public class Intake extends SubsystemBase{
         this.setName("Intake");
         this.register();
 
-        this.m_intakeMotor.restoreFactoryDefaults();
-        this.m_intakeMotor.setInverted(false);
-        this.m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        // this.m_intakeMotor.restoreFactoryDefaults();
+        // this.m_intakeMotor.setInverted(false);
+        // this.m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     /**
      * Sets speed of intake motor to specified parameter
      * @param speed user specified parameter
      */
-    public void setSpeed(double speed) {
-        this.m_intakeMotor.set(speed);
-    }
+    // public void setSpeed(double speed) {
+    //     this.m_intakeMotor.set(speed);
+    // }
 
     /**
      * Sets motor speed at a certain speed
-     */
-    public void startIntake() {
-        this.setSpeed(0.1);//test this when possible. will likely be set high to something like 0.97 or 1
-    }
+    //  */
+    // public void startIntake() {
+    //     this.setSpeed(0.1);//test this when possible. will likely be set high to something like 0.97 or 1
+    // }
     
-    /**
-     * Stops the motor
-     */
-    public void stopIntake() {
-        this.setSpeed(0);
-    }
+    // /**
+    //  * Stops the motor
+    //  */
+    // public void stopIntake() {
+    //     this.setSpeed(0);
+    // }
 
     /**
      * Detects whether or not a note is within the Limelight's POV
@@ -92,7 +94,7 @@ public class Intake extends SubsystemBase{
     }
 
     public double calculateHeading(double x, double y, double z) {
-        return this.swerve.getCurrentHeadingDegrees() + this.radiansToDegrees(Math.acos((x * x - y * y - z * z) / (-2 * y * z))) * Math.signum(this.getNoteDegreeX());
+        return this.swerve.getCurrentHeadingDegrees() - this.radiansToDegrees(Math.acos((x * x - y * y - z * z) / (-2 * y * z))) * Math.signum(this.getNoteDegreeX());
     }
 
     public double degreesToRadians(double degrees) {
@@ -112,33 +114,24 @@ public class Intake extends SubsystemBase{
     }
 
     public void periodic() {
-        periodicControl++; //will probably remove this since it will lag intake
-        if (periodicControl % 500 == 0) { //this does things every second which is probably slow but whatever will change it anyways
-            this.periodicControl = 0;
-            
+        this.c = this.getNoteDegreeX();
+        this.b = 180 - this.c;
+        this.x = this.calculateX(this.getNoteBoundingBoxWidth());
+        this.y = this.limelightPoseOffset;
+        this.z = this.calculateZ(x, y, b);
+        this.a = this.calculateHeading(x, y, z);
+        
+        if (homing) {
             if (this.noteDetected()) {
-                this.c = this.getNoteDegreeX();
-                this.b = 180 - this.c;
-                this.x = this.calculateX(this.getNoteBoundingBoxWidth());
-                this.y = this.limelightPoseOffset;
-                this.z = this.calculateZ(x, y, b);
-                this.a = this.calculateHeading(x, y, z);
+                //this.startIntake();
+                this.swerve.setTargetHeading(this.a);
+                if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);
+                else this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
             }
-
-            if (homing) {
-                if (this.noteDetected()) {
-                    this.startIntake();
-                    this.swerve.setTargetHeading(this.a);
-                    // this.swerve.setDriveMode("robot centric");
-                }
-                else {
-                    this.setHoming(false);
-                }
-            }
-            else {
-                this.stopIntake();
-                // this.swerve.setDriveMode("field centric");
-            }
+        }
+        else {
+            //this.stopIntake();
+            this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }
     }
 
