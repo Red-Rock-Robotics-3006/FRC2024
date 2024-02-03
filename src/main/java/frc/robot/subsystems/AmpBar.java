@@ -29,6 +29,9 @@ public class AmpBar extends SubsystemBase{
     private PIDController controller = new PIDController(kP, kI, kD);
     private RelativeEncoder encoder = ampBarMotor.getEncoder();
 
+    /**
+     * Creates an Amp Bar object, registering the subsystem Amp Bar, and setting up the motors
+     */
     private AmpBar() {
         this.setName("Amp Bar");
         this.register();
