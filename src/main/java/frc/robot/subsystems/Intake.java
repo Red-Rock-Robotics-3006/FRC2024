@@ -13,16 +13,15 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public class Intake extends SubsystemBase{
 
-    //private final CANSparkMax m_intakeMotor = new CANSparkMax(Constants.Intake.INTAKE_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+    private final CANSparkMax m_intakeMotor = new CANSparkMax(Constants.Intake.INTAKE_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
 
     private static Intake instance = null;
-    private static boolean homing = false;
-    private int periodicControl = 0;
+    private boolean homing = false;
     private double boundingBoxOffsetX = 1.0;
     private double boundingBoxOffsetY = 1.0;
     private double limelightPoseOffset = 13.653;
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    private SwerveIO swerve = TunerConstants.DriveTrain;//TODO filler for no ugly red
+    private SwerveIO swerve = TunerConstants.DriveTrain;
 
     private double x, y, z, a, b, c;
 
@@ -30,32 +29,39 @@ public class Intake extends SubsystemBase{
         this.setName("Intake");
         this.register();
 
-        // this.m_intakeMotor.restoreFactoryDefaults();
-        // this.m_intakeMotor.setInverted(false);
-        // this.m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.m_intakeMotor.restoreFactoryDefaults();
+        this.m_intakeMotor.setInverted(false);
+        this.m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     /**
      * Sets speed of intake motor to specified parameter
      * @param speed user specified parameter
      */
-    // public void setSpeed(double speed) {
-    //     this.m_intakeMotor.set(speed);
-    // }
+    public void setSpeed(double speed) {
+        this.m_intakeMotor.set(speed);
+    }
 
     /**
      * Sets motor speed at a certain speed
-    //  */
-    // public void startIntake() {
-    //     this.setSpeed(0.1);//test this when possible. will likely be set high to something like 0.97 or 1
-    // }
+     */
+    public void startIntake() {
+        this.setSpeed(0.7);
+    }
+
+    /**
+     * Spins intake backwards in the case of a note being caught
+     */
+    public void reverseIntake() {
+        this.setSpeed(-0.2);
+    }
     
-    // /**
-    //  * Stops the motor
-    //  */
-    // public void stopIntake() {
-    //     this.setSpeed(0);
-    // }
+    /**
+     * Stops the motor
+     */
+    public void stopIntake() {
+        this.setSpeed(0);
+    }
 
     /**
      * Detects whether or not a note is within the Limelight's POV
@@ -86,7 +92,7 @@ public class Intake extends SubsystemBase{
     }
 
     public double calculateX(double boundingBoxWidth) {
-        return 600 / boundingBoxWidth; //TODO implement this method
+        return 600 / boundingBoxWidth;
     }
 
     public double calculateZ(double x, double y, double a) {
@@ -106,11 +112,11 @@ public class Intake extends SubsystemBase{
     }
 
     public void setHoming(boolean b) {
-        Intake.homing = b;
+        this.homing = b;
     }
 
     public boolean getHoming() {
-        return Intake.homing;
+        return this.homing;
     }
 
     public void periodic() {
@@ -121,20 +127,22 @@ public class Intake extends SubsystemBase{
         this.z = this.calculateZ(x, y, b);
         this.a = this.calculateHeading(x, y, z);
         
-        if (homing) {
-            if (this.noteDetected()) {
-                //this.startIntake();
-                this.swerve.setTargetHeading(this.a);
-                if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);
-                else this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
-            }
+        if (homing && this.noteDetected()) {
+            this.startIntake();
+            this.swerve.setTargetHeading(this.a);
+            if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);
+            else this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }
         else {
-            //this.stopIntake();
+            this.stopIntake();
             this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }
     }
 
+    /**
+     * Singleton architecture which returns the singular instance of Intake
+     * @return the instance (which is instantiated when first called)
+     */
     public static Intake getInstance(){
         if (instance == null) instance = new Intake();
         return instance;
