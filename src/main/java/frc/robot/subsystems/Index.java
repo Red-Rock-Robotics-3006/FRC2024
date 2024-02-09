@@ -12,6 +12,7 @@ public class Index extends SubsystemBase{
     private final CANSparkMax m_frontMotor = new CANSparkMax(Constants.Index.TOP_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
     private final CANSparkMax m_backMotor = new CANSparkMax(Constants.Index.BOTTOM_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
     private final DigitalInput beamBrake = new DigitalInput(Constants.Index.SWITCH_CHANNEL_ID);
+    private boolean isTransferring = false;
 
     private static Index instance = null;
 
@@ -28,16 +29,26 @@ public class Index extends SubsystemBase{
         this.m_backMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
+    public void setTransferring(boolean b) {
+        this.isTransferring = b;
+    }
+
+    public boolean getTransferring(boolean b) {
+        return this.isTransferring;
+    }
+
     public void setSpeed(double speed) {
         this.m_frontMotor.set(speed);
         this.m_backMotor.set(speed);
     }
 
     public void startTransfer() {
+        this.isTransferring = true;
         this.setSpeed(0.1);//test this when possible
     }
 
     public void stopTransfer() {
+        this.isTransferring = false;
         this.setSpeed(0);
     }
 

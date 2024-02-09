@@ -12,6 +12,10 @@ public class LED extends SubsystemBase{
     private AddressableLED control = new AddressableLED(Constants.LED.LED_CHANNEL_ID);
     private AddressableLEDBuffer buffer = new AddressableLEDBuffer(Constants.LED.NUM_LEDS);
 
+    private Intake intake = Intake.getInstance();
+    private Index index = Index.getInstance();
+    private Shooter shooter = Shooter.getInstance();
+
     private boolean initialAlliance = false;//TODO implement this
 
     private enum State {
@@ -22,7 +26,7 @@ public class LED extends SubsystemBase{
         HOMING_APRILTAG
     }
 
-    State RobotState = State.RESTING;
+    private State RobotState = State.RESTING;
 
     private int policeMode = 0;
     private boolean policeModeEnabled = false;
@@ -74,7 +78,7 @@ public class LED extends SubsystemBase{
     }
 
     public void periodic() {
-        switch(RobotState) {
+        switch(RobotState) { //TODO make these more intuitive
             case RESTING:
                 for (int i = allianceColorCutoff; i < buffer.getLength(); i++) {
                     buffer.setRGB(i, 255, 255, 255);//white
@@ -108,15 +112,24 @@ public class LED extends SubsystemBase{
         }
 
         if (policeModeEnabled) {
+            if (policeMode == 0) {//solid color
+                for (int i = 0; i < buffer.getLength() / 2; i++) {
+                    buffer.setRGB(i, 255, 0, 0);
+                }
+                for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
+                    buffer.setRGB(i, 0, 0, 255);
+                }
+                control.setData(buffer);
+            }
             if (policeMode == 1) {//solid alternating color
                 policeModeControl1++;
-                if (policeModeControl1 % 2 == 0) {
+                if (policeModeControl1 % 50 == 0) {
                     for (int i = 0; i < buffer.getLength(); i++) {
                         buffer.setRGB(i, 255, 0, 0);
                     }
                     control.setData(buffer);
                 }
-                else {
+                else if (policeModeControl1 % 25 == 0) {
                     for (int i = 0; i < buffer.getLength(); i++) {
                         buffer.setRGB(i, 0, 0, 255);
                     }
@@ -125,7 +138,7 @@ public class LED extends SubsystemBase{
             }
             else if (policeMode == 2) {//one flash each color on two halves
                 policeModeControl2++;
-                if (policeModeControl2 % 2 == 0) {
+                if (policeModeControl2 % 40 == 0) {
                     for (int i = 0; i < buffer.getLength() / 2; i++) {
                         buffer.setRGB(i, 255, 0, 0);
                     }
@@ -134,7 +147,7 @@ public class LED extends SubsystemBase{
                     }
                     control.setData(buffer);
                 }
-                else {
+                else if (policeModeControl2 % 20 == 0) {
                     for (int i = 0; i < buffer.getLength() / 2; i++) {
                         buffer.setRGB(i, 0, 0, 0);
                     }
@@ -204,20 +217,20 @@ public class LED extends SubsystemBase{
             }
         }
 
-        if (Intake.getInstance().noteDetected() && Intake.getInstance().getHoming()) {
+        if (shooter.getHoming()) {
+            this.setState(State.HOMING_APRILTAG);
+        }
+        else if (intake.noteDetected() && intake.getHoming()) {
             this.setState(State.HOMING_NOTE);
         }
-        else if (Intake.getInstance().noteDetected()) {
+        else if (intake.noteDetected()) {
             this.setState(State.NOTE_DETECTED);
         }
-        else if (!Intake.getInstance().noteDetected() && !Index.getInstance().hasNote()) {
+        else if (!intake.noteDetected() && !index.hasNote()) {
             this.setState(State.RESTING);
         }
-        else if (Index.getInstance().hasNote()) {
+        else if (index.hasNote()) {
             this.setState(State.HAS_NOTE);
-        }
-        else if (Shooter.getInstance().getHoming()) {
-            this.setState(State.HOMING_APRILTAG);
         }
     
         //123, 231, 244 giorgio blue :)
