@@ -148,11 +148,11 @@ public class RobotContainer {
     );
 
     joystick.leftBumper().onTrue(
-      new InstantCommand(() -> intake.setHoming(true), intake)
+      new InstantCommand(() -> intake.toggleHoming(), intake)
     );
 
     joystick.rightBumper().onTrue(
-      new InstantCommand(() -> intake.setHoming(false), intake)
+      new InstantCommand(() -> intake.toggleHoming(), intake)
     );
 
     

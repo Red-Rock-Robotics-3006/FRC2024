@@ -22,6 +22,7 @@ public class Intake extends SubsystemBase{
     private double limelightPoseOffset = 13.653;
     private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     private SwerveIO swerve = TunerConstants.DriveTrain;
+    private double kIntakeSpeed = 0.7;
 
     private double x, y, z, a, b, c;
 
@@ -46,13 +47,14 @@ public class Intake extends SubsystemBase{
      * Sets motor speed at a certain speed
      */
     public void startIntake() {
-        this.setSpeed(0.7);
+        this.setSpeed(this.kIntakeSpeed);
     }
 
     /**
      * Spins intake backwards in the case of a note being caught
      */
     public void reverseIntake() {
+        this.setHoming(false);
         this.setSpeed(-0.2);
     }
     
@@ -96,19 +98,11 @@ public class Intake extends SubsystemBase{
     }
 
     public double calculateZ(double x, double y, double a) {
-        return Math.sqrt(x * x + y * y - 2 * x * y * Math.cos(this.degreesToRadians(a)));
+        return Math.sqrt(x * x + y * y - 2 * x * y * Math.cos(Math.toRadians(a)));
     }
 
     public double calculateHeading(double x, double y, double z) {
-        return this.swerve.getCurrentHeadingDegrees() - this.radiansToDegrees(Math.acos((x * x - y * y - z * z) / (-2 * y * z))) * Math.signum(this.getNoteDegreeX());
-    }
-
-    public double degreesToRadians(double degrees) {
-        return degrees * (Math.PI / 180);
-    }
-
-    public double radiansToDegrees(double degrees) {
-        return degrees * (180 / Math.PI);
+        return this.swerve.getCurrentHeadingDegrees() - Math.toDegrees(Math.acos((x * x - y * y - z * z) / (-2 * y * z))) * Math.signum(this.getNoteDegreeX());
     }
 
     public void setHoming(boolean b) {
@@ -119,6 +113,11 @@ public class Intake extends SubsystemBase{
         return this.homing;
     }
 
+    public void toggleHoming() {
+        if (this.getHoming()) this.setHoming(false);
+        else this.setHoming(true);
+    }
+    
     public void periodic() {
         this.c = this.getNoteDegreeX();
         this.b = 180 - this.c;
@@ -131,7 +130,7 @@ public class Intake extends SubsystemBase{
             this.startIntake();
             this.swerve.setTargetHeading(this.a);
             Index.getInstance().startTransfer();
-            if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);
+            if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);//TODO may or may not use this
             else this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }
         else if (homing && !this.noteDetected()) {

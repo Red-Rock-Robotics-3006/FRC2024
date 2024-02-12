@@ -44,29 +44,35 @@ public class LED extends SubsystemBase{
     private LED() {
         this.setName("LED");
         this.register();
+        this.control.setLength(this.buffer.getLength());
 
-        control.setLength(buffer.getLength());
         if (initialAlliance) {//true is red
             for (int i = 0; i < allianceColorCutoff; i++) {
-                buffer.setRGB(i, 255, 0, 0);
+                this.buffer.setRGB(i, 255, 0, 0);
             }
         }
         else {//false is blue
             for (int i = 0; i < allianceColorCutoff; i++) {
-                buffer.setRGB(i, 0, 0, 255);
+                this.buffer.setRGB(i, 0, 0, 255);
             }
         }
-        control.setData(buffer);
+
+        this.control.setData(buffer);
+        this.control.start();
     }
 
     public void setState(State s) {
         switch(s) {
-            case RESTING: RobotState = State.RESTING;
-            case NOTE_DETECTED: RobotState = State.NOTE_DETECTED;
-            case HOMING_NOTE: RobotState = State.HOMING_NOTE;
-            case HAS_NOTE: RobotState = State.HAS_NOTE;
-            case HOMING_APRILTAG: RobotState = State.HOMING_APRILTAG;
+            case RESTING: this.RobotState = State.RESTING;
+            case NOTE_DETECTED: this.RobotState = State.NOTE_DETECTED;
+            case HOMING_NOTE: this.RobotState = State.HOMING_NOTE;
+            case HAS_NOTE: this.RobotState = State.HAS_NOTE;
+            case HOMING_APRILTAG: this.RobotState = State.HOMING_APRILTAG;
         }
+    }
+
+    public State getState(State s) {
+        return this.RobotState;
     }
 
     public void togglePoliceMode(boolean b) {
@@ -78,36 +84,36 @@ public class LED extends SubsystemBase{
     }
 
     public void periodic() {
-        switch(RobotState) { //TODO make these more intuitive
+        switch(RobotState) { //TODO make the led patterns more intuitive (ie flashing instead of colors)
             case RESTING:
-                for (int i = allianceColorCutoff; i < buffer.getLength(); i++) {
-                    buffer.setRGB(i, 255, 255, 255);//white
+                for (int i = allianceColorCutoff; i < this.buffer.getLength(); i++) {
+                    this.buffer.setRGB(i, 255, 255, 255);//white
                 }
-                control.setData(buffer);
+                this.control.setData(this.buffer);
                 break;
             case NOTE_DETECTED:
-                for (int i = allianceColorCutoff; i < buffer.getLength(); i++) {
-                    buffer.setRGB(i, 115, 81, 226);//cube purple
+                for (int i = allianceColorCutoff; i < this.buffer.getLength(); i++) {
+                    this.buffer.setRGB(i, 115, 81, 226);//cube purple
                 }
-                control.setData(buffer);
+                this.control.setData(this.buffer);
                 break;
             case HOMING_NOTE:
-                for (int i = allianceColorCutoff; i < buffer.getLength(); i++) {
-                    buffer.setRGB(i, 255, 183, 3);//cone yellow
+                for (int i = allianceColorCutoff; i < this.buffer.getLength(); i++) {
+                    this.buffer.setRGB(i, 255, 183, 3);//cone yellow
                 }
-                control.setData(buffer);
+                this.control.setData(this.buffer);
                 break;
             case HAS_NOTE:
-                for (int i = allianceColorCutoff; i < buffer.getLength(); i++) {
-                    buffer.setRGB(i, 252, 85, 36);//note orange
+                for (int i = allianceColorCutoff; i < this.buffer.getLength(); i++) {
+                    this.buffer.setRGB(i, 252, 85, 36);//note orange
                 }
-                control.setData(buffer);
+                this.control.setData(this.buffer);
                 break;
             case HOMING_APRILTAG:
-                for (int i = allianceColorCutoff; i < buffer.getLength(); i++) {
-                    buffer.setRGB(i, 30, 225, 30);//limelight green
+                for (int i = allianceColorCutoff; i < this.buffer.getLength(); i++) {
+                    this.buffer.setRGB(i, 30, 225, 30);//limelight green
                 }
-                control.setData(buffer);
+                this.control.setData(this.buffer);
                 break;
         }
 
@@ -217,19 +223,19 @@ public class LED extends SubsystemBase{
             }
         }
 
-        if (shooter.getHoming()) {
+        if (this.shooter.getHoming()) {
             this.setState(State.HOMING_APRILTAG);
         }
-        else if (intake.noteDetected() && intake.getHoming()) {
+        else if (this.intake.noteDetected() && intake.getHoming()) {
             this.setState(State.HOMING_NOTE);
         }
-        else if (intake.noteDetected()) {
+        else if (this.intake.noteDetected()) {
             this.setState(State.NOTE_DETECTED);
         }
-        else if (!intake.noteDetected() && !index.hasNote()) {
+        else if (!this.intake.noteDetected() && !this.index.hasNote()) {
             this.setState(State.RESTING);
         }
-        else if (index.hasNote()) {
+        else if (this.index.hasNote()) {
             this.setState(State.HAS_NOTE);
         }
     
