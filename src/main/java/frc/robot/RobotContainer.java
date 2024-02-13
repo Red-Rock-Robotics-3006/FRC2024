@@ -20,7 +20,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
-import frc.robot.subsystems.swerve.*;;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.swerve.*;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 
 public class RobotContainer {
   public static final double kDeadBand = 0.1;
@@ -43,8 +45,13 @@ public class RobotContainer {
       .withDeadband(MaxSpeed * kDeadBand)
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
+  private final SwerveRequest.RobotCentric driveRobotCentric = new SwerveRequest.RobotCentric()
+      .withDeadband(MaxSpeed * kDeadBand)
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
+  public Intake intake = Intake.getInstance();//TODO for now
 
   private double targetHeadingD = 0;
 
@@ -57,9 +64,9 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(
           () -> {
-                  if (Math.abs(joystick.getRightX()) > kRotationDeadband || joystick.leftBumper().getAsBoolean()) {
+                  if (Math.abs(joystick.getRightX()) > kRotationDeadband) {
                     SmartDashboard.putBoolean("facing angle", false);
-                    return drive.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
+                    return drive.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY() - 0.2)[1] * MaxSpeed)
                                 .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
                                 .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
                   }
@@ -72,11 +79,36 @@ public class RobotContainer {
           }
         ) 
     );
+    
+    drivetrain.setDefaultCommand(
+        drivetrain.applyRequest(
+          () -> {
+                  if (drivetrain.getDriveState() == DriveState.ROBOT_CENTRIC){
+                    SmartDashboard.putBoolean("facing angle", false);
+                    SmartDashboard.putBoolean("robot centric", true);
+                    return driveRobotCentric.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
+                                            .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
+                                            .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+                  }
+                  else if (Math.abs(joystick.getRightX()) > kRotationDeadband) {
+                    SmartDashboard.putBoolean("facing angle", false);
+                    SmartDashboard.putBoolean("robot centric", false);
 
+                    return drive.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
+                                .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
+                                .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+                  }
+                  else {
+                    SmartDashboard.putBoolean("facing angle", true);
+                    SmartDashboard.putBoolean("robot centric", false);
 
-
-
-
+                    return angle.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
+                                .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
+                                .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
+                  }    
+          }
+        ) 
+    );
     new Trigger(
       () -> Math.abs(joystick.getRightX()) > kRotationDeadband
     ).onFalse(
@@ -115,6 +147,14 @@ public class RobotContainer {
       new InstantCommand(() -> drivetrain.setTargetHeading(0), drivetrain)
     );
 
+    joystick.leftBumper().onTrue(
+      new InstantCommand(() -> intake.setHoming(true), intake)
+    );
+
+    joystick.rightBumper().onTrue(
+      new InstantCommand(() -> intake.setHoming(false), intake)
+    );
+
     
 
     if (Utils.isSimulation()) {
@@ -132,6 +172,9 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("heading p", 4.25);
     SmartDashboard.putNumber("heading d", 0.2);
+
+    SmartDashboard.putNumber("homing p", 12);
+    SmartDashboard.putNumber("homing d", 0.01);
   }
 
   public RobotContainer() {
@@ -157,9 +200,19 @@ public class RobotContainer {
    * Updates values needed from the dashboard
    * Called in the main Robot class
    */
-  public void updateDashboard(){
-    angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
-    angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
+    public void updateDashboard(){
+      if (!Intake.getInstance().getHoming()){
+
+          angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
+          angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
+        } else {
+          angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 12));
+          angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.01));
+        
+      }
+
+    SmartDashboard.putNumber("current p", angle.HeadingController.getP());
+    SmartDashboard.putNumber("current d", angle.HeadingController.getD());
 
     this.MaxAngularRate = SmartDashboard.getNumber("max turn", 0.5) * Math.PI;
     this.MaxSpeed = SmartDashboard.getNumber("max speed", 1);
@@ -183,4 +236,3 @@ public class RobotContainer {
     return drivetrain.getCurrentHeadingDegrees() - rate * 1;
   }
 }
-
