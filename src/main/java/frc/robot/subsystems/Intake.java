@@ -130,21 +130,21 @@ public class Intake extends SubsystemBase{
         
         if (this.homing && this.noteDetected()) {
             this.startIntake();
-            this.swerve.setTargetHeading(this.a);
+            // this.swerve.setTargetHeading(this.a);
             this.index.startTransfer();
-            if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);//TODO may or may not use this
-            else this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
+            // if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);//TODO may or may not use this
+            // else this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }
         else if (this.homing && !this.noteDetected()) {
-            this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
+            // this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }
-        else if (this.homing && this.index.hasNote()) {
+        else if (this.homing && this.index.hasNote2()) {
             this.stopIntake();
             this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
             this.index.stopTransfer();
             this.setHoming(false);
         }
-        else if (!this.homing) {
+        else if (!this.homing && !this.shooter.getHoming()) {
             this.stopIntake();
             this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
             this.index.stopTransfer();

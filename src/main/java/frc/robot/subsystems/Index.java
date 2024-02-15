@@ -54,14 +54,30 @@ public class Index extends SubsystemBase{
         this.setSpeed(0);
     }
 
-    public boolean hasNote() {
-        if (this.beamBrake.get()) return true;
-        return false;
-    }
+    // public boolean hasNote() {
+    //     if (this.beamBrake.get()) return true;
+    //     return false;
+    // }
 
     public boolean hasNote2() {
         if (this.distanceSensor.getRange() <= this.hasNoteThreshold && this.distanceSensor.isRangeValid()) return true;
         return false;
+    }
+
+    public double getRange() {
+        return this.distanceSensor.getRange();
+    }
+
+    boolean isDisplaying = false;
+    public void toggleDisplayRanges() {
+        if (isDisplaying) isDisplaying = false;
+        else isDisplaying = true;
+    }
+
+    public void periodic() {
+        if (isDisplaying) {
+            System.out.println(getRange());
+        }
     }
 
     /**
