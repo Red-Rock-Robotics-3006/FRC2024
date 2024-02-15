@@ -6,12 +6,11 @@ package frc.robot;
 
 public final class Constants {
   public static class Intake {
-    public static final int INTAKE_MOTOR_ID = 1000;//FILLER
+    public static final int INTAKE_MOTOR_ID = 17;
   }
   public static class Index {
-    public static final int SWITCH_CHANNEL_ID = 1;//FILLER
-    public static final int TOP_MOTOR_ID = 1000;//FILLER
-    public static final int BOTTOM_MOTOR_ID = 1000;//FILLER
+    public static final int SWITCH_CHANNEL_ID = 0;//FILLER
+    public static final int INDEX_MOTOR_ID = 60;
   }
   public static class LED {
     public static final int NUM_LEDS = 60;//FILLER

@@ -13,17 +13,19 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public class Intake extends SubsystemBase{
 
+    private static Intake instance = null;
+
     private final CANSparkMax m_intakeMotor = new CANSparkMax(Constants.Intake.INTAKE_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
 
-    private static Intake instance = null;
+    private Index index = Index.getInstance();
+    private SwerveIO swerve = TunerConstants.DriveTrain;
+    private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+
     private boolean homing = false;
     private double boundingBoxOffsetX = 1.0;
     private double boundingBoxOffsetY = 1.0;
     private double limelightPoseOffset = 13.653;
-    private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    private SwerveIO swerve = TunerConstants.DriveTrain;
     private double kIntakeSpeed = 0.7;
-
     private double x, y, z, a, b, c;
 
     private Intake() {
@@ -70,7 +72,7 @@ public class Intake extends SubsystemBase{
      * @return whether or note a note is detected
      */
     public boolean noteDetected() {
-        return table.getEntry("tv").getDouble(0) > 0;
+        return this.table.getEntry("tv").getDouble(0) > 0;
     }
 
     /**
@@ -78,7 +80,7 @@ public class Intake extends SubsystemBase{
      * @return horizontal displacement in degrees
      */
     public double getNoteDegreeX() {
-        return table.getEntry("tx").getDouble(0) + this.boundingBoxOffsetX;
+        return this.table.getEntry("tx").getDouble(0) + this.boundingBoxOffsetX;
     }
 
     /**
@@ -86,11 +88,11 @@ public class Intake extends SubsystemBase{
      * @return vertical displacement in degrees
      */
     public double getNoteDegreeY() {
-        return table.getEntry("ty").getDouble(0) + this.boundingBoxOffsetY;
+        return this.table.getEntry("ty").getDouble(0) + this.boundingBoxOffsetY;
     }
 
     public double getNoteBoundingBoxWidth() {
-        return table.getEntry("thor").getDouble(0);
+        return this.table.getEntry("thor").getDouble(0);
     }
 
     public double calculateX(double boundingBoxWidth) {
@@ -126,21 +128,26 @@ public class Intake extends SubsystemBase{
         this.z = this.calculateZ(x, y, b);
         this.a = this.calculateHeading(x, y, z);
         
-        if (homing && this.noteDetected()) {
+        if (this.homing && this.noteDetected()) {
             this.startIntake();
             this.swerve.setTargetHeading(this.a);
-            Index.getInstance().startTransfer();
+            this.index.startTransfer();
             if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);//TODO may or may not use this
             else this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }
-        else if (homing && !this.noteDetected()) {
-            this.stopIntake();
+        else if (this.homing && !this.noteDetected()) {
             this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }
-        else if (homing && Index.getInstance().hasNote()) {
+        else if (this.homing && this.index.hasNote()) {
             this.stopIntake();
             this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
-            Index.getInstance().stopTransfer();
+            this.index.stopTransfer();
+            this.setHoming(false);
+        }
+        else if (!this.homing) {
+            this.stopIntake();
+            this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
+            this.index.stopTransfer();
             this.setHoming(false);
         }
     }

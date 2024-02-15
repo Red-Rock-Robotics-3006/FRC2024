@@ -1,32 +1,35 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.Rev2mDistanceSensor.Port;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
 
 
 public class Index extends SubsystemBase{
-
-    private final CANSparkMax m_frontMotor = new CANSparkMax(Constants.Index.TOP_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
-    private final CANSparkMax m_backMotor = new CANSparkMax(Constants.Index.BOTTOM_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
-    private final DigitalInput beamBrake = new DigitalInput(Constants.Index.SWITCH_CHANNEL_ID);
-    private boolean isTransferring = false;
-
+    
     private static Index instance = null;
+
+    private final CANSparkMax m_indexMotor = new CANSparkMax(Constants.Index.INDEX_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+    private final DigitalInput beamBrake = new DigitalInput(Constants.Index.SWITCH_CHANNEL_ID);
+    private final Rev2mDistanceSensor distanceSensor = new Rev2mDistanceSensor(Port.kOnboard);
+    
+    private boolean isTransferring = false;
+    private double hasNoteThreshold = 10;//TODO tune this
 
     private Index() {
         this.setName("Index");
         this.register();
 
-        this.m_frontMotor.restoreFactoryDefaults();
-        this.m_frontMotor.setInverted(false);
-        this.m_frontMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.m_indexMotor.restoreFactoryDefaults();
+        this.m_indexMotor.setInverted(false);
+        this.m_indexMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        this.m_backMotor.restoreFactoryDefaults();
-        this.m_backMotor.setInverted(false);
-        this.m_backMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.distanceSensor.setAutomaticMode(true);
     }
 
     public void setTransferring(boolean b) {
@@ -38,8 +41,7 @@ public class Index extends SubsystemBase{
     }
 
     public void setSpeed(double speed) {
-        this.m_frontMotor.set(speed);
-        this.m_backMotor.set(speed);
+        this.m_indexMotor.set(speed);
     }
 
     public void startTransfer() {
@@ -54,6 +56,11 @@ public class Index extends SubsystemBase{
 
     public boolean hasNote() {
         if (this.beamBrake.get()) return true;
+        return false;
+    }
+
+    public boolean hasNote2() {
+        if (this.distanceSensor.getRange() <= this.hasNoteThreshold && this.distanceSensor.isRangeValid()) return true;
         return false;
     }
 
