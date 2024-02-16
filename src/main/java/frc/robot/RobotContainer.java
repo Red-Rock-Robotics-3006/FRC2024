@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
+import frc.robot.subsystems.Index;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
@@ -52,6 +53,7 @@ public class RobotContainer {
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
   public Intake intake = Intake.getInstance();//TODO for now
+  public Index index = Index.getInstance();
 
   private double targetHeadingD = 0;
 
@@ -119,9 +121,9 @@ public class RobotContainer {
     angle.HeadingController.setPID(CommandSwerveDrivetrain.kHeadingP, CommandSwerveDrivetrain.kHeadingI, CommandSwerveDrivetrain.kHeadingD);
     angle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-    joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    joystick.b().whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+    // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    // joystick.b().whileTrue(drivetrain
+    //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     joystick.y().onTrue(
       drivetrain.resetHeading()
@@ -148,11 +150,23 @@ public class RobotContainer {
     );
 
     joystick.leftBumper().onTrue(
-      new InstantCommand(() -> intake.toggleHoming(), intake)
+      new InstantCommand(() -> intake.startIntake(), intake).andThen(new InstantCommand(() -> index.startTransfer(), index))
     );
 
     joystick.rightBumper().onTrue(
-      new InstantCommand(() -> intake.toggleHoming(), intake)
+      new InstantCommand(() -> intake.stopIntake(), intake).andThen(new InstantCommand(() -> index.stopTransfer(), index))
+    );
+
+    joystick.a().onTrue(
+      new InstantCommand(() -> intake.reverseIntake(), intake)
+    );
+
+    joystick.x().onTrue(
+      new InstantCommand(() -> index.startOuttaking(), index)
+    );
+
+    joystick.b().onTrue(
+      new InstantCommand(() -> index.stopOuttaking(), index)
     );
 
     
@@ -201,15 +215,15 @@ public class RobotContainer {
    * Called in the main Robot class
    */
     public void updateDashboard(){
-      if (!Intake.getInstance().getHoming()){
+      // if (!Intake.getInstance().getHoming()){
 
-          angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
-          angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
-        } else {
+      //     angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
+      //     angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
+      //   } else {
           angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 12));
           angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.01));
         
-      }
+      // }
 
     SmartDashboard.putNumber("current p", angle.HeadingController.getP());
     SmartDashboard.putNumber("current d", angle.HeadingController.getD());
