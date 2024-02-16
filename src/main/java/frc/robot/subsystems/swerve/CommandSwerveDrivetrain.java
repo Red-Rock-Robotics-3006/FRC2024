@@ -169,5 +169,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     @Override
     public void periodic(){
         this.field.setRobotPose(this.getState().Pose);
+        System.out.println(this.driveState);
     }
 }
