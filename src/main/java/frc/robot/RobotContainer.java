@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 // import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
@@ -27,6 +29,14 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 public class RobotContainer {
   public static final double kDeadBand = 0.1;
   public static final double kRotationDeadband = 0.05;
+
+  public static final String 
+      kStraight = "straightChor",
+      kFourNote = "fournote",
+      kSquare = "squareLol",
+      kStraightBack = "straightBackChor",
+      kTroll = "L";
+  
   
   private double MaxSpeed = 4.5; 
   private double MaxAngularRate = 0.5 * Math.PI; 
@@ -57,7 +67,7 @@ public class RobotContainer {
 
   private Command runAuto = drivetrain.getAuto("fournote");
 
-  SendableChooser<String> m_chooser = new SendableChooser<>();
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   private void configureBindings() {
 
@@ -155,6 +165,18 @@ public class RobotContainer {
     //   new InstantCommand(() -> intake.setHoming(false), intake)
     // );
 
+    joystick.leftBumper().onTrue(
+      new InstantCommand(() -> Intake.getInstance().toggleIntake(), Intake.getInstance())
+    );
+
+    joystick.rightBumper().onTrue(
+      new InstantCommand(() -> Intake.getInstance().toggleOuttake(), Intake.getInstance())
+    );
+
+    joystick.x().onTrue(
+      new InstantCommand(() -> Shooter.getInstance().toggleShooter(), Shooter.getInstance())
+    );
+
     
 
     if (Utils.isSimulation()) {
@@ -175,6 +197,20 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("homing p", 12);
     SmartDashboard.putNumber("homing d", 0.01);
+
+    SmartDashboard.putNumber("Intake speed", 0.6);
+    SmartDashboard.putNumber("Index speed", 0.65);
+
+    SmartDashboard.putNumber("Shooter speed", 0.5);
+  }
+
+  public void configureChooser(){
+    m_chooser.setDefaultOption("square", kSquare);
+    m_chooser.addOption("straight", kStraight);
+    m_chooser.addOption("straight and back", kStraightBack);
+    m_chooser.addOption("four note", kFourNote);
+    m_chooser.addOption("troll", kTroll);
+    SmartDashboard.putData("auto choices", m_chooser);
   }
 
   public RobotContainer() {
@@ -184,7 +220,7 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     // return Commands.print("No autonomous command configured");  
-    return runAuto;
+    return drivetrain.getAuto(m_chooser.getSelected());
   }
 
   public double getDriveHeading(){
@@ -216,6 +252,11 @@ public class RobotContainer {
 
     this.MaxAngularRate = SmartDashboard.getNumber("max turn", 0.5) * Math.PI;
     this.MaxSpeed = SmartDashboard.getNumber("max speed", 1);
+
+    Intake.kIntakeSpeed = SmartDashboard.getNumber("Intake speed", 0.6);
+    Intake.kIndexSpeed = SmartDashboard.getNumber("Index speed", 0.65);
+
+    Shooter.kShooterSpeed = SmartDashboard.getNumber("Shooter speed", 0.5);
   }
 
   /**

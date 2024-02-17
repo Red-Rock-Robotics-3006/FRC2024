@@ -144,12 +144,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         this.driveState = state;
     }
 
+    @Override
     public DriveState getDriveState(){
         return this.driveState;
     }
-
-
-    
 
     @Override
     public void setTargetHeading(double degrees){
@@ -169,6 +167,5 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     @Override
     public void periodic(){
         this.field.setRobotPose(this.getState().Pose);
-        System.out.println(this.driveState);
     }
 }
