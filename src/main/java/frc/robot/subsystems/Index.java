@@ -16,8 +16,8 @@ public class Index extends SubsystemBase{
     private static Index instance = null;
 
     private final CANSparkFlex m_indexMotor = new CANSparkFlex(Constants.Index.INDEX_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
-    private final CANSparkFlex m_shooterLeftMotor = new CANSparkFlex(42, CANSparkMax.MotorType.kBrushless);
-    private final CANSparkFlex m_shooterRightMotor = new CANSparkFlex(59, CANSparkMax.MotorType.kBrushless);
+    // private final CANSparkFlex m_shooterLeftMotor = new CANSparkFlex(42, CANSparkMax.MotorType.kBrushless);
+    // private final CANSparkFlex m_shooterRightMotor = new CANSparkFlex(59, CANSparkMax.MotorType.kBrushless);
     //private final DigitalInput beamBrake = new DigitalInput(Constants.Index.SWITCH_CHANNEL_ID);
     // private final Rev2mDistanceSensor distanceSensor = new Rev2mDistanceSensor(Port.kOnboard);
     
@@ -37,13 +37,13 @@ public class Index extends SubsystemBase{
         this.m_indexMotor.setInverted(true);
         this.m_indexMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        this.m_shooterLeftMotor.restoreFactoryDefaults();
-        this.m_shooterLeftMotor.setInverted(true);
-        this.m_shooterLeftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        // this.m_shooterLeftMotor.restoreFactoryDefaults();
+        // this.m_shooterLeftMotor.setInverted(true);
+        // this.m_shooterLeftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        this.m_shooterRightMotor.restoreFactoryDefaults();
-        this.m_shooterRightMotor.setInverted(false);
-        this.m_shooterRightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        // this.m_shooterRightMotor.restoreFactoryDefaults();
+        // this.m_shooterRightMotor.setInverted(false);
+        // this.m_shooterRightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         // this.distanceSensor.setAutomaticMode(true);
     }
@@ -70,13 +70,13 @@ public class Index extends SubsystemBase{
     }
 
     public void startOuttaking() {
-        this.m_shooterRightMotor.set(this.shootSpeed);
-        this.m_shooterLeftMotor.set(this.shootSpeed);
+        // this.m_shooterRightMotor.set(this.shootSpeed);
+        // this.m_shooterLeftMotor.set(this.shootSpeed);
     }
 
     public void stopOuttaking() {
-        this.m_shooterRightMotor.set(0);
-        this.m_shooterLeftMotor.set(0);
+        // this.m_shooterRightMotor.set(0);
+        // this.m_shooterLeftMotor.set(0);
     }
 
     public void stopTransfer() {

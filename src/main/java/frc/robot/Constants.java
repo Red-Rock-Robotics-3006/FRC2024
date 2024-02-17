@@ -16,4 +16,10 @@ public final class Constants {
     public static final int NUM_LEDS = 60;//FILLER
     public static final int LED_CHANNEL_ID = 1000;//FILLER
   }
+  public static class Shooter {
+    public static final int LEFT_MOTOR_ID = 42;
+    public static final int RIGHT_MOTOR_ID = 59;
+    public static final int LEFT_ANGLE_MOTOR_ID = 13;
+    public static final int RIGHT_ANGLE_MOTOR_ID = 45;
+  }
 }
