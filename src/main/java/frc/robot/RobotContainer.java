@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -63,24 +64,24 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    drivetrain.setDefaultCommand(
-        drivetrain.applyRequest(
-          () -> {
-                  if (Math.abs(joystick.getRightX()) > kRotationDeadband) {
-                    SmartDashboard.putBoolean("facing angle", false);
-                    return drive.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY() - 0.2)[1] * MaxSpeed)
-                                .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
-                                .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
-                  }
-                  else {
-                    SmartDashboard.putBoolean("facing angle", true);
-                    return angle.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
-                                .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
-                                .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
-                  }    
-          }
-        ) 
-    );
+    // drivetrain.setDefaultCommand(
+    //     drivetrain.applyRequest(
+    //       () -> {
+    //               if (Math.abs(joystick.getRightX()) > kRotationDeadband) {
+    //                 SmartDashboard.putBoolean("facing angle", false);
+    //                 return drive.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY() - 0.2)[1] * MaxSpeed)
+    //                             .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
+    //                             .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+    //               }
+    //               else {
+    //                 SmartDashboard.putBoolean("facing angle", true);
+    //                 return angle.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
+    //                             .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
+    //                             .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
+    //               }    
+    //       }
+    //     ) 
+    // );
     
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(
@@ -149,24 +150,33 @@ public class RobotContainer {
       new InstantCommand(() -> drivetrain.setTargetHeading(0), drivetrain)
     );
 
+
     joystick.leftBumper().onTrue(
-      new InstantCommand(() -> intake.startIntake(), intake).andThen(new InstantCommand(() -> index.startTransfer(), index))
+      new InstantCommand(() -> intake.startIntake(), intake)
     );
 
-    joystick.rightBumper().onTrue(
-      new InstantCommand(() -> intake.stopIntake(), intake).andThen(new InstantCommand(() -> index.stopTransfer(), index))
-    );
+    joystick.rightBumper()
+      .onTrue(new StartEndCommand(
+        () -> intake.reverseIntake(), 
+        () -> intake.stopIntake(),
+        intake
+      ).withTimeout(0.1)
+      );
 
     joystick.a().onTrue(
-      new InstantCommand(() -> intake.reverseIntake(), intake)
+      new InstantCommand(() -> intake.reverseIntake(), intake).andThen(new InstantCommand(() -> index.reverseTransfer(), index))
     );
 
-    joystick.x().onTrue(
-      new InstantCommand(() -> index.startOuttaking(), index)
+    joystick.x()
+      .onTrue(new StartEndCommand(
+        () -> index.startOuttaking(), 
+        () -> index.startTransfer(),
+        index
+      ).withTimeout(2.5)
     );
 
     joystick.b().onTrue(
-      new InstantCommand(() -> index.stopOuttaking(), index)
+      new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> index.stopOuttaking(), index))
     );
 
     
@@ -217,11 +227,11 @@ public class RobotContainer {
     public void updateDashboard(){
       // if (!Intake.getInstance().getHoming()){
 
-      //     angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
-      //     angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
-      //   } else {
-          angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 12));
-          angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.01));
+          angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
+          angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
+        // } else {
+        //   angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 12));
+        //   angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.01));
         
       // }
 

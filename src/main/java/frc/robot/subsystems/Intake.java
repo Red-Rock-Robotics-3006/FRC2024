@@ -35,7 +35,7 @@ public class Intake extends SubsystemBase{
 
         this.m_intakeMotor.restoreFactoryDefaults();
         this.m_intakeMotor.setInverted(false);
-        this.m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        this.m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     /**
@@ -51,6 +51,7 @@ public class Intake extends SubsystemBase{
      */
     public void startIntake() {
         this.setSpeed(this.kIntakeSpeed);
+        index.startTransfer();
     }
 
     /**
@@ -59,6 +60,7 @@ public class Intake extends SubsystemBase{
     public void reverseIntake() {
         // this.setHoming(false);
         this.setSpeed(-0.2);
+        index.reverseTransfer();
     }
     
     /**
@@ -66,6 +68,7 @@ public class Intake extends SubsystemBase{
      */
     public void stopIntake() {
         this.setSpeed(0);
+        index.stopTransfer();
     }
 
     /**

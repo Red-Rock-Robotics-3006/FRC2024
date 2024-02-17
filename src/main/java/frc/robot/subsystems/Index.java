@@ -23,6 +23,11 @@ public class Index extends SubsystemBase{
     
     private boolean isTransferring = false;
     private double hasNoteThreshold = 10;//TODO tune this
+    private double accelSpike = 10;
+    private double noteSpike = 20;
+
+    private double transferSpeed = 0.8;
+    private double shootSpeed = 1;
 
     private Index() {
         this.setName("Index");
@@ -30,15 +35,15 @@ public class Index extends SubsystemBase{
 
         this.m_indexMotor.restoreFactoryDefaults();
         this.m_indexMotor.setInverted(true);
-        this.m_indexMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        this.m_indexMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         this.m_shooterLeftMotor.restoreFactoryDefaults();
         this.m_shooterLeftMotor.setInverted(true);
-        this.m_shooterLeftMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        this.m_shooterLeftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         this.m_shooterRightMotor.restoreFactoryDefaults();
         this.m_shooterRightMotor.setInverted(false);
-        this.m_shooterRightMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        this.m_shooterRightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         // this.distanceSensor.setAutomaticMode(true);
     }
@@ -57,12 +62,16 @@ public class Index extends SubsystemBase{
 
     public void startTransfer() {
         this.isTransferring = true;
-        this.setSpeed(0.3);//test this when possible
+        this.setSpeed(this.transferSpeed);//test this when possible
+    }
+
+    public void reverseTransfer() {
+        this.setSpeed(-0.2);
     }
 
     public void startOuttaking() {
-        this.m_shooterRightMotor.set(0.2);
-        this.m_shooterLeftMotor.set(0.2);
+        this.m_shooterRightMotor.set(this.shootSpeed);
+        this.m_shooterLeftMotor.set(this.shootSpeed);
     }
 
     public void stopOuttaking() {
@@ -73,6 +82,10 @@ public class Index extends SubsystemBase{
     public void stopTransfer() {
         this.isTransferring = false;
         this.setSpeed(0);
+    }
+
+    public boolean hasNote() {
+        return m_indexMotor.getOutputCurrent() > this.noteSpike && m_indexMotor.getOutputCurrent() < this.accelSpike;
     }
 
     // public boolean hasNote() {
@@ -95,11 +108,9 @@ public class Index extends SubsystemBase{
     //     else isDisplaying = true;
     // }
 
-    // public void periodic() {
-    //     if (isDisplaying) {
-    //         System.out.println(getRange());
-    //     }
-    // }
+    public void periodic() {
+        
+    }
 
     /**
      * Singleton architecture which returns the singular instance of Index
