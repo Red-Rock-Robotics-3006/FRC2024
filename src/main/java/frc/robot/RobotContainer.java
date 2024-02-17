@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.Index;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
+// import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 
@@ -56,7 +56,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
   public Intake intake = Intake.getInstance();//TODO for now
   public Index index = Index.getInstance();
-  public Shooter shooter = Shooter.getInstance();
+  // public Shooter shooter = Shooter.getInstance();
 
   private double targetHeadingD = 0;
 
