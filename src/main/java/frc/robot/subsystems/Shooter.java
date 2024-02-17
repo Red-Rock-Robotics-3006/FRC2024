@@ -5,8 +5,6 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-// import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 
 
 
@@ -16,11 +14,8 @@ import com.revrobotics.CANSparkFlex;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-// import frc.robot.LimelightHelpers;
-import frc.robot.Constants.AprilTags;
-// import frc.robot.Constants.*;
 import edu.wpi.first.math.controller.PIDController;
-
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -37,11 +32,13 @@ public class Shooter extends SubsystemBase {
 
 
     private static Shooter instance = null;
-    private CANSparkFlex leftShooter = new CANSparkFlex(Constants.Shooter.LEFT_MOTOR_ID, MotorType.kBrushless);
-    private CANSparkFlex rightShooter = new CANSparkFlex(Constants.Shooter.RIGHT_MOTOR_ID, MotorType.kBrushless);
+    private CANSparkFlex leftShooter = new CANSparkFlex(Constants.Shooter.LEFT_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
+    private CANSparkFlex rightShooter = new CANSparkFlex(Constants.Shooter.RIGHT_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
     
-    private CANSparkFlex m_leftAngleMotor = new CANSparkFlex(Constants.Shooter.LEFT_ANGLE_MOTOR_ID, MotorType.kBrushless);
-    private CANSparkFlex m_rightAngleMotor = new CANSparkFlex(Constants.Shooter.RIGHT_ANGLE_MOTOR_ID, MotorType.kBrushless);
+    private CANSparkFlex m_leftAngleMotor = new CANSparkFlex(Constants.Shooter.LEFT_ANGLE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
+    private CANSparkFlex m_rightAngleMotor = new CANSparkFlex(Constants.Shooter.RIGHT_ANGLE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
+
+    private DutyCycleEncoder shooterEncoder = new DutyCycleEncoder(9); // TODO Check that this works
 
     private double kP = 0.01; // TODO FILLER
     private double kI = 0.0;
@@ -76,43 +73,37 @@ public class Shooter extends SubsystemBase {
     public enum Positions {
         SUB_CENTER, SUB_LEFT, SUB_RIGHT, PODIUM_BLUE, PODIUM_RED, AMP
     }
-    
-    
-    // private int sample;
-    // private double[] sums;
-    // private double[][] data;
-    // private String[] samples;
-    // private int counter;
-    // private int heartbeat;
-
 
 
 
     private NetworkTable limelight = NetworkTableInstance.getDefault().getTable("limelight");
-    // private Limelight vision;
     private SwerveIO swerve = new SwerveIO() {
         public double getTargetHeading(){return 0;};
         public void setTargetHeading(double degrees){};
-    }; //TunerConstants.DriveTrain; // Swerve object, FILLER
+        public boolean isStill(){return true;};
+    }; // TODO FILLER
     private Index index = Index.getInstance(); // Index object
       
 
-    private double robotX, robotY, robotYaw; // These should be all the things that we care about, assuming Z is vertical.
+    private double robotX, robotY; // These should be all the things that we care about, assuming Z is vertical.
     private double targetPitch, targetYaw;
     private boolean seek; // If shooter should seek the speaker
     private boolean autoFire; // If shooter should fire when ready
     private boolean shooting; // Actively shooting
-    private boolean ready; // Ready to shoot
+    // private boolean locked; // Aimed at speaker with shooter at angle // For use in case of pre-emptive shooting
     private boolean tagInVision; // If a tag is in vision
     private boolean isOnBlue; // True if on blue alliance, false if on red alliance // TODO get value from smart dashboard or something else
+    private boolean hasNote; // If the robot has a note
 
     private boolean snapshot; // For toggling snapshots
 
 
+    private double[] target;
 
 
     private final double STOW_ANGLE = 0.0; // TODO FILLER
     private final double EXIT_VELOCITY = 0.0; // TODO FILLER
+    private final double SHOOTER_HEIGHT = 0.0; // TODO FILLER
 
 
 
@@ -121,27 +112,6 @@ public class Shooter extends SubsystemBase {
     private Shooter() {
         this.setName("Shooter");
         this.register();
-        /* Diagnostics
-        this.sums = new double[3];
-        this.data = new double[500][3];
-        this.sample = 0;
-        this.counter = 0;
-        this.heartbeat = 0;
-        this.seek = true; // REMOVE BEFORE DEPLOYMENT
-        this.samples = new String[]{
-            "\nOff, Grey, 7ft",
-            "\nOff, Grey, 8ft",
-            "\nOff, Grey, 9ft",
-            "\nOff, Black, 7ft",
-            "\nOff, Black, 8ft",
-            "\nOff, Black, 9ft",
-            "\nOn, Grey, 7ft",
-            "\nOn, Grey, 8ft",
-            "\nOn, Grey, 9ft",
-            "\nOn, Black, 7ft",
-            "\nOn, Black, 8ft",
-            "\nOn, Black, 9ft"
-        };*/
 
         this.leftShooter.restoreFactoryDefaults();
         this.leftShooter.setInverted(false);
@@ -158,6 +128,10 @@ public class Shooter extends SubsystemBase {
         this.m_leftAngleMotor.restoreFactoryDefaults();
         this.m_leftAngleMotor.setInverted(false);
         this.m_leftAngleMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+        this.setTarget(this.isOnBlue?this.blueSpeaker:this.redSpeaker);
+        
+        this.controller.setTolerance(5.0); // TODO FILLER
     }
 
     /**
@@ -176,113 +150,13 @@ public class Shooter extends SubsystemBase {
 
 
 
-    public void setHoming(boolean homing)
-    {
-        this.seek = homing;
-        this.autoFire = homing;
-    }
-
-
     public boolean getHoming()
     {
         return this.seek;
     }
 
 
-    /**
-     * Disables tracking and seeking apriltags and automatically shooting the note and moves to stow angle.
-     */
-    private void stow()
-    {
-        this.setHoming(false);
-        this.setTarget(this.STOW_ANGLE);
-    }
 
-
-    private void shootNote()
-    {
-        this.shooting = true;
-        this.leftShooter.set(1);
-        this.rightShooter.set(1);
-
-        // Spin up
-        // while(this.leftShooter.getEncoder().getVelocity() < 0.99)
-        //     SmartDashboard.putString("Shooter Status","Spinning up");
-
-        // Await note
-        // while(!this.index.hasNote())
-        //     SmartDashboard.putString("Shooter Status","Pending note intake");
-            
-        this.index.startTransfer();
-
-        // Await fire
-        // while(this.index.hasNote())
-        //     SmartDashboard.putString("Shooter Status","Firing");
-        
-        // this.index.stopTransfer();
-
-        this.shooting = false;
-        this.leftShooter.set(0.3);
-        this.rightShooter.set(0.3);
-
-        // Cool off
-        // while(!this.shooting && this.leftShooter.getEncoder().getVelocity() > 0.32)
-        //     SmartDashboard.putString("Shooter Status","Cooling down");
-
-        SmartDashboard.putString("Shooter Status","Idle");
-        
-        
-        // while()
-        // {
-        //     SmartDashboard.putNumber("Motor Speed", this.leftShooter.getEncoder().getVelocity());
-        // }
-        // this.index.startTransfer();
-
-        // while(this.index.hasNote());
-        
-        // this.leftShooter.set(0.3);
-        // this.rightShooter.set(0.3);
-
-        // while(this.leftShooter.getEncoder().getVelocity() > 0.32)
-        //     SmartDashboard.putNumber("Motor Speed", this.leftShooter.getEncoder().getVelocity());
-
-        // Move note into flywheels
-    }
-
-
-    /* Deprecated presetShoot(int pos)
-    public void presetShoot(int pos)
-    {
-        switch(pos) // 0 indicates auto speaker, 1x indicates speaker, 2x indicates amp
-        {
-            case 10: // Pressed up against center subwoofer
-                this.setTarget(Constants.Shooter.CENTER_ANGLE);
-                break;
-            case 11: // Pressed up against left subwoofer
-                this.setTarget(Constants.Shooter.LEFT_ANGLE);
-                break;
-            case 12: // Pressed up against right subwoofer
-                this.setTarget(Constants.Shooter.RIGHT_ANGLE);
-                break;
-            case 13: // Pressed up against blue podium
-                this.setTarget(Constants.Shooter.PODIUM_ANGLE, Constants.Shooter.BLUE_PODIUM_HEADING);
-                break;
-            case 14: // Pressed up against red podium
-                this.setTarget(Constants.Shooter.PODIUM_ANGLE, Constants.Shooter.RED_PODIUM_HEADING);
-                break;
-            case 20: // Pressed up against amp
-                this.setTarget(Constants.Shooter.AMP_ANGLE);
-                // Make amp bar engage // Amp bar should do this on its own
-                break;
-            default:
-                // Auto seek
-        }
-        
-
-        this.shootNote();
-        if(pos / 10 == 1)
-            ; // Make amp bar disengage // Amp bar should do this on its own
-    }*/
 
     // Essential Methods
 
@@ -290,95 +164,55 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         
-
-        // if(this.seek)
-        // {
-        //     double speed = this.controller.calculate(this.leftShooter.getEncoder().getPosition(), this.targetPitch) + this.kF;
-        //     this.setAngleSpeed(speed);
-        // }
-
-
-
+        // Get if the robot can see an AprilTag
         this.tagInVision = this.limelight.getEntry("tv").getDouble(0) > 0;
-
-        // Use pid controller to move the shooter
-        this.setAngleSpeed(this.controller.calculate(this.m_rightAngleMotor.getEncoder().getPosition(), this.targetPitch));
-
         
-        if(this.seek && this.tagInVision)
-        {
+        // Set stored robot location
+        if(this.tagInVision)
             this.setLocation(this.limelight.getEntry("botpose").getDoubleArray(new double[6]));
-            this.track(this.robotX, this.robotY, this.robotYaw, (int)this.limelight.getEntry("tid").getDouble(0));
-            /*
-            // if(this.sample < this.data.length)
-            // {
-                
-            //     this.data[this.sample][0] = this.robotX;
-            //     this.sums[0] += this.robotX;
-            //     this.data[this.sample][1] = this.robotY;
-            //     this.sums[1] += this.robotY;
-            //     this.data[this.sample][2] = this.robotZ;
-            //     this.sums[2] += this.robotZ;
-            //     this.sample++;
-            // }
-            // else if(this.sample == this.data.length)
-            // {
-            //     double meanX = this.sums[0]/(this.data.length);
-            //     double meanY = this.sums[1]/(this.data.length);
-            //     double meanZ = this.sums[2]/(this.data.length);
-            //     double sdX = 0;
-            //     double sdY = 0;
-            //     double sdZ = 0;
-            //     for(double[] point : this.data)
-            //     {
-            //         sdX += Math.pow(point[0] - meanX, 2);
-            //         sdY += Math.pow(point[1] - meanY, 2);
-            //         sdZ += Math.pow(point[2] - meanZ, 2);
-            //     }
-            //     sdX = Math.sqrt(sdX / this.data.length);
-            //     sdY = Math.sqrt(sdY / this.data.length);
-            //     sdZ = Math.sqrt(sdZ / this.data.length);
-            //     System.out.println("\n" +
-            //         this.samples[this.counter++] +
-            //         "\nμX: " + meanX + " - σX: " + sdX +
-            //         "\nμY: " + meanY + " - σY: " + sdY +
-            //         "\nμZ: " + meanZ + " - σZ: " + sdZ +
-            //         "\nSample: " + this.sample + "\n\n"); 
-            //     this.sample++;
-            //     this.counter = this.counter % this.samples.length;
-            // }
-            // else
-            // {
-            //     if(++this.sample > 600)
-            //     {
-            //         // System.out.println(this.sample);
-            //         this.sums = new double[3];
-            //         this.data = new double[500][3];
-            //         this.sample = 0;
-            //     }
-            //     // System.out.println("\n\nX: " + this.sums[0]/(100 - this.sample) + ", Y: " + this.sums[1]/(100 - this.sample) + ", Z: " + this.sums[2]/(100 - this.sample) + ", Sample: " + this.sample + "\n\n");
-            //     // this.sample = 100;
-            //     // this.sums[0] = 0;
-            //     // this.sums[1] = 0;
-            //     // this.sums[2] = 0;
-            // }
-            */
+
+        // Get angle from pos
+        double currentPos = this.shooterEncoder.getAbsolutePosition();
+        double angle = currentPos; // TODO MATH get angle from pos
+
+        // // Get pos from angle
+        // double newPos = 0; // TODO MATH get pos from angle
+
+        // Calculate feedForward value.
+        double feedForward = this.kF * Math.cos(Math.toRadians(angle)); // account for gravity: tourque =  r * F * cos(theta) |  r * F is tunable kF term//feedForward.calculate(Math.toRadians(targetAngle), 6, 2);//kF * Math.abs(Math.cos(Math.toRadians(currentAngle))); // account for gravity: tourque =  r * F * cos(theta) |  r * F is tunable kF term
+        System.out.println("l" + feedForward);
+
+        // If it is set to start homing on the speaker
+        if(this.seek)
+        {
+            this.aim();
+            this.swerve.setTargetHeading(this.targetYaw);
         }
-        else if(!this.seek)
+        else if(this.shooting)
         {
             this.stow();
         }
 
-        if(this.seek && this.autoFire && this.ready)
+        if(this.autoFire && this.isReady() && this.shooting)
         {
-            this.shootNote();
+            this.fire();
         }
 
+        boolean hadNote = this.index.hasNote();
+        if(this.shooting && this.hasNote && !hadNote)
+            this.stow();
+
+        this.hasNote = hadNote;
+
+        // Use pid controller to move the shooter
+        this.setAngleSpeed(this.controller.calculate(currentPos, this.targetPitch + feedForward));
+
+        System.out.println("Angle: " + this.shooterEncoder.getAbsolutePosition());
 
         // POST to smart dashboard periodically
+        SmartDashboard.putNumber("Shooter Angle", this.shooterEncoder.getAbsolutePosition());
         SmartDashboard.putNumber("RobotX", this.robotX);
-        SmartDashboard.putNumber("Robot", this.robotY);
-        SmartDashboard.putNumber("RobotYaw", this.robotYaw);
+        SmartDashboard.putNumber("RobotY", this.robotY);
         SmartDashboard.putNumber("TagID", (int)this.limelight.getEntry("tid").getDouble(0));
         SmartDashboard.putBoolean("Tag in Vision", this.tagInVision);
     }
@@ -388,6 +222,18 @@ public class Shooter extends SubsystemBase {
 
 
     // Public Interface Methods : Methods that allow outside classes to interface with Shooter
+
+
+    public void setHoming(boolean homing)
+    {
+        this.seek = homing;
+    }
+
+
+    public void setAutoFire(boolean auto)
+    {
+        this.autoFire = auto;
+    }
 
 
     public void presetShoot(Positions pos)
@@ -411,11 +257,10 @@ public class Shooter extends SubsystemBase {
                 break;
             case AMP: // Pressed up against amp
                 this.setTarget(Constants.Shooter.AMP_ANGLE);
-                // Make amp bar engage // Amp bar should do this on its own
                 break;
         }
 
-        this.shootNote();
+        this.aim();
     }
     
     /**
@@ -460,9 +305,75 @@ public class Shooter extends SubsystemBase {
     }
 
 
+    public boolean isAimed()
+    {
+        return this.controller.atSetpoint();
+    }
+
+
+    public boolean isReady()
+    {
+        return this.isAimed() && this.swerve.isStill();
+    }
+
     // Private Interface Methods : Methods that allow Shooter to interface with fundamental components / set values
 
-    
+
+    // Shooting
+
+    private void aim()
+    {
+        // Set values
+        if(!shooting)
+        {
+            SmartDashboard.putString("Shooter Status","Aiming");
+            this.shooting = true;
+            
+            // Spin up shooters
+            this.setShooterSpeed(1);
+        }
+
+        // Calculate shooter angle
+        double xDiff = this.robotX - this.target[0];
+        double yDiff = this.robotY - this.target[1];
+        double zDiff = this.target[2] - this.SHOOTER_HEIGHT;
+
+        // Calculate robot angle
+        double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff )) + 180) % 360;
+
+        // Set Target angles
+        this.setTarget(this.calculateAngle(Math.abs(xDiff), Math.abs(yDiff), zDiff), yaw);
+    }
+
+
+    private void fire()
+    {
+        SmartDashboard.putString("Shooter Status","Firing");
+        this.index.startTransfer();
+    }
+
+    /**
+     * Disables tracking and seeking apriltags and automatically shooting the note and moves to stow angle.
+     */
+    private void stow()
+    {
+        SmartDashboard.putString("Shooter Status","Stow");
+        this.setHoming(false);
+        this.setTarget(this.STOW_ANGLE);
+        this.setShooterSpeed(0); // 0.3 for idle
+        this.shooting = false;
+    }
+
+
+
+    // OTHER
+
+
+    private void setTarget(double[] target)
+    {
+        this.target = target;
+    }
+
     /**
      * Calculates the necessary angle of the shooter based on the robot's position and the target's position, both field relative
      * @param botX The field relative x position of the robot
@@ -487,11 +398,15 @@ public class Shooter extends SubsystemBase {
      */
     private double calculateAngle(double xDiff, double yDiff, double zDiff)
     {
-        // TODO MATH!
-        // this.EXIT_VELOCITY
-        return 0;
-    }
+        double hDist = Math.sqrt(xDiff * xDiff + yDiff + yDiff);
+        double vDist = zDiff;
 
+        double theta = Math.atan(hDist - Math.sqrt(hDist * hDist - 2 * 9.8 * hDist * hDist / this.EXIT_VELOCITY * this.EXIT_VELOCITY * (9.8 * hDist * hDist / 2 / this.EXIT_VELOCITY + vDist)) / (9.8 * hDist * hDist / this.EXIT_VELOCITY * this.EXIT_VELOCITY));
+
+        // TODO Check math
+        // this.EXIT_VELOCITY
+        return theta;
+    }
 
     /**
      * Sets the stored location of the robot using data from apriltags.
@@ -499,7 +414,7 @@ public class Shooter extends SubsystemBase {
      */
     public void setLocation(double[] pose)
     {
-        this.setLocation(pose[0], pose[1], pose[5]);
+        this.setLocation(pose[0], pose[1]);
     }
 
     /**
@@ -508,50 +423,10 @@ public class Shooter extends SubsystemBase {
      * @param botY the robot's field relative y coordinate
      * @param botYaw the robot's field relative yaw
      */
-    public void setLocation(double botX, double botY, double botYaw)
+    public void setLocation(double botX, double botY)
     {
         this.robotX = botX;
         this.robotY = botY;
-        this.robotYaw = botYaw;
-    }
-
-    /**
-     * Sets the robot to track the speaker based on vision
-     * @param botX
-     * @param botY
-     * @param botYaw
-     * @param tagID
-     */
-    private void track(double botX, double botY, double botYaw, int tagID)
-    {
-        if(tagID < 1 || tagID > 16)
-        {
-            System.out.println("\u001B[41m\u001B[37mERROR : Shooter.track was called with an invalid tagID!\u001B[0m\n\u001B[41m\u001B[36mDO NOT USE HOMING ON THE SHOOTER UNTIL THIS IS RESOLVED\u001B[0m");
-            return;
-        }
-        // double[] tagPos = Constants.AprilTags.locations[tagID];
-
-        this.setLocation(botX, botY, botYaw);
-
-        // TODO test that math works
-        // Calculate heading to point at speaker
-        double[] speaker = isOnBlue?this.blueSpeaker:this.redSpeaker;
-        double xDiff = botX - speaker[0];
-        double yDiff = botY - speaker[1];
-        double zDiff = speaker[2];
-
-        double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff )) + 180) % 360;
-        this.setTarget(this.calculateAngle(xDiff, yDiff, zDiff), yaw);
-
-
-        // this.setLocation(this.limelight.getEntry("botpose").getDoubleArray(new double[6]));
-
-        /* Logging
-        // System.out.println("Relative Pos:\nX: " + (tagPos[0] - robotX) + ", Y: " + (tagPos[1] - robotY));
-        // System.out.println("\nX: " + tagPos[0] + ", Y: " + tagPos[1] + ", Z: " + tagPos[2]);
-        // System.out.println("X: " + this.robotX + ", Y: " + this.robotY + ", Z: " + this.robotZ);
-        // System.out.println("X: " + tagPos[0]/this.robotX + ", Y: " + tagPos[1]/this.robotY + ", Z: " + tagPos[2]/this.robotZ);
-        // Robot position is tag pos + robot pose*/
     }
 
 
@@ -562,9 +437,9 @@ public class Shooter extends SubsystemBase {
      */
     private void setTarget(double pitch, double yaw)
     {
+
         this.setTarget(pitch);
         this.targetYaw = yaw;
-        this.swerve.setTargetHeading(this.targetYaw);
     }
 
     /**
@@ -573,7 +448,10 @@ public class Shooter extends SubsystemBase {
      */
     private void setTarget(double pitch)
     {
-        this.targetPitch = pitch;
+        // Convert encoder to degrees
+        double targetDegrees = pitch; // TODO Add math that converts pitch to degrees
+
+        this.targetPitch = targetDegrees;
     }
 
 
