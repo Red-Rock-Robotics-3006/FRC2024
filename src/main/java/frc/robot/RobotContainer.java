@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.Index;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
 // import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
@@ -56,7 +57,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
   public Intake intake = Intake.getInstance();//TODO for now
   public Index index = Index.getInstance();
-  // public Shooter shooter = Shooter.getInstance();
+  public Shooter shooter = Shooter.getInstance();
 
   private double targetHeadingD = 0;
 
@@ -136,20 +137,12 @@ public class RobotContainer {
       drivetrain.resetHeading()
     );
 
-    joystick.povLeft().onTrue(
-      new InstantCommand(() -> drivetrain.setTargetHeading(90), drivetrain)
-    );
-
     joystick.povDown().onTrue(
-      new InstantCommand(() -> drivetrain.setTargetHeading(180), drivetrain)
-    );
-
-    joystick.povRight().onTrue(
-      new InstantCommand(() -> drivetrain.setTargetHeading(-90), drivetrain)
+      new InstantCommand(() -> Shooter.encoderTarget = 0.8)
     );
 
     joystick.povUp().onTrue(
-      new InstantCommand(() -> drivetrain.setTargetHeading(0), drivetrain)
+      new InstantCommand(() -> Shooter.encoderTarget = 0.7)
     );
 
 
@@ -171,15 +164,17 @@ public class RobotContainer {
 
     joystick.x()
       .onTrue(new StartEndCommand(
-        () -> index.startOuttaking(), 
+        () -> shooter.setShooterSpeed(1), 
         () -> index.startTransfer(),
         index
       ).withTimeout(2.5)
     );
 
     joystick.b().onTrue(
-      new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> index.stopOuttaking(), index))
+      new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> shooter.setShooterSpeed(0), index))
     );
+
+
 
     
 
@@ -205,7 +200,10 @@ public class RobotContainer {
 
   public RobotContainer() {
     configureDashboard();
-    configureBindings();
+    configureBindings();    
+    SmartDashboard.putNumber("kF", 0.049);
+    SmartDashboard.putNumber("kP", -1.1); // -1.1
+    SmartDashboard.putNumber("encoder target", 0.7);
   }
 
   public Command getAutonomousCommand() {
