@@ -172,7 +172,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("encoder target", encoderTarget);
         /*
         // Get if the robot can see an AprilTag
-        this.tagInVision = this.limelight.getEntry("tv").getDouble(0) > 0;
+        this.tagInVision =  this.limelight.getEntry("tv").getDouble(0) > 0;
         
         // Set stored robot location
         if(this.tagInVision)
@@ -187,7 +187,6 @@ public class Shooter extends SubsystemBase {
         
         // Calculate feedForward value.
         double feedForward = kF * Math.cos(Math.toRadians(angle + 30)); // account for gravity: tourque =  r * F * cos(theta) |  r * F is tunable kF term//feedForward.calculate(Math.toRadians(targetAngle), 6, 2);//kF * Math.abs(Math.cos(Math.toRadians(currentAngle))); // account for gravity: tourque =  r * F * cos(theta) |  r * F is tunable kF term
-        System.out.println("F: " + feedForward);
         /*
         // If it is set to start homing on the speaker
         if(this.seek)
@@ -493,7 +492,7 @@ public class Shooter extends SubsystemBase {
 
     public void setAngleSpeed(double speed)
     {
-        System.out.println(speed);
+        // System.out.println(speed);
         this.m_rightAngleMotor.set(speed);
         this.m_leftAngleMotor.set(speed);
     }

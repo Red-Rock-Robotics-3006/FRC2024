@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerve.SwerveIO;
@@ -44,6 +45,7 @@ public class Intake extends SubsystemBase{
      */
     public void setSpeed(double speed) {
         this.m_intakeMotor.set(speed);
+        System.out.println("set speed");
     }
 
     /**
@@ -52,6 +54,7 @@ public class Intake extends SubsystemBase{
     public void startIntake() {
         this.setSpeed(this.kIntakeSpeed);
         index.startTransfer();
+        System.out.println("start intake");
     }
 
     /**

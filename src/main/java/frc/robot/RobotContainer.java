@@ -31,6 +31,8 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 public class RobotContainer {
   public static final double kDeadBand = 0.1;
   public static final double kRotationDeadband = 0.05;
+
+  private double ampSpeed = 0.5;
   
   private double MaxSpeed = 4.5; 
   private double MaxAngularRate = 0.5 * Math.PI; 
@@ -129,7 +131,7 @@ public class RobotContainer {
     // joystick.b().whileTrue(drivetrain
     //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
-    joystick.y().onTrue(
+    joystick.start().onTrue(
       drivetrain.resetHeading()
     );
     
@@ -147,12 +149,12 @@ public class RobotContainer {
 
 
     joystick.leftBumper().onTrue(
-      new InstantCommand(() -> intake.startIntake(), intake)
+      new InstantCommand(() -> {intake.startIntake(); System.out.println("left bumper");}, intake)
     );
 
     joystick.rightBumper()
       .onTrue(new StartEndCommand(
-        () -> intake.reverseIntake(), 
+        () -> {intake.reverseIntake(); System.out.println("right bumper");}, 
         () -> intake.stopIntake(),
         intake
       ).withTimeout(0.1)
@@ -169,7 +171,14 @@ public class RobotContainer {
         index
       ).withTimeout(2.5)
     );
-
+    
+    // joystick.y()
+    //   .onTrue(new StartEndCommand(
+    //     () -> shooter.setShooterSpeed(0.5), 
+    //     () -> index.startTransfer(),
+    //     index
+    //   ).withTimeout(2.5)
+    // );
     joystick.b().onTrue(
       new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> shooter.setShooterSpeed(0), index))
     );
@@ -188,14 +197,16 @@ public class RobotContainer {
    * Sets up desired values to be displayed to the Smart Dashboard
    */
   public void configureDashboard(){
-    SmartDashboard.putNumber("max speed", 1);
-    SmartDashboard.putNumber("max turn", 0.5);
+    SmartDashboard.putNumber("max speed", 4.5);
+    SmartDashboard.putNumber("max turn", 1);
 
     SmartDashboard.putNumber("heading p", 4.25);
     SmartDashboard.putNumber("heading d", 0.2);
 
     SmartDashboard.putNumber("homing p", 12);
     SmartDashboard.putNumber("homing d", 0.01);
+
+    SmartDashboard.putNumber("amp speed", 0.5);
   }
 
   public RobotContainer() {
@@ -238,8 +249,10 @@ public class RobotContainer {
     SmartDashboard.putNumber("current p", angle.HeadingController.getP());
     SmartDashboard.putNumber("current d", angle.HeadingController.getD());
 
-    this.MaxAngularRate = SmartDashboard.getNumber("max turn", 0.5) * Math.PI;
-    this.MaxSpeed = SmartDashboard.getNumber("max speed", 1);
+    this.MaxAngularRate = SmartDashboard.getNumber("max turn", 1) * Math.PI;
+    this.MaxSpeed = SmartDashboard.getNumber("max speed", 4.5);
+
+    this.ampSpeed = SmartDashboard.getNumber("amp speed", 0.5);
   }
 
   /**
