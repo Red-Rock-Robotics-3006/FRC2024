@@ -174,7 +174,7 @@ public class RobotContainer {
     
     joystick.y()
       .onTrue(new StartEndCommand(
-        () -> shooter.setShooterSpeed(0.5), 
+        () -> shooter.setShooterSpeed(ampSpeed), 
         () -> index.startTransfer(),
         index
       ).withTimeout(2.5)
@@ -206,7 +206,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("homing p", 12);
     SmartDashboard.putNumber("homing d", 0.01);
 
-    SmartDashboard.putNumber("amp speed", 0.5);
+    SmartDashboard.putNumber("amp speed", 0.12);
   }
 
   public RobotContainer() {
@@ -252,7 +252,7 @@ public class RobotContainer {
     this.MaxAngularRate = SmartDashboard.getNumber("max turn", 1) * Math.PI;
     this.MaxSpeed = SmartDashboard.getNumber("max speed", 4.5);
 
-    this.ampSpeed = SmartDashboard.getNumber("amp speed", 0.5);
+    this.ampSpeed = SmartDashboard.getNumber("amp speed", 0.12);
   }
 
   /**
