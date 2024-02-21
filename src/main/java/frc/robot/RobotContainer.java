@@ -172,13 +172,13 @@ public class RobotContainer {
       ).withTimeout(2.5)
     );
     
-    // joystick.y()
-    //   .onTrue(new StartEndCommand(
-    //     () -> shooter.setShooterSpeed(0.5), 
-    //     () -> index.startTransfer(),
-    //     index
-    //   ).withTimeout(2.5)
-    // );
+    joystick.y()
+      .onTrue(new StartEndCommand(
+        () -> shooter.setShooterSpeed(0.5), 
+        () -> index.startTransfer(),
+        index
+      ).withTimeout(2.5)
+    );
     joystick.b().onTrue(
       new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> shooter.setShooterSpeed(0), index))
     );
