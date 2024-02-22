@@ -56,13 +56,7 @@ public class LED extends SubsystemBase{
     }
 
     public void setState(State s) {
-        switch(s) {
-            case RESTING: this.RobotState = State.RESTING;
-            case NOTE_DETECTED: this.RobotState = State.NOTE_DETECTED;
-            case HOMING_NOTE: this.RobotState = State.HOMING_NOTE;
-            case HAS_NOTE: this.RobotState = State.HAS_NOTE;
-            case HOMING_APRILTAG: this.RobotState = State.HOMING_APRILTAG;
-        }
+        this.RobotState = s;
     }
 
     public State getState(State s) {
@@ -96,38 +90,30 @@ public class LED extends SubsystemBase{
         this.control.setData(this.buffer);
     }
 
+    public void setSection(int start, int end, int r, int g, int b) {
+        for (int i = start; i < end; i++) {
+            buffer.setRGB(i, r, g, b);
+        }
+        control.setData(buffer);
+    }
+
     public void periodic() {
         if (!this.policeModeEnabled) {
             switch(this.RobotState) { //TODO make the led patterns more intuitive (ie flashing instead of colors)
                 case RESTING:
-                    for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-                        this.buffer.setRGB(i, 255, 255, 255);//white
-                    }
-                    this.control.setData(this.buffer);
+                    this.setSection(this.allianceColorCutoff, this.driveStateColorCutoff, 0, 0, 0);//no color
                     break;
                 case NOTE_DETECTED:
-                    for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-                        this.buffer.setRGB(i, 115, 81, 226);//cube purple
-                    }
-                    this.control.setData(this.buffer);
+                    this.setSection(this.allianceColorCutoff, this.driveStateColorCutoff, 115, 81, 226);//cube purple
                     break;
                 case HOMING_NOTE:
-                    for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-                        this.buffer.setRGB(i, 255, 183, 3);//cone yellow
-                    }
-                    this.control.setData(this.buffer);
+                    this.setSection(this.allianceColorCutoff, this.driveStateColorCutoff, 255, 183, 3);//cone yellow
                     break;
                 case HAS_NOTE:
-                    for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-                        this.buffer.setRGB(i, 252, 85, 36);//note orange
-                    }
-                    this.control.setData(this.buffer);
+                    this.setSection(this.allianceColorCutoff, this.driveStateColorCutoff, 252, 85, 36);//note orange
                     break;
                 case HOMING_APRILTAG:
-                    for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-                        this.buffer.setRGB(i, 30, 225, 30);//limelight green
-                    }
-                    this.control.setData(this.buffer);
+                    this.setSection(this.allianceColorCutoff, this.driveStateColorCutoff, 30, 225, 30);//limelight green
                     break;
             }
 
