@@ -141,22 +141,7 @@ public class Shooter extends SubsystemBase {
         this.controller.setTolerance(0.02); // TODO FILLER
 
         
-    }
-
-
-    /**
-     * Example command factory method.
-     *
-     * @return a command
-     */
-    public Command exampleMethodCommand() {
-        // Inline construction of command goes here.
-        // Subsystem::RunOnce implicitly requires `this` subsystem.
-        return runOnce(
-            () -> {
-                /* one-time action goes here */
-            });
-    }
+    } 
 
 
 
@@ -170,6 +155,7 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         this.controller.setP(kP);
         SmartDashboard.putNumber("encoder target", encoderTarget);
+        SmartDashboard.putNumber("shooter target", this.targetPitch);
         /*
         // Get if the robot can see an AprilTag
         this.tagInVision =  this.limelight.getEntry("tv").getDouble(0) > 0;
@@ -180,55 +166,24 @@ public class Shooter extends SubsystemBase {
         */
         // Get angle from pos
         double currentPos = this.shooterEncoder.getAbsolutePosition();
-        double angle = this.posToDegrees(currentPos); // TODO MATH get angle from pos
+        double angle = this.posToDegrees(currentPos);
 
-        // // Get pos from angle
-        // double newPos = 0; // TODO MATH get pos from angle
+        double eTarget = this.degreesToPos(this.targetPitch);
         
         // Calculate feedForward value.
-        double feedForward = kF * Math.cos(Math.toRadians(angle + 30)); // account for gravity: tourque =  r * F * cos(theta) |  r * F is tunable kF term//feedForward.calculate(Math.toRadians(targetAngle), 6, 2);//kF * Math.abs(Math.cos(Math.toRadians(currentAngle))); // account for gravity: tourque =  r * F * cos(theta) |  r * F is tunable kF term
-        /*
-        // If it is set to start homing on the speaker
-        if(this.seek)
-        {
-            this.aim();
-            this.swerve.setTargetHeading(this.targetYaw);
-        }
-        else if(this.shooting)
-        {
-            this.stow();
-        }
-
-        if(this.autoFire && this.isReady() && this.shooting)
-        {
-            this.fire();
-        }
-
-        boolean hadNote = this.index.hasNote();
-        if(this.shooting && this.hasNote && !hadNote)
-            this.stow();
-
-        this.hasNote = hadNote;
-        */
-        // Use pid controller to move the shooter
-        this.setAngleSpeed(this.controller.calculate(currentPos, encoderTarget) + feedForward);
-        // this.setAngleSpeed(feedForward);
+        double feedForward = kF * Math.cos(Math.toRadians(angle + 30));
         
-        // System.out.println("Pos: " + currentPos);
-        // System.out.println("Angle: " + angle);
+        // Use pid controller to move the shooter
+        double speed = this.controller.calculate(currentPos, eTarget) + feedForward;
+        System.out.println(speed);
+        this.setAngleSpeed(speed);
+        
         kP = SmartDashboard.getNumber("kP", -1.1);
         kF = SmartDashboard.getNumber("kF", 0.049);
 
         SmartDashboard.putNumber("power", this.m_leftAngleMotor.getAppliedOutput());
         SmartDashboard.putNumber("current encoder", currentPos);
-        /*
-        // POST to smart dashboard periodically
-        SmartDashboard.putNumber("Shooter Angle", this.shooterEncoder.getAbsolutePosition());
-        SmartDashboard.putNumber("RobotX", this.robotX);
-        SmartDashboard.putNumber("RobotY", this.robotY);
-        SmartDashboard.putNumber("TagID", (int)this.limelight.getEntry("tid").getDouble(0));
-        SmartDashboard.putBoolean("Tag in Vision", this.tagInVision);
-        */
+        SmartDashboard.putNumber("angle current", angle);
 
         SmartDashboard.putNumber("left v", leftShooter.getEncoder().getVelocity());
         SmartDashboard.putNumber("right v", rightShooter.getEncoder().getVelocity());
@@ -258,31 +213,35 @@ public class Shooter extends SubsystemBase {
         this.autoFire = auto;
     }
 
-
-    public void presetShoot(Positions pos)
+    /**
+     * Sets the shooter to a preset angle based on the position of the robot as provided
+     * SUB_CENTER = 45 degrees
+     * SUB_LEFT = 60 degrees
+     * @param pos the position of the robot
+     */
+    public static void presetShoot(Positions pos)
     {
         switch(pos)
         {
             case SUB_CENTER: // Pressed up against center subwoofer
-                this.setTarget(0.45);
+                Shooter.getInstance().setTarget(45);
                 break;
             case SUB_LEFT: // Pressed up against left subwoofer
-                this.setTarget(0);
+                Shooter.getInstance().setTarget(60);
                 break;
             case SUB_RIGHT: // Pressed up against right subwoofer
-                this.setTarget(0);
+                Shooter.getInstance().setTarget(0);
                 break;
             case PODIUM_BLUE: // Pressed up against blue podium
-                this.setTarget(0, 0);
+                Shooter.getInstance().setTarget(0, 0);
                 break;
             case PODIUM_RED: // Pressed up against red podium
-                this.setTarget(0, 0);
+                Shooter.getInstance().setTarget(0, 0);
                 break;
             case AMP: // Pressed up against amp
-                this.setTarget(0);
+                Shooter.getInstance().setTarget(0);
                 break;
         }
-
         // this.aim();
     }
     
@@ -313,7 +272,7 @@ public class Shooter extends SubsystemBase {
         if(on)
             this.setShooterSpeed(1);
         else
-            this.setShooterSpeed(0.3);
+            this.setShooterSpeed(0); // 0.3 for idle
     }
 
     /**
@@ -406,7 +365,7 @@ public class Shooter extends SubsystemBase {
 
     private void setTarget(double[] target)
     {
-        this.target = this.target;
+        this.target = target;
     }
 
     /**
@@ -433,13 +392,19 @@ public class Shooter extends SubsystemBase {
      */
     private double calculateAngle(double xDiff, double yDiff, double zDiff)
     {
-        double hDist = Math.sqrt(xDiff * xDiff + yDiff + yDiff);
+        double hDist = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
         double vDist = zDiff;
 
-        double theta = Math.atan(hDist - Math.sqrt(hDist * hDist - 2 * 9.8 * hDist * hDist / this.EXIT_VELOCITY * this.EXIT_VELOCITY * (9.8 * hDist * hDist / 2 / this.EXIT_VELOCITY + vDist)) / (9.8 * hDist * hDist / this.EXIT_VELOCITY * this.EXIT_VELOCITY));
+        // Equation to solve for the angle that the shooter needs to be at.
+        // DOES NOT WORK
+        // double theta = Math.atan(hDist - Math.sqrt(hDist * hDist - 2 * 9.8 * hDist * hDist / this.EXIT_VELOCITY * this.EXIT_VELOCITY * (9.8 * hDist * hDist / 2 / this.EXIT_VELOCITY + vDist)) / (9.8 * hDist * hDist / this.EXIT_VELOCITY * this.EXIT_VELOCITY));
+        
+        // Equation to estimate the angle that the shooter needs to be at.
+        double tof = Math.sqrt(hDist * hDist + vDist * vDist)/EXIT_VELOCITY;
+        double drop = 4.9 * tof * tof;
+        double theta = Math.atan((vDist + drop) / hDist);
 
         // TODO Check math
-        // this.EXIT_VELOCITY
         return theta;
     }
 

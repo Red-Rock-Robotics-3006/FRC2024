@@ -140,21 +140,21 @@ public class RobotContainer {
     );
 
     joystick.povDown().onTrue(
-      new InstantCommand(() -> Shooter.encoderTarget = 0.8)
+      new InstantCommand(() -> Shooter.presetShoot(Shooter.Positions.SUB_CENTER))//Shooter.encoderTarget = 0.8)
     );
 
     joystick.povUp().onTrue(
-      new InstantCommand(() -> Shooter.encoderTarget = 0.7)
+      new InstantCommand(() -> Shooter.presetShoot(Shooter.Positions.SUB_LEFT))//Shooter.encoderTarget = 0.7)
     );
 
 
     joystick.leftBumper().onTrue(
-      new InstantCommand(() -> {intake.startIntake(); System.out.println("left bumper");}, intake)
+      new InstantCommand(() -> {intake.setHoming(true); System.out.println("left bumper");}, intake)
     );
 
     joystick.rightBumper()
       .onTrue(new StartEndCommand(
-        () -> {intake.reverseIntake(); System.out.println("right bumper");}, 
+        () -> {intake.setHoming(false);intake.reverseIntake(); System.out.println("right bumper");}, 
         () -> intake.stopIntake(),
         intake
       ).withTimeout(0.1)
@@ -215,6 +215,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("kF", 0.049);
     SmartDashboard.putNumber("kP", -1.1); // -1.1
     SmartDashboard.putNumber("encoder target", 0.7);
+    SmartDashboard.putNumber("shooter target", 45);
   }
 
   public Command getAutonomousCommand() {
@@ -236,15 +237,15 @@ public class RobotContainer {
    * Called in the main Robot class
    */
     public void updateDashboard(){
-      // if (!Intake.getInstance().getHoming()){
+      if (!Intake.getInstance().getHoming()){
 
           angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
           angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
-        // } else {
-        //   angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 12));
-        //   angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.01));
+        } else {
+          angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 12));
+          angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.01));
         
-      // }
+      }
 
     SmartDashboard.putNumber("current p", angle.HeadingController.getP());
     SmartDashboard.putNumber("current d", angle.HeadingController.getD());
