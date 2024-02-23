@@ -16,7 +16,7 @@ public final class Constants {
     public static final int INDEX_MOTOR_ID = 60;
   }
   public static class LED {
-    public static final int NUM_LEDS = 60;//FILLER
-    public static final int LED_CHANNEL_ID = 1000;//FILLER
+    public static final int NUM_LEDS = 58;//FILLER
+    public static final int LED_CHANNEL_ID = 9;//FILLER
   }
 }

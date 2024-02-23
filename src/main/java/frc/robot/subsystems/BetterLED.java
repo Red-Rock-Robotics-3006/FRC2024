@@ -1,16 +1,16 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.util.Color;
 
-public class LED extends SubsystemBase{
+public class BetterLED extends SubsystemBase{
 
-    private static LED instance = null;
+    private static BetterLED instance = null;
 
     private AddressableLED control = new AddressableLED(Constants.LED.LED_CHANNEL_ID);
-    private AddressableLEDBuffer buffer = new AddressableLEDBuffer(Constants.LED.NUM_LEDS);
+    private LEDBuffer buffer = new LEDBuffer(Constants.LED.NUM_LEDS);
 
     // private Intake intake = Intake.getInstance();
     // private Index index = Index.getInstance();
@@ -31,24 +31,26 @@ public class LED extends SubsystemBase{
     private int policeModeControl3 = 0;
     private int policeModeColorControl3 = 0;
 
+    private Color RED = new Color(255, 0, 0);
+    private Color BLUE = new Color(0, 0, 255);
+    private Color WHITE = new Color(255, 255, 255);
+    private Color OFF = new Color(0, 0, 0);
+    
+
     /**
      * Constructor for LED which registers the subsystem and sets a specified portion of the LED lights to the alliance color
      */
-    private LED() {
+    private BetterLED() {
         this.setName("LED");
         this.register();
         this.control.setLength(this.buffer.getLength());
         this.control.start();
 
         if (this.initialAlliance) {//true is red
-            for (int i = 0; i < this.allianceColorCutoff; i++) {
-                this.buffer.setRGB(i, 255, 0, 0);
-            }
+            this.buffer.setLED(0, this.allianceColorCutoff, RED);
         }
         else {//false is blue
-            for (int i = 0; i < this.allianceColorCutoff; i++) {
-                this.buffer.setRGB(i, 0, 0, 255);
-            }
+            this.buffer.setLED(0, this.allianceColorCutoff, BLUE);
         }
         this.control.setData(buffer);
     }
@@ -74,25 +76,17 @@ public class LED extends SubsystemBase{
     public void reset() {
         if (this.policeModeEnabled) this.togglePoliceMode();
         if (this.initialAlliance) {//true is red
-            for (int i = 0; i < this.allianceColorCutoff; i++) {
-                this.buffer.setRGB(i, 255, 0, 0);
-            }
+            this.buffer.setLED(0, this.allianceColorCutoff, RED);
         }
         else {//false is blue
-            for (int i = 0; i < this.allianceColorCutoff; i++) {
-                this.buffer.setRGB(i, 0, 0, 255);
-            }
+            this.buffer.setLED(0, this.allianceColorCutoff, RED);
         }
-        for (int i = this.allianceColorCutoff; i < driveStateColorCutoff; i++) {
-            this.buffer.setRGB(i, 255, 255, 255);//white
-        }
+        this.buffer.setLED(this.allianceColorCutoff, driveStateColorCutoff, RED);
         this.control.setData(this.buffer);
     }
 
     public void setSection(int start, int end, int r, int g, int b) {
-        for (int i = start; i < end; i++) {
-            buffer.setRGB(i, r, g, b);
-        }
+        this.buffer.setRGB(start, end, r, g, b);
         control.setData(buffer);
     }
 
@@ -160,47 +154,31 @@ public class LED extends SubsystemBase{
 
         if (this.policeModeEnabled) {
             if (policeMode == 0) {//solid color
-                for (int i = 0; i < buffer.getLength() / 2; i++) {
-                    buffer.setRGB(i, 255, 0, 0);
-                }
-                for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                    buffer.setRGB(i, 0, 0, 255);
-                }
+                this.buffer.setLED(0, buffer.getLength()/2, RED);
+                this.buffer.setLED(buffer.getLength()/2, buffer.getLength(), BLUE);
                 control.setData(buffer);
             }
             if (policeMode == 1) {//solid alternating color
                 policeModeControl1++;
                 if (policeModeControl1 % 50 == 0) {
-                    for (int i = 0; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 255, 0, 0);
-                    }
+                    this.buffer.setLED(RED);
                     control.setData(buffer);
                 }
                 else if (policeModeControl1 % 25 == 0) {
-                    for (int i = 0; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 0, 0, 255);
-                    }
+                    this.buffer.setLED(BLUE);
                     control.setData(buffer);
                 }
             }
             else if (policeMode == 2) {//one flash each color on two halves
                 policeModeControl2++;
                 if (policeModeControl2 % 40 == 0) {
-                    for (int i = 0; i < buffer.getLength() / 2; i++) {
-                        buffer.setRGB(i, 255, 0, 0);
-                    }
-                    for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 0, 0, 0);
-                    }
+                    this.buffer.setLED(0, this.buffer.getLength()/2, RED);
+                    this.buffer.setLED(this.buffer.getLength()/2, this.buffer.getLength(), OFF);
                     control.setData(buffer);
                 }
                 else if (policeModeControl2 % 20 == 0) {
-                    for (int i = 0; i < buffer.getLength() / 2; i++) {
-                        buffer.setRGB(i, 0, 0, 0);
-                    }
-                    for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 0, 0, 255);
-                    }
+                    this.buffer.setLED(0, this.buffer.getLength()/2, OFF);
+                    this.buffer.setLED(this.buffer.getLength()/2, this.buffer.getLength(), BLUE);
                     control.setData(buffer);
                 }
             }
@@ -208,16 +186,12 @@ public class LED extends SubsystemBase{
                 policeModeControl3++;
                 if (policeModeColorControl3 % 2 == 0) {
                     if (policeModeControl3 % 8 == 0) {
-                        for (int i = 0; i < buffer.getLength() / 2; i++) {
-                            buffer.setRGB(i, 0, 0, 0);
-                        }
+                        this.buffer.setLED(0, this.buffer.getLength()/2, OFF);
                         control.setData(buffer);
                     }
 
                     else if (policeModeControl3 % 4 == 0) {
-                        for (int i = 0; i < buffer.getLength() / 2; i++) {
-                            buffer.setRGB(i, 0, 0, 255);
-                        }
+                        this.buffer.setLED(0, this.buffer.getLength()/2, BLUE);
                         control.setData(buffer);
 
 
@@ -227,23 +201,17 @@ public class LED extends SubsystemBase{
                         }
                     }
 
-                    for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 0, 0, 0);
-                    }
+                    this.buffer.setLED(this.buffer.getLength()/2, this.buffer.getLength(), OFF);
                     control.setData(buffer);
                 }
                 else {
                     if (policeModeControl3 % 8 == 0) {
-                        for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                            buffer.setRGB(i, 0, 0, 0);
-                        }
+                        this.buffer.setLED(this.buffer.getLength()/2, this.buffer.getLength(), OFF);
                         control.setData(buffer);
                     }
 
                     else if (policeModeControl3 % 4 == 0) {
-                        for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                            buffer.setRGB(i, 255, 0, 0);
-                        }
+                        this.buffer.setLED(this.buffer.getLength()/2, this.buffer.getLength(), RED);
                         control.setData(buffer);
 
 
@@ -253,14 +221,40 @@ public class LED extends SubsystemBase{
                         }
                     }
 
-                    for (int i = 0; i < buffer.getLength() / 2; i++) {
-                        buffer.setRGB(i, 0, 0, 0);
-                    }
+                    this.buffer.setLED(0, this.buffer.getLength()/2, OFF);
                     control.setData(buffer);
                 }
             }
             else if (policeMode == 4) {//segmented flashes
 
+            }
+            else if(policeMode == 5) { // Fill
+                policeModeControl2 = (policeModeControl2 + 1) % 40;
+                int index = (int)(((policeModeControl2 % 20 + 1) / 20.0) * this.buffer.getLength()/2);
+                if(policeModeControl2 % 20 == 0)
+                    this.buffer.setLED(OFF);
+                if (policeModeControl2 / 20 == 0) {
+                    this.buffer.setLED(this.buffer.getLength()/2 - index, this.buffer.getLength()/2, RED);
+                    control.setData(buffer);
+                }
+                else {
+                    this.buffer.setLED(this.buffer.getLength()/2, this.buffer.getLength()/2 + index, BLUE);
+                    control.setData(buffer);
+                }
+            }
+            else if(policeMode == 6) { // Fill Gradient
+                policeModeControl2 = (policeModeControl2 + 1) % 40;
+                int index = (int)(((policeModeControl2 % 20 + 1) / 20.0) * this.buffer.getLength()/2);
+                if(policeModeControl2 % 20 == 0)
+                    this.buffer.setLED(OFF);
+                if (policeModeControl2 / 20 == 0) {
+                    this.buffer.setRGB(this.buffer.getLength()/2 - index, this.buffer.getLength()/2, n -> 255, n -> 0, n-> (this.buffer.getLength()/2-n)*6  );
+                    control.setData(buffer);
+                }
+                else {
+                    this.buffer.setRGB(this.buffer.getLength()/2, this.buffer.getLength()/2 + index, n -> (n-this.buffer.getLength()/2)*2, n -> 0, n-> 255);
+                    control.setData(buffer);
+                }
             }
         }
     }
@@ -269,8 +263,8 @@ public class LED extends SubsystemBase{
      * Singleton architecture which returns the singular instance of LED
      * @return the instance (which is instantiated when first called)
      */
-    public static LED getInstance(){
-        if (instance == null) instance = new LED();
+    public static BetterLED getInstance(){
+        if (instance == null) instance = new BetterLED();
         return instance;
     }
 }
