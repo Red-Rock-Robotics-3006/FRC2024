@@ -9,6 +9,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -32,6 +33,10 @@ import frc.robot.subsystems.swerve.generated.*;
  * so it can be used in command-based projects easily.
  */
 public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsystem, SwerveIO {
+    public static final PathConstraints constraints = new PathConstraints(
+        2, 
+        1, 1.5, 1);
+
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
@@ -121,6 +126,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new PathPlannerAuto(text);
     }
 
+    public Command toPoseAuto(){
+        return null;
+    }
+
     public Command resetHeading(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> this.seedFieldRelative(
@@ -132,6 +141,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             ), this
           ),
           new InstantCommand(() -> this.setTargetHeading(0), this)
+        );
+    }
+
+    public Command pathFindToPose(Pose2d pose){
+        return AutoBuilder.pathfindToPose(pose, 
+            constraints
         );
     }
 
