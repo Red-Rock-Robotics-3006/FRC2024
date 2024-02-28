@@ -24,8 +24,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-
 import frc.robot.subsystems.swerve.generated.*;
+import frc.robot.subsystems.*;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem
@@ -44,7 +44,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public enum DriveState{
         FIELD_CENTRIC,
-        ROBOT_CENTRIC
+        ROBOT_CENTRIC,
+        FIELD_CENTRIC_NO_LOCK
     }
 
     private DriveState driveState = DriveState.FIELD_CENTRIC;
@@ -123,6 +124,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command resetHeading(){
         return new SequentialCommandGroup(
+            new InstantCommand(() -> Shooter.getInstance().setOffset(this.getState().Pose.getRotation().getDegrees() + Shooter.getInstance().getOffset()), Shooter.getInstance()),
             new InstantCommand(() -> this.seedFieldRelative(
               new Pose2d(
                 this.getState().Pose.getX(),
@@ -134,7 +136,21 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
           new InstantCommand(() -> this.setTargetHeading(0), this)
         );
     }
-
+    
+    public Command resetFieldHeading(){
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> Shooter.getInstance().setOffset(0), Shooter.getInstance()),
+            new InstantCommand(() -> this.seedFieldRelative(
+              new Pose2d(
+                this.getState().Pose.getX(),
+                this.getState().Pose.getY(),
+                new Rotation2d()
+              )
+            ), this
+          ),
+          new InstantCommand(() -> this.setTargetHeading(0), this)
+        );
+    }
     public double getRotationRate(){
         return this.getPigeon2().getRate();
     }
@@ -169,5 +185,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     @Override
     public void periodic(){
         this.field.setRobotPose(this.getState().Pose);
+        SmartDashboard.putNumber("field heading", this.getState().Pose.getRotation().getDegrees());
     }
 }

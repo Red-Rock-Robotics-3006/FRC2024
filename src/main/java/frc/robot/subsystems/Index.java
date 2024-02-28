@@ -1,11 +1,97 @@
+// package frc.robot.subsystems;
+
+// import com.revrobotics.CANSparkFlex;
+// import com.revrobotics.CANSparkMax;
+
+// import edu.wpi.first.wpilibj.DigitalInput;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+// import frc.robot.Constants;
+
+
+// public class Index extends SubsystemBase{
+    
+//     private static Index instance = null;
+
+//     private final CANSparkFlex m_indexMotor = new CANSparkFlex(Constants.Index.INDEX_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+//     private final DigitalInput beamBrake = new DigitalInput(Constants.Index.SWITCH_CHANNEL_ID);
+    
+//     private boolean isTransferring = false;
+
+//     private double transferSpeed = 0.85;
+
+//     private Index() {
+//         this.setName("Index");
+//         this.register();
+
+//         this.m_indexMotor.restoreFactoryDefaults();
+//         this.m_indexMotor.setInverted(true);
+//         this.m_indexMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+//     }
+
+//     public void setTransferring(boolean b) {
+//         this.isTransferring = b;
+//     }
+
+//     public boolean getTransferring(boolean b) {
+//         return this.isTransferring;
+//     }
+
+//     public void setSpeed(double speed) {
+//         this.m_indexMotor.set(speed);
+//     }
+
+//     public void startTransfer() {
+//         this.setSpeed(this.transferSpeed);
+//     }
+
+//     public void reverseTransfer() {
+//         this.setSpeed(-0.2);
+//     }
+
+//     public void stopTransfer() {
+//         // this.isTransferring = false;
+//         this.setSpeed(0);
+//     }
+
+//     // public boolean hasNote() {
+//     //     return !this.beamBrake.get();
+//     // }
+    
+//     public boolean
+
+//     double current = 0;
+//     public void periodic() {
+//         // // if (this.isTransferring && this.hasNote())
+//         // // {
+//         // //     this.stopTransfer();
+//         // //     SmartDashboard.putBoolean("Stopped",true);
+//         // // }
+//         //     SmartDashboard.putBoolean("Has Note", this.hasNote());
+//         // System.out.println(this.hasNote());
+
+
+
+//     }
+
+//     /**
+//      * Singleton architecture which returns the singular instance of Index
+//      * @return the instance (which is instantiated when first called)
+//      */
+//     public static Index getInstance(){
+//         if (instance == null) instance = new Index();
+//         return instance;
+//     }
+// }
+
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkFlex;
+import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkMax;
-// import com.revrobotics.Rev2mDistanceSensor;
-// import com.revrobotics.Rev2mDistanceSensor.Port;
 
-import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
@@ -15,44 +101,32 @@ public class Index extends SubsystemBase{
     
     private static Index instance = null;
 
-    private final CANSparkFlex m_indexMotor = new CANSparkFlex(Constants.Index.INDEX_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
-    // private final CANSparkFlex m_shooterLeftMotor = new CANSparkFlex(42, CANSparkMax.MotorType.kBrushless);
-    // private final CANSparkFlex m_shooterRightMotor = new CANSparkFlex(59, CANSparkMax.MotorType.kBrushless);
-    //private final DigitalInput beamBrake = new DigitalInput(Constants.Index.SWITCH_CHANNEL_ID);
-    // private final Rev2mDistanceSensor distanceSensor = new Rev2mDistanceSensor(Port.kOnboard);
+    private final CANSparkMax m_indexMotor = new CANSparkMax(Constants.Index.INDEX_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+    private final TimeOfFlight indexTOFSensor = new TimeOfFlight(Constants.Index.INDEX_TOF_SENSOR_ID);
     
     private boolean isTransferring = false;
-    private double hasNoteThreshold = 10;//TODO tune this
-    private double accelSpike = 10;
-    private double noteSpike = 20;
-
-    private double transferSpeed = 0.8;
-    private double shootSpeed = 1;
+    private double clearThresholdIndex;
+    private double hasNoteThresholdDeviation = 10;//in mm, tune this
 
     private Index() {
         this.setName("Index");
         this.register();
 
         this.m_indexMotor.restoreFactoryDefaults();
-        this.m_indexMotor.setInverted(true);
+        this.m_indexMotor.setInverted(false);
         this.m_indexMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        // this.m_shooterLeftMotor.restoreFactoryDefaults();
-        // this.m_shooterLeftMotor.setInverted(true);
-        // this.m_shooterLeftMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.indexTOFSensor.setRangeOfInterest(8, 8, 12, 12);
+        this.indexTOFSensor.setRangingMode(TimeOfFlight.RangingMode.Short, 24);
 
-        // this.m_shooterRightMotor.restoreFactoryDefaults();
-        // this.m_shooterRightMotor.setInverted(false);
-        // this.m_shooterRightMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-
-        // this.distanceSensor.setAutomaticMode(true);
+        this.clearThresholdIndex = this.indexTOFSensor.getRange();
     }
 
     public void setTransferring(boolean b) {
         this.isTransferring = b;
     }
 
-    public boolean getTransferring(boolean b) {
+    public boolean getTransferring() {
         return this.isTransferring;
     }
 
@@ -61,22 +135,7 @@ public class Index extends SubsystemBase{
     }
 
     public void startTransfer() {
-        this.isTransferring = true;
-        this.setSpeed(this.transferSpeed);//test this when possible
-    }
-
-    public void reverseTransfer() {
-        this.setSpeed(-0.2);
-    }
-
-    public void startOuttaking() {
-        // this.m_shooterRightMotor.set(this.shootSpeed);
-        // this.m_shooterLeftMotor.set(this.shootSpeed);
-    }
-
-    public void stopOuttaking() {
-        // this.m_shooterRightMotor.set(0);
-        // this.m_shooterLeftMotor.set(0);
+        this.setSpeed(0.85);
     }
 
     public void stopTransfer() {
@@ -84,32 +143,24 @@ public class Index extends SubsystemBase{
         this.setSpeed(0);
     }
 
-    public boolean hasNote() {
-        return m_indexMotor.getOutputCurrent() > this.noteSpike && m_indexMotor.getOutputCurrent() < this.accelSpike;
+    public void reverseTransfer() {
+        this.setSpeed(-0.2);
     }
 
-    // public boolean hasNote() {
-    //     if (this.beamBrake.get()) return true;
-    //     return false;
-    // }
+    public boolean noteInIndex() {
+        return this.indexTOFSensor.getRange() < this.clearThresholdIndex - this.hasNoteThresholdDeviation && this.indexTOFSensor.isRangeValid();
+    }
 
-    // public boolean hasNote2() {
-    //     if (this.distanceSensor.getRange() <= this.hasNoteThreshold && this.distanceSensor.isRangeValid()) return true;
-    //     return false;
-    // }
-
-    // public double getRange() {++
-    //     return this.distanceSensor.getRange();
-    // }
-
-    // boolean isDisplaying = false;
-    // public void toggleDisplayRanges() {
-    //     if (isDisplaying) isDisplaying = false;
-    //     else isDisplaying = true;
-    // }
+    public boolean hasNote() {
+        return this.noteInIndex();
+    }
 
     public void periodic() {
-        
+        SmartDashboard.putNumber("TOF Range ", this.indexTOFSensor.getRange());
+
+        if (this.hasNote() && this.getTransferring()) {
+            this.stopTransfer();
+        }
     }
 
     /**

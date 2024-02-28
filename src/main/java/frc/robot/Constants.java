@@ -9,12 +9,13 @@ public final class Constants {
     public static final int INTAKE_MOTOR_ID = 17;
   }
   public static class Index {
-    public static final int SWITCH_CHANNEL_ID = 0;//FILLER
+    public static final int INDEX_TOF_SENSOR_ID = 8;//FIX T
     public static final int INDEX_MOTOR_ID = 60;
   }
   public static class LED {
-    public static final int NUM_LEDS = 60;//FILLER
-    public static final int LED_CHANNEL_ID = 1000;//FILLER
+    public static final int NUM_LEDS = 15;
+    public static final int LED_LEFT_CHANNEL_ID = 0;
+    public static final int LED_RIGHT_CHANNEL_ID = 0;
   }
   public static class Shooter {
     public static final int LEFT_MOTOR_ID = 42;

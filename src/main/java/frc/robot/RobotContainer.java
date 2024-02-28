@@ -15,29 +15,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
-import frc.robot.subsystems.Index;
-import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
-// import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 
 public class RobotContainer {
-  public static final double kDeadBand = 0.1;
-  public static final double kRotationDeadband = 0.05;
-
-  private double ampSpeed = 0.5;
+  public static final double kDeadBand = 0.02;
+  public static final double kRotationDeadband = 0.02;
   
   private double MaxSpeed = 4.5; 
   private double MaxAngularRate = 0.5 * Math.PI; 
 
   private final CommandXboxController joystick = new CommandXboxController(0);
+  private final CommandXboxController mechstick = new CommandXboxController(1);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -59,14 +56,15 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
   public Intake intake = Intake.getInstance();//TODO for now
   public Index index = Index.getInstance();
+  public LED led = LED.getInstance();
   public Shooter shooter = Shooter.getInstance();
+  public Climber climber = Climber.getInstance();
 
   private double targetHeadingD = 0;
 
   private Command runAuto = drivetrain.getAuto("fournote");
 
-  SendableChooser<String> m_chooser = new SendableChooser<>();
-
+  private SendableChooser<Command> m_chooser = new SendableChooser<>();
   private void configureBindings() {
 
     // drivetrain.setDefaultCommand(
@@ -98,7 +96,7 @@ public class RobotContainer {
                                             .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
                                             .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
                   }
-                  else if (Math.abs(joystick.getRightX()) > kRotationDeadband) {
+                  else if (drivetrain.getDriveState() == DriveState.FIELD_CENTRIC_NO_LOCK || Math.abs(joystick.getRightX()) > kRotationDeadband) {
                     SmartDashboard.putBoolean("facing angle", false);
                     SmartDashboard.putBoolean("robot centric", false);
 
@@ -136,20 +134,28 @@ public class RobotContainer {
     );
     
     RobotModeTriggers.teleop().onTrue(
-      drivetrain.resetHeading()
+        drivetrain.resetFieldHeading()
     );
 
     joystick.povDown().onTrue(
-      new InstantCommand(() -> Shooter.presetShoot(Shooter.Positions.SUB_CENTER))//Shooter.encoderTarget = 0.8)
+      new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_CENTER))//Shooter.encoderTarget = 0.8)
     );
 
     joystick.povUp().onTrue(
-      new InstantCommand(() -> Shooter.presetShoot(Shooter.Positions.SUB_LEFT))//Shooter.encoderTarget = 0.7)
+      new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_LEFT))//Shooter.encoderTarget = 0.7)
+    );
+
+    joystick.povLeft().onTrue(
+      new InstantCommand(() -> shooter.setHoming(true))//Shooter.encoderTarget = 0.7)
+    );
+
+    joystick.povRight().onTrue(
+      new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_RIGHT))//Shooter.encoderTarget = 0.7)
     );
 
 
     joystick.leftBumper().onTrue(
-      new InstantCommand(() -> {intake.setHoming(true); System.out.println("left bumper");}, intake)
+      new InstantCommand(() -> {intake.toggleHoming(); System.out.println("left bumper");}, intake)
     );
 
     joystick.rightBumper()
@@ -159,6 +165,18 @@ public class RobotContainer {
         intake
       ).withTimeout(0.1)
       );
+
+    mechstick.povLeft().onTrue(new InstantCommand(
+      () -> led.setPoliceMode(0),
+      led
+    ));
+
+    mechstick.povRight().onTrue(new InstantCommand(
+      () -> led.setPoliceMode(1),
+      led
+    ));
+
+    
 
     joystick.a().onTrue(
       new InstantCommand(() -> intake.reverseIntake(), intake).andThen(new InstantCommand(() -> index.reverseTransfer(), index))
@@ -172,25 +190,90 @@ public class RobotContainer {
       ).withTimeout(2.5)
     );
     
-    joystick.y()
-      .onTrue(new StartEndCommand(
-        () -> shooter.setShooterSpeed(ampSpeed), 
-        () -> index.startTransfer(),
-        index
-      ).withTimeout(2.5)
+    // joystick.y()
+    //   .onTrue(new StartEndCommand(
+    //     () -> shooter.setShooterSpeed(ampSpeed), 
+    //     () -> index.startTransfer(),
+    //     index
+    //   ).withTimeout(2.5)
+    // );
+
+    // joystick.x().onTrue(
+    //   new InstantCommand(() -> shooter.setHoming(true))
+    // );
+
+    joystick.y().onTrue(
+      new InstantCommand(() -> shooter.stow())
     );
+
     joystick.b().onTrue(
       new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> shooter.setShooterSpeed(0), index))
     );
 
-
-
     
+
+        
+    mechstick.back().onTrue(
+      new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC_NO_LOCK), drivetrain)
+    ).onFalse(
+      new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC), drivetrain)
+    );
+    
+    mechstick.start().onTrue(
+      drivetrain.resetFieldHeading()
+    );
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
     }
     drivetrain.registerTelemetry(logger::telemeterize);
+
+
+
+    climber.setDefaultCommand(
+      new RunCommand(
+        () -> climber.move(mechstick.getRightTriggerAxis() - mechstick.getLeftTriggerAxis()), 
+        climber)
+    );
+
+
+
+    // mechstick.y().onTrue(
+    //   new InstantCommand(
+    //     () -> climber.resetLeftEncoder(), climber
+    //   )
+    // );
+    
+    // mechstick.a().onTrue(
+    //   new InstantCommand(
+    //     () -> climber.resetRightEncoder(), climber
+    //   )
+    // );
+    // m_driverController.x().onTrue(
+    //   m_climber.setIdleMode(IdleMode.kCoast)
+    // );
+
+    // m_driverController.b().onTrue(
+    //   m_climber.setIdleMode(IdleMode.kBrake)
+    // );
+
+    mechstick.leftBumper().whileTrue(
+      new RunCommand(() -> climber.setLeftSpeed(SmartDashboard.getNumber("reset speed", Climber.kResetSpeed)), climber)
+    ).onFalse(
+      new InstantCommand(
+        () -> {climber.stop(); climber.resetLeftEncoder();},
+        climber
+      )
+    );
+
+    mechstick.rightBumper().whileTrue(
+      new RunCommand(() -> climber.setRightSpeed(SmartDashboard.getNumber("reset speed", Climber.kResetSpeed)), climber)
+    ).onFalse(
+      new InstantCommand(
+        () -> {climber.stop(); climber.resetRightEncoder();},
+        climber
+      )
+    );
   }
 
   /**
@@ -212,11 +295,12 @@ public class RobotContainer {
   public RobotContainer() {
     configureDashboard();
     configureBindings();    
-    SmartDashboard.putNumber("kF", 0.049);
-    SmartDashboard.putNumber("kP", -1.1); // -1.1
+    configureSelector();
+    SmartDashboard.putNumber("kF", 0.025);
+    SmartDashboard.putNumber("kP", -5.0); // -1.1
     SmartDashboard.putNumber("encoder target", 0.7);
     SmartDashboard.putNumber("shooter target", 45);
-  }
+  } 
 
   public Command getAutonomousCommand() {
     // return Commands.print("No autonomous command configured");  
@@ -253,7 +337,13 @@ public class RobotContainer {
     this.MaxAngularRate = SmartDashboard.getNumber("max turn", 1) * Math.PI;
     this.MaxSpeed = SmartDashboard.getNumber("max speed", 4.5);
 
-    this.ampSpeed = SmartDashboard.getNumber("amp speed", 0.12);
+  }
+
+  public void configureSelector(){
+    m_chooser.setDefaultOption("straight line", drivetrain.getAuto("StraightLineAuto"));
+    m_chooser.addOption("four note", runAuto);
+    
+    SmartDashboard.putData("auto chooser", m_chooser);
   }
 
   /**
@@ -264,10 +354,11 @@ public class RobotContainer {
    * @return array of new x and y values
    */
   public static double[] mapJoystick(double x, double y){
-    double m_x = x * Math.sqrt(1 - y * y / 2);
-    double m_y = y * Math.sqrt(1 - x * x / 2);
-    double[] converted = {m_x, m_y};
-    return converted;
+    // double m_x = x * Math.sqrt(1 - y * y / 2);
+    // double m_y = y * Math.sqrt(1 - x * x / 2);
+    // double[] converted = {m_x, m_y};
+    // return converted;
+    return new double[]{x, y};
   }
 
   private double getPredictedHeading(double rate){

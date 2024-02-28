@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase{
 
     private Index index = Index.getInstance();
     private SwerveIO swerve = TunerConstants.DriveTrain;
-    private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight-intake");
 
     private boolean homing = false;
     private double boundingBoxOffsetX = 1.0;
@@ -45,7 +45,7 @@ public class Intake extends SubsystemBase{
      */
     public void setSpeed(double speed) {
         this.m_intakeMotor.set(speed);
-        System.out.println("set speed");
+        // System.out.println("set speed");
     }
 
     /**
@@ -54,7 +54,7 @@ public class Intake extends SubsystemBase{
     public void startIntake() {
         this.setSpeed(this.kIntakeSpeed);
         index.startTransfer();
-        System.out.println("start intake");
+        // System.out.println("start intake");
     }
 
     /**
@@ -116,6 +116,7 @@ public class Intake extends SubsystemBase{
 
     public void setHoming(boolean b) {
         this.homing = b;
+        index.setTransferring(b);
     }
 
     public boolean getHoming() {
@@ -124,7 +125,10 @@ public class Intake extends SubsystemBase{
 
     public void toggleHoming() {
         if (this.getHoming()) this.setHoming(false);
-        else this.setHoming(true);
+        else {
+            this.setHoming(true);
+            index.setTransferring(true);
+        }
     }
     
     public void periodic() {
@@ -139,6 +143,8 @@ public class Intake extends SubsystemBase{
             this.startIntake();
             this.swerve.setTargetHeading(this.a);
             this.index.startTransfer();
+            SmartDashboard.putNumber("a value", this.a);
+            SmartDashboard.putNumber("note degree x", this.c);
             // if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);//TODO may or may not use this
             // else this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }
