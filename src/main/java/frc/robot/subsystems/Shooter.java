@@ -73,7 +73,7 @@ public class Shooter extends SubsystemBase {
     
     
     public enum Positions {
-        SUB_CENTER, SUB_LEFT, SUB_RIGHT, PODIUM_BLUE, PODIUM_RED, AMP
+        SUB_CENTER, SUB_LEFT, SUB_RIGHT, PODIUM_BLUE, PODIUM_RED, AMP, AUTO_SIDES
     }
 
 

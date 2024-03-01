@@ -374,6 +374,9 @@ public class RobotContainer {
     m_chooser.addOption("alliance neutral: two note", Autos.twoNoteAuto());
     m_chooser.addOption("alliance neutral: tow note paths", Autos.twoNotePaths());
     m_chooser.addOption("blue: source side one note to center", Autos.blueSourceToCenter());
+    m_chooser.addOption("red: source side one note to center", Autos.redSourceToCenter());
+    m_chooser.addOption("blue: amp side no pickup", Autos.blueAmpNoPickup());
+    m_chooser.addOption("red: amp side no pickup", Autos.redAmpNoPickup());
     
     SmartDashboard.putData("auto chooser", m_chooser);
   }

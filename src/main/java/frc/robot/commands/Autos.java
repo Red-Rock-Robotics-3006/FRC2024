@@ -79,7 +79,7 @@ public class Autos {
     public static Command oneNoteSourceSide(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
-            new InstantCommand(() -> Shooter.getInstance().presetShoot(Shooter.Positions.SUB_LEFT), Shooter.getInstance()),
+            new InstantCommand(() -> Shooter.getInstance().presetShoot(Shooter.Positions.AUTO_SIDES), Shooter.getInstance()),
             new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(1), Shooter.getInstance()),
             new WaitCommand(2.5),
             new InstantCommand(
@@ -95,7 +95,7 @@ public class Autos {
                 Index.getInstance(),
                 Shooter.getInstance()
             ),
-            TunerConstants.DriveTrain.getAuto("MidNote")
+            TunerConstants.DriveTrain.getAuto("SourceNoPickup")
         );
     }
 
@@ -109,7 +109,7 @@ public class Autos {
     public static Command blueSourceToCenter(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
-            new InstantCommand(() -> Shooter.getInstance().presetShoot(Shooter.Positions.SUB_LEFT), Shooter.getInstance()),
+            new InstantCommand(() -> Shooter.getInstance().presetShoot(Shooter.Positions.AUTO_SIDES), Shooter.getInstance()),
             new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(1), Shooter.getInstance()),
             new WaitCommand(2.5),
             new InstantCommand(
@@ -136,7 +136,7 @@ public class Autos {
     public static Command redSourceToCenter(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
-            new InstantCommand(() -> Shooter.getInstance().presetShoot(Shooter.Positions.SUB_LEFT), Shooter.getInstance()),
+            new InstantCommand(() -> Shooter.getInstance().presetShoot(Shooter.Positions.AUTO_SIDES), Shooter.getInstance()),
             new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(1), Shooter.getInstance()),
             new WaitCommand(2.5),
             new InstantCommand(
@@ -163,7 +163,7 @@ public class Autos {
     public static Command blueAmpNoPickup(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
-            new InstantCommand(() -> Shooter.getInstance().presetShoot(Shooter.Positions.SUB_LEFT), Shooter.getInstance()),
+            new InstantCommand(() -> Shooter.getInstance().presetShoot(Shooter.Positions.AUTO_SIDES), Shooter.getInstance()),
             new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(1), Shooter.getInstance()),
             new WaitCommand(2.5),
             new InstantCommand(
@@ -187,5 +187,34 @@ public class Autos {
             TunerConstants.DriveTrain.getAuto("BlueAmpNoPickupAuto")
         );
     }
+    
+    public static Command redAmpNoPickup(){
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
+            new InstantCommand(() -> Shooter.getInstance().presetShoot(Shooter.Positions.AUTO_SIDES), Shooter.getInstance()),
+            new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(1), Shooter.getInstance()),
+            new WaitCommand(2.5),
+            new InstantCommand(
+                () -> Index.getInstance().startTransfer(),
+                Index.getInstance()
+            ),
+            new WaitCommand(2),
+            new InstantCommand(
+                () -> {
+                    Index.getInstance().stopTransfer();
+                    Shooter.getInstance().setShooterSpeed(0);
+                },
+                Index.getInstance(),
+                Shooter.getInstance()
+            ),
+            // new InstantCommand(
+            //     () -> {
+            //         Intake.getInstance().setHoming(true);
+            //     }
+            // ),
+            TunerConstants.DriveTrain.getAuto("RedAmpNoPickupAuto")
+        );
+    }
+
 }
 
