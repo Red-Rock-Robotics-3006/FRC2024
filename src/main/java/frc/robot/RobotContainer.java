@@ -369,10 +369,11 @@ public class RobotContainer {
     m_chooser.setDefaultOption("straight", drivetrain.getAuto("StraightLineAuto"));
     // m_chooser.addOption("four note", runAuto);
     m_chooser.addOption("no auto", Commands.print("good luck drivers!"));
-    m_chooser.addOption("one note pick up mid", Autos.oneNoteGrabAuto());
-    m_chooser.addOption("one note source side", Autos.oneNoteSourceSide());
-    m_chooser.addOption("two note", Autos.twoNoteAuto());
-    m_chooser.addOption("tow note paths", Autos.twoNotePaths());
+    m_chooser.addOption("alliance neutral: one note pick up mid", Autos.oneNoteGrabAuto());
+    m_chooser.addOption("blkue: one note source side", Autos.oneNoteSourceSide());
+    m_chooser.addOption("alliance neutral: two note", Autos.twoNoteAuto());
+    m_chooser.addOption("alliance neutral: tow note paths", Autos.twoNotePaths());
+    m_chooser.addOption("blue: source side one note to center", Autos.blueSourceToCenter());
     
     SmartDashboard.putData("auto chooser", m_chooser);
   }
