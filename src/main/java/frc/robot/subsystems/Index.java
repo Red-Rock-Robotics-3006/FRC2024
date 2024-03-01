@@ -91,6 +91,8 @@ import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 // import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -98,6 +100,8 @@ import frc.robot.Constants;
 
 
 public class Index extends SubsystemBase{
+
+    public static final double kReverseTime = 0.2;
     
     private static Index instance = null;
 
@@ -106,20 +110,22 @@ public class Index extends SubsystemBase{
     
     private boolean isTransferring = false;
     private double clearThresholdIndex;
-    private double hasNoteThresholdDeviation = 10;//in mm, tune this
+    private double hasNoteThresholdDeviation = 100;//in mm, tune this
 
     private Index() {
         this.setName("Index");
         this.register();
 
         this.m_indexMotor.restoreFactoryDefaults();
-        this.m_indexMotor.setInverted(false);
+        this.m_indexMotor.setInverted(true);
         this.m_indexMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         this.indexTOFSensor.setRangeOfInterest(8, 8, 12, 12);
         this.indexTOFSensor.setRangingMode(TimeOfFlight.RangingMode.Short, 24);
 
-        this.clearThresholdIndex = this.indexTOFSensor.getRange();
+        this.clearThresholdIndex = 300;
+
+        SmartDashboard.putNumber("index reverse time", kReverseTime);
     }
 
     public void setTransferring(boolean b) {
@@ -147,6 +153,10 @@ public class Index extends SubsystemBase{
         this.setSpeed(-0.2);
     }
 
+    public void reverseFastTransfer() {
+        this.setSpeed(-0.5);
+    }
+
     public boolean noteInIndex() {
         return this.indexTOFSensor.getRange() < this.clearThresholdIndex - this.hasNoteThresholdDeviation && this.indexTOFSensor.isRangeValid();
     }
@@ -155,11 +165,25 @@ public class Index extends SubsystemBase{
         return this.noteInIndex();
     }
 
+    boolean stopped = false;
+
     public void periodic() {
         SmartDashboard.putNumber("TOF Range ", this.indexTOFSensor.getRange());
+        SmartDashboard.putBoolean("Range Valid ", this.indexTOFSensor.isRangeValid());
+        SmartDashboard.putBoolean("IS TRANSFERRING ", this.getTransferring());
 
-        if (this.hasNote() && this.getTransferring()) {
+        if (this.hasNote() && this.getTransferring() && this.indexTOFSensor.isRangeValid()) {
+            Intake.getInstance().setHoming(false);
+            Intake.getInstance().stopIntake();
             this.stopTransfer();
+            stopped = true;
+
+            CommandScheduler.getInstance().schedule(new StartEndCommand(
+                () -> this.reverseFastTransfer(), 
+                () -> this.stopTransfer(),
+                this
+                ).withTimeout(SmartDashboard.getNumber("index reverse time", kReverseTime))
+            );
         }
     }
 

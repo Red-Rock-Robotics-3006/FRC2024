@@ -141,8 +141,8 @@ public class Intake extends SubsystemBase{
         
         if (this.homing) {
             this.startIntake();
-            this.swerve.setTargetHeading(this.a);
-            this.index.startTransfer();
+            // this.swerve.setTargetHeading(this.a);
+            if (index.getTransferring()) this.index.startTransfer();
             SmartDashboard.putNumber("a value", this.a);
             SmartDashboard.putNumber("note degree x", this.c);
             // if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);//TODO may or may not use this

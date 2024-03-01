@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
@@ -29,7 +30,7 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public class Shooter extends SubsystemBase {
     
-
+    private boolean pitchHoming = false;
 
 
     private static Shooter instance = null;
@@ -139,7 +140,7 @@ public class Shooter extends SubsystemBase {
         this.m_leftAngleMotor.setInverted(false);
         this.m_leftAngleMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        this.isOnBlue = true;
+        this.isOnBlue = false;
 
         this.setTarget(this.isOnBlue?this.blueSpeaker:this.redSpeaker);
         
@@ -198,7 +199,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Homing Offset", this.homingOffset);
         // this.setTarget(targetAngle);
         // Set Target angles
-        if(!this.seek)
+        if(!this.pitchHoming || !this.seek)
             targetAngle = this.targetPitch;
         this.setTarget(targetAngle, yaw);
         // else
@@ -289,7 +290,7 @@ public class Shooter extends SubsystemBase {
                 this.setTarget(37);
                 break;
             case SUB_LEFT: // Pressed up against left subwoofer
-                this.setTarget(61);
+                this.setTarget(57);
                 break;
             case SUB_RIGHT: // Pressed up against right subwoofer
                 this.setTarget(47);
@@ -514,7 +515,7 @@ public class Shooter extends SubsystemBase {
      * Sets the target angle of the shooter.
      * @param pitch the target angle of the shooter in degrees
      */
-    private void setTarget(double pitch)
+    public void setTarget(double pitch)
     {
 
         // Prevent target angle from being set to an extreme value

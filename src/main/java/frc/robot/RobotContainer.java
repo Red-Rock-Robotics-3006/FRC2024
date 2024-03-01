@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
+import frc.robot.commands.Autos;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
@@ -32,6 +34,8 @@ public class RobotContainer {
   
   private double MaxSpeed = 4.5; 
   private double MaxAngularRate = 0.5 * Math.PI; 
+
+  public static double kAngle = 51.7;
 
   private final CommandXboxController joystick = new CommandXboxController(0);
   private final CommandXboxController mechstick = new CommandXboxController(1);
@@ -145,9 +149,9 @@ public class RobotContainer {
       new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_LEFT))//Shooter.encoderTarget = 0.7)
     );
 
-    joystick.povLeft().onTrue(
-      new InstantCommand(() -> shooter.setHoming(true))//Shooter.encoderTarget = 0.7)
-    );
+    // joystick.povLeft().onTrue(
+    //   new InstantCommand(() -> shooter.setHoming(true))//Shooter.encoderTarget = 0.7)
+    // );
 
     joystick.povRight().onTrue(
       new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_RIGHT))//Shooter.encoderTarget = 0.7)
@@ -155,7 +159,7 @@ public class RobotContainer {
 
 
     joystick.leftBumper().onTrue(
-      new InstantCommand(() -> {intake.toggleHoming(); System.out.println("left bumper");}, intake)
+      new InstantCommand(() -> {intake.toggleHoming(); System.out.println("left bumper");}, intake).andThen(new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_LEFT), shooter))
     );
 
     joystick.rightBumper()
@@ -166,15 +170,20 @@ public class RobotContainer {
       ).withTimeout(0.1)
       );
 
-    mechstick.povLeft().onTrue(new InstantCommand(
-      () -> led.setPoliceMode(0),
+    joystick.back().onTrue(new InstantCommand(
+      () -> led.toggleHasNote(),
       led
     ));
 
-    mechstick.povRight().onTrue(new InstantCommand(
-      () -> led.setPoliceMode(1),
-      led
-    ));
+    // mechstick.povLeft().onTrue(new InstantCommand(
+    //   () -> led.setPoliceMode(0),
+    //   led
+    // ));
+
+    // mechstick.povRight().onTrue(new InstantCommand(
+    //   () -> led.setPoliceMode(1),
+    //   led
+    // ));
 
     
 
@@ -182,12 +191,8 @@ public class RobotContainer {
       new InstantCommand(() -> intake.reverseIntake(), intake).andThen(new InstantCommand(() -> index.reverseTransfer(), index))
     );
 
-    joystick.x()
-      .onTrue(new StartEndCommand(
-        () -> shooter.setShooterSpeed(1), 
-        () -> index.startTransfer(),
-        index
-      ).withTimeout(2.5)
+    joystick.x().onTrue(
+          new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(1), Shooter.getInstance())
     );
     
     // joystick.y()
@@ -202,12 +207,16 @@ public class RobotContainer {
     //   new InstantCommand(() -> shooter.setHoming(true))
     // );
 
+    // joystick.y().onTrue(
+    //   new InstantCommand(() -> shooter.stow())
+    // );
+
     joystick.y().onTrue(
-      new InstantCommand(() -> shooter.stow())
+      new InstantCommand(() -> index.startTransfer(), index)
     );
 
     joystick.b().onTrue(
-      new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> shooter.setShooterSpeed(0), index))
+      new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> shooter.setShooterSpeed(0), shooter))
     );
 
     
@@ -221,6 +230,13 @@ public class RobotContainer {
     
     mechstick.start().onTrue(
       drivetrain.resetFieldHeading()
+    );
+
+    mechstick.a().onTrue(
+      new InstantCommand(
+        () -> led.reset(),
+        led
+      )
     );
 
     if (Utils.isSimulation()) {
@@ -257,6 +273,14 @@ public class RobotContainer {
     //   m_climber.setIdleMode(IdleMode.kBrake)
     // );
 
+    joystick.povLeft().onTrue(
+      new InstantCommand(
+        () -> Shooter.getInstance().setTarget(
+          SmartDashboard.getNumber("shoot angle", kAngle)
+          ), Shooter.getInstance()
+      )
+    );
+
     mechstick.leftBumper().whileTrue(
       new RunCommand(() -> climber.setLeftSpeed(SmartDashboard.getNumber("reset speed", Climber.kResetSpeed)), climber)
     ).onFalse(
@@ -290,6 +314,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("homing d", 0.01);
 
     SmartDashboard.putNumber("amp speed", 0.12);
+
+    SmartDashboard.putNumber("shoot angle", kAngle);
   }
 
   public RobotContainer() {
@@ -304,8 +330,8 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     // return Commands.print("No autonomous command configured");  
-    return runAuto;
-  }
+    return m_chooser.getSelected();
+    }
 
   public double getDriveHeading(){
     return this.drivetrain.getState().Pose.getRotation().getDegrees();
@@ -340,8 +366,11 @@ public class RobotContainer {
   }
 
   public void configureSelector(){
-    m_chooser.setDefaultOption("straight line", drivetrain.getAuto("StraightLineAuto"));
-    m_chooser.addOption("four note", runAuto);
+    m_chooser.setDefaultOption("straight", drivetrain.getAuto("StraightLineAuto"));
+    // m_chooser.addOption("four note", runAuto);
+    m_chooser.addOption("no auto", Commands.print("good luck drivers!"));
+    m_chooser.addOption("one note pick up mid", Autos.oneNoteGrabAuto());
+    m_chooser.addOption("one note source side", Autos.oneNoteSourceSide());
     
     SmartDashboard.putData("auto chooser", m_chooser);
   }

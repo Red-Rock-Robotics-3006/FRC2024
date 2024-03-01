@@ -9,6 +9,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -16,8 +17,10 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -37,6 +40,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private double m_lastSimTime;
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
+
+    public static PathConstraints kConstraints = new PathConstraints(
+        2, 1, 1.5, 1.5);
 
     private double targetHeadingDegrees = 0;
 
@@ -95,7 +101,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             TunerConstants.kSpeedAt12VoltsMps,
                                             driveBaseRadius,
                                             new ReplanningConfig()),
-            ()->false, // Change this if the path needs to be flipped on red vs blue
+            // ()->false, // Change this if the path needs to be flipped on red vs blue
+            // () -> {
+            //     var alliance = DriverStation.getAlliance();
+            //     if (alliance.isPresent()){
+            //         return alliance.get() == Alliance.Red;
+            //     }
+            //     return false;
+            // },
+            () -> false,
             this); // Subsystem for requirements
     }
 
@@ -151,6 +165,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
           new InstantCommand(() -> this.setTargetHeading(0), this)
         );
     }
+
+    public Command goToPose(Pose2d pose){
+        return AutoBuilder.pathfindToPose(pose, kConstraints);
+    }
     public double getRotationRate(){
         return this.getPigeon2().getRate();
     }
@@ -187,4 +205,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         this.field.setRobotPose(this.getState().Pose);
         SmartDashboard.putNumber("field heading", this.getState().Pose.getRotation().getDegrees());
     }
+
+
 }

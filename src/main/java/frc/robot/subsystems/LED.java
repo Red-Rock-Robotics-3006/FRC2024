@@ -24,7 +24,7 @@ public class LED extends SubsystemBase{
     private State RobotState = State.RESTING;
     private int driveStateControl = 0;
 
-    private boolean policeModeEnabled = true;
+    private boolean policeModeEnabled = false;
     private int policeMode = 0;
     private int policeModeControl1 = 0;
     private int policeModeControl2 = 0;
@@ -38,15 +38,21 @@ public class LED extends SubsystemBase{
         this.setName("LED");
         this.register();
         this.controlRight.setLength(this.bufferRight.getLength());
+
+        for (int i = 0; i < bufferRight.getLength(); i++) {
+            bufferRight.setRGB(i, 255, 165, 0);
+        }
+        this.controlRight.setData(bufferRight);
+        
         this.controlRight.start();
 
         // if (this.initialAlliance) {//true is red
-        //     for (int i = 0; i < this.allianceColorCutoff; i++) {
+        //     for (int i = 0; i < 0; i++) {
         //         this.buffer.setRGB(i, 255, 0, 0);
         //     }
         // }
         // else {//false is blue
-        //     for (int i = 0; i < this.allianceColorCutoff; i++) {
+        //     for (int i = 0; i < 0; i++) {
         //         this.buffer.setRGB(i, 0, 0, 255);
         //     }
         // }
@@ -54,13 +60,7 @@ public class LED extends SubsystemBase{
     }
 
     public void setState(State s) {
-        switch(s) {
-            case RESTING: this.RobotState = State.RESTING;
-            case NOTE_DETECTED: this.RobotState = State.NOTE_DETECTED;
-            case HOMING_NOTE: this.RobotState = State.HOMING_NOTE;
-            case HAS_NOTE: this.RobotState = State.HAS_NOTE;
-            case HOMING_APRILTAG: this.RobotState = State.HOMING_APRILTAG;
-        }
+        this.RobotState = s;
     }
 
     public State getState(State s) {
@@ -76,62 +76,65 @@ public class LED extends SubsystemBase{
         this.policeMode = mode;
     }
 
-    // public void reset() {
-    //     if (this.policeModeEnabled) this.togglePoliceMode();
-    //     if (this.initialAlliance) {//true is red
-    //         for (int i = 0; i < this.allianceColorCutoff; i++) {
-    //             this.buffer.setRGB(i, 255, 0, 0);
-    //         }
-    //     }
-    //     else {//false is blue
-    //         for (int i = 0; i < this.allianceColorCutoff; i++) {
-    //             this.buffer.setRGB(i, 0, 0, 255);
-    //         }
-    //     }
-    //     for (int i = this.allianceColorCutoff; i < driveStateColorCutoff; i++) {
-    //         this.buffer.setRGB(i, 255, 255, 255);//white
-    //     }
-    //     this.control.setData(this.buffer);
-    // }
+    boolean toggleHasNoteControl = false;
+    public void toggleHasNote() {
+        if (RobotState == State.HAS_NOTE) this.setState(State.RESTING);
+        else this.setState(State.HAS_NOTE);
+    }
+
+    public void reset() {
+        this.setState(State.RESTING);
+        for (int i = 0; i < bufferRight.getLength(); i++) {
+            this.bufferRight.setRGB(i, 255, 255, 255);
+        }
+        this.controlRight.setData(this.bufferRight);
+    }
 
     public void periodic() {
-        // if (!this.policeModeEnabled) {
-        //     switch(this.RobotState) { //TODO make the led patterns more intuitive (ie flashing instead of colors)
-        //         case RESTING:
-        //             for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-        //                 this.buffer.setRGB(i, 255, 255, 255);//white
-        //             }
-        //             this.control.setData(this.buffer);
-        //             break;
-        //         case NOTE_DETECTED:
-        //             for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-        //                 this.buffer.setRGB(i, 115, 81, 226);//cube purple
-        //             }
-        //             this.control.setData(this.buffer);
-        //             break;
-        //         case HOMING_NOTE:
-        //             for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-        //                 this.buffer.setRGB(i, 255, 183, 3);//cone yellow
-        //             }
-        //             this.control.setData(this.buffer);
-        //             break;
-        //         case HAS_NOTE:
-        //             for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-        //                 this.buffer.setRGB(i, 252, 85, 36);//note orange
-        //             }
-        //             this.control.setData(this.buffer);
-        //             break;
-        //         case HOMING_APRILTAG:
-        //             for (int i = this.allianceColorCutoff; i < this.driveStateColorCutoff; i++) {
-        //                 this.buffer.setRGB(i, 30, 225, 30);//limelight green
-        //             }
-        //             this.control.setData(this.buffer);
-        //             break;
-        //     }
+        if (!this.policeModeEnabled) {
+            switch(this.RobotState) { //TODO make the led patterns more intuitive (ie flashing instead of colors)
+                case RESTING:
+                    for (int i = 0; i < bufferRight.getLength(); i++) {
+                        this.bufferRight.setRGB(i, 255, 255, 255);//white
+                    }
+                    this.controlRight.setData(this.bufferRight);
+                    break;
+                case NOTE_DETECTED:
+                    for (int i = 0; i < bufferRight.getLength(); i++) {
+                        this.bufferRight.setRGB(i, 115, 81, 226);//cube purple
+                    }
+                    this.controlRight.setData(this.bufferRight);
+                    break;
+                case HOMING_NOTE:
+                    for (int i = 0; i < bufferRight.getLength(); i++) {
+                        this.bufferRight.setRGB(i, 255, 183, 3);//cone yellow
+                    }
+                    this.controlRight.setData(this.bufferRight);
+                    break;
+                case HAS_NOTE:
+                    for (int i = 0; i < bufferRight.getLength(); i++) {
+                        this.bufferRight.setRGB(i, 0, 0, 255)
+                        ;//blue
+                    }
+                    this.controlRight.setData(this.bufferRight);
+                    break;
+                case HOMING_APRILTAG:
+                    for (int i = 0; i < bufferRight.getLength(); i++) {
+                        this.bufferRight.setRGB(i, 30, 225, 30);//limelight green
+                    }
+                    this.controlRight.setData(this.bufferRight);
+                    break;
+            }
+        }
+
+        if (index.hasNote()) {
+            this.setState(State.HAS_NOTE);
+        }
+        else this.setState(State.RESTING);
 
         //     switch(this.swerve.getDriveState()) {
         //         case FIELD_CENTRIC:
-        //             for (int i = this.driveStateColorCutoff; i < this.buffer.getLength(); i++) {
+        //             for (int i = bufferRight.getLength(); i < this.buffer.getLength(); i++) {
         //                 this.buffer.setRGB(i, 255, 255, 255);
         //             }
         //             this.control.setData(this.buffer);
@@ -139,12 +142,12 @@ public class LED extends SubsystemBase{
         //         case ROBOT_CENTRIC:
         //             this.driveStateControl++;
         //             if (this.driveStateControl % 50 == 0) {
-        //                 for (int i = this.driveStateColorCutoff; i < this.buffer.getLength(); i++) {
+        //                 for (int i = bufferRight.getLength(); i < this.buffer.getLength(); i++) {
         //                     this.buffer.setRGB(i, 255, 255, 255);
         //                 }
         //             }
         //             else if (this.driveStateControl % 25 == 0) {
-        //                 for (int i = this.driveStateColorCutoff; i < this.buffer.getLength(); i++) {
+        //                 for (int i = bufferRight.getLength(); i < this.buffer.getLength(); i++) {
         //                     this.buffer.setRGB(i, 0, 0, 0);
         //                 }
         //             }
@@ -170,31 +173,31 @@ public class LED extends SubsystemBase{
         // }
         //123, 231, 244 giorgio blue :)
 
-        if (this.policeModeEnabled) {
-            if (policeMode == 0) {//solid color
-                for (int i = 0; i < bufferRight.getLength() / 2; i++) {
-                    bufferRight.setRGB(i, 255, 0, 0);
-                }
-                for (int i = bufferRight.getLength() / 2; i < bufferRight.getLength(); i++) {
-                    bufferRight.setRGB(i, 0, 0, 255);
-                }
-                controlRight.setData(bufferRight);
-            }
-            if (policeMode == 1) {//solid alternating color
-                policeModeControl1++;
-                if (policeModeControl1 % 50 == 0) {
-                    for (int i = 0; i < bufferRight.getLength(); i++) {
-                        bufferRight.setRGB(i, 255, 0, 0);
-                    }
-                    controlRight.setData(bufferRight);
-                }
-                else if (policeModeControl1 % 25 == 0) {
-                    for (int i = 0; i < bufferRight.getLength(); i++) {
-                        bufferRight.setRGB(i, 0, 0, 255);
-                    }
-                    controlRight.setData(bufferRight);
-                }
-            }
+        // if (this.policeModeEnabled) {
+        //     if (policeMode == 0) {//solid color
+        //         for (int i = 0; i < bufferRight.getLength() / 2; i++) {
+        //             bufferRight.setRGB(i, 255, 0, 0);
+        //         }
+        //         for (int i = bufferRight.getLength() / 2; i < bufferRight.getLength(); i++) {
+        //             bufferRight.setRGB(i, 0, 0, 255);
+        //         }
+        //         controlRight.setData(bufferRight);
+        //     }
+        //     if (policeMode == 1) {//solid alternating color
+        //         policeModeControl1++;
+        //         if (policeModeControl1 % 50 == 0) {
+        //             for (int i = 0; i < bufferRight.getLength(); i++) {
+        //                 bufferRight.setRGB(i, 255, 0, 0);
+        //             }
+        //             controlRight.setData(bufferRight);
+        //         }
+        //         else if (policeModeControl1 % 25 == 0) {
+        //             for (int i = 0; i < bufferRight.getLength(); i++) {
+        //                 bufferRight.setRGB(i, 0, 0, 255);
+        //             }
+        //             controlRight.setData(bufferRight);
+        //         }
+        //     }
             // else if (policeMode == 2) {//one flash each color on two halves
             //     policeModeControl2++;
             //     if (policeModeControl2 % 40 == 0) {
@@ -271,10 +274,12 @@ public class LED extends SubsystemBase{
             //         control.setData(buffer);
             //     }
             // }
-            else if (policeMode == 4) {//segmented flashes
+            // else if (policeMode == 4) {//segmented flashes
 
-            }
-        }
+            // }
+        // }
+
+
     }
 
     /**
