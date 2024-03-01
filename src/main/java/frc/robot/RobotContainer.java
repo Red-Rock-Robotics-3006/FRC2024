@@ -304,8 +304,8 @@ public class RobotContainer {
    * Sets up desired values to be displayed to the Smart Dashboard
    */
   public void configureDashboard(){
-    SmartDashboard.putNumber("max speed", 4.5);
-    SmartDashboard.putNumber("max turn", 1);
+    SmartDashboard.putNumber("max speed", CommandSwerveDrivetrain.kDriveSpeed);
+    SmartDashboard.putNumber("max turn", CommandSwerveDrivetrain.kTurnSpeed);
 
     SmartDashboard.putNumber("heading p", 4.25);
     SmartDashboard.putNumber("heading d", 0.2);
@@ -360,8 +360,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("current p", angle.HeadingController.getP());
     SmartDashboard.putNumber("current d", angle.HeadingController.getD());
 
-    this.MaxAngularRate = SmartDashboard.getNumber("max turn", 1) * Math.PI;
-    this.MaxSpeed = SmartDashboard.getNumber("max speed", 4.5);
+    this.MaxAngularRate = SmartDashboard.getNumber("max turn", CommandSwerveDrivetrain.kTurnSpeed) * Math.PI;
+    this.MaxSpeed = SmartDashboard.getNumber("max speed", CommandSwerveDrivetrain.kDriveSpeed);
 
   }
 
@@ -371,6 +371,8 @@ public class RobotContainer {
     m_chooser.addOption("no auto", Commands.print("good luck drivers!"));
     m_chooser.addOption("one note pick up mid", Autos.oneNoteGrabAuto());
     m_chooser.addOption("one note source side", Autos.oneNoteSourceSide());
+    m_chooser.addOption("two note", Autos.twoNoteAuto());
+    m_chooser.addOption("tow note paths", Autos.twoNotePaths());
     
     SmartDashboard.putData("auto chooser", m_chooser);
   }
