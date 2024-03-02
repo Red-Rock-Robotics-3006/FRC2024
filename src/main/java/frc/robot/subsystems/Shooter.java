@@ -199,7 +199,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Homing Offset", this.homingOffset);
         // this.setTarget(targetAngle);
         // Set Target angles
-        if(!this.pitchHoming || !this.seek)
+        if(!Constants.Settings.SHOOTER_PITCH_HOMING_ENABLED || !this.seek)
             targetAngle = this.targetPitch;
         this.setTarget(targetAngle, yaw);
         // else
@@ -304,6 +304,9 @@ public class Shooter extends SubsystemBase {
             case AMP: // Pressed up against amp
                 this.setTarget(0);
                 break;
+            case AUTO_SIDES:
+                this.setTarget(60);
+                break;    
         }
         SmartDashboard.putString("Shooter Status", "Preset");
         // this.aim();
@@ -528,7 +531,7 @@ public class Shooter extends SubsystemBase {
     public void setAngleSpeed(double speed)
     {
         // System.out.println(speed);
-        this.m_rightAngleMotor.set(speed);
+        this.m_rightAngleMotor.set(speed); // TODO FIX
         this.m_leftAngleMotor.set(speed);
     }
 

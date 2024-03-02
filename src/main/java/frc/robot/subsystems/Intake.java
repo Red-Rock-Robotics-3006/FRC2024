@@ -132,19 +132,19 @@ public class Intake extends SubsystemBase{
     }
     
     public void periodic() {
-        this.c = this.getNoteDegreeX();
-        this.b = 180 - this.c;
-        this.x = this.calculateX(this.getNoteBoundingBoxWidth());
-        this.y = this.limelightPoseOffset;
-        this.z = this.calculateZ(x, y, b);
-        this.a = this.calculateHeading(x, y, z);
+        // this.c = this.getNoteDegreeX();
+        // this.b = 180 - this.c;
+        // this.x = this.calculateX(this.getNoteBoundingBoxWidth());
+        // this.y = this.limelightPoseOffset;
+        // this.z = this.calculateZ(x, y, b);
+        // this.a = this.calculateHeading(x, y, z);
         
         if (this.homing) {
             this.startIntake();
-            // this.swerve.setTargetHeading(this.a);
+            if (Constants.Settings.INTAKE_HOMING_ENABLED) this.swerve.setTargetHeading(this.a);
             if (index.getTransferring()) this.index.startTransfer();
-            SmartDashboard.putNumber("a value", this.a);
-            SmartDashboard.putNumber("note degree x", this.c);
+            // SmartDashboard.putNumber("a value", this.a);
+            // SmartDashboard.putNumber("note degree x", this.c);
             // if (Math.abs(this.getNoteDegreeX()) < 10 && this.x < 24) this.swerve.setDriveState(DriveState.ROBOT_CENTRIC);//TODO may or may not use this
             // else this.swerve.setDriveState(DriveState.FIELD_CENTRIC);
         }

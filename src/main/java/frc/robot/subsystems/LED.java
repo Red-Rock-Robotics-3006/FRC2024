@@ -24,7 +24,6 @@ public class LED extends SubsystemBase{
     private State RobotState = State.RESTING;
     private int driveStateControl = 0;
 
-    private boolean policeModeEnabled = false;
     private int policeMode = 0;
     private int policeModeControl1 = 0;
     private int policeModeControl2 = 0;
@@ -67,11 +66,6 @@ public class LED extends SubsystemBase{
         return this.RobotState;
     }
 
-    public void togglePoliceMode() {
-        if (this.policeModeEnabled) this.policeModeEnabled = false;
-        else this.policeModeEnabled = true;
-    }
-
     public void setPoliceMode(int mode) {
         this.policeMode = mode;
     }
@@ -90,8 +84,9 @@ public class LED extends SubsystemBase{
         this.controlRight.setData(this.bufferRight);
     }
 
+    int blinkControl = 0;
     public void periodic() {
-        if (!this.policeModeEnabled) {
+        if (!Constants.Settings.POLICE_MODE_ENABLED) {
             switch(this.RobotState) { //TODO make the led patterns more intuitive (ie flashing instead of colors)
                 case RESTING:
                     for (int i = 0; i < bufferRight.getLength(); i++) {
@@ -112,11 +107,20 @@ public class LED extends SubsystemBase{
                     this.controlRight.setData(this.bufferRight);
                     break;
                 case HAS_NOTE:
-                    for (int i = 0; i < bufferRight.getLength(); i++) {
-                        this.bufferRight.setRGB(i, 0, 0, 255)
-                        ;//blue
+                    blinkControl++;
+
+                    if (blinkControl % 60 < 30) {
+                        for (int i = 0; i < bufferRight.getLength(); i++) {
+                            this.bufferRight.setRGB(i, 255, 0, 255);//red
+                        }
+                        this.controlRight.setData(this.bufferRight);
                     }
-                    this.controlRight.setData(this.bufferRight);
+                    else {
+                        for (int i = 0; i < bufferRight.getLength(); i++) {
+                            this.bufferRight.setRGB(i, 0, 0, 0);//nothing
+                        }
+                        this.controlRight.setData(this.bufferRight);
+                    }
                     break;
                 case HOMING_APRILTAG:
                     for (int i = 0; i < bufferRight.getLength(); i++) {
@@ -124,6 +128,111 @@ public class LED extends SubsystemBase{
                     }
                     this.controlRight.setData(this.bufferRight);
                     break;
+            }
+        }
+        else if (Constants.Settings.POLICE_MODE_ENABLED) {
+            if (policeMode == 0) {//solid color
+                for (int i = 0; i < bufferRight.getLength() / 2; i++) {
+                    bufferRight.setRGB(i, 255, 0, 0);
+                }
+                for (int i = bufferRight.getLength() / 2; i < bufferRight.getLength(); i++) {
+                    bufferRight.setRGB(i, 0, 0, 255);
+                }
+                controlRight.setData(bufferRight);
+            }
+            if (policeMode == 1) {//solid alternating color
+                policeModeControl1++;
+                if (policeModeControl1 % 50 == 0) {
+                    for (int i = 0; i < bufferRight.getLength(); i++) {
+                        bufferRight.setRGB(i, 255, 0, 0);
+                    }
+                    controlRight.setData(bufferRight);
+                }
+                else if (policeModeControl1 % 25 == 0) {
+                    for (int i = 0; i < bufferRight.getLength(); i++) {
+                        bufferRight.setRGB(i, 0, 0, 255);
+                    }
+                    controlRight.setData(bufferRight);
+                }
+            }
+            else if (policeMode == 2) {//one flash each color on two halves
+                policeModeControl2++;
+                if (policeModeControl2 % 40 == 0) {
+                    for (int i = 0; i < bufferRight.getLength() / 2; i++) {
+                        bufferRight.setRGB(i, 255, 0, 0);
+                    }
+                    for (int i = bufferRight.getLength() / 2; i < bufferRight.getLength(); i++) {
+                        bufferRight.setRGB(i, 0, 0, 0);
+                    }
+                    controlRight.setData(bufferRight);
+                }
+                else if (policeModeControl2 % 20 == 0) {
+                    for (int i = 0; i < bufferRight.getLength() / 2; i++) {
+                        bufferRight.setRGB(i, 0, 0, 0);
+                    }
+                    for (int i = bufferRight.getLength() / 2; i < bufferRight.getLength(); i++) {
+                        bufferRight.setRGB(i, 0, 0, 255);
+                    }
+                    controlRight.setData(bufferRight);
+                }
+            }
+            else if (policeMode == 3) {//three flashes each color on two halves
+                policeModeControl3++;
+                if (policeModeColorControl3 % 2 == 0) {
+                    if (policeModeControl3 % 8 == 0) {
+                        for (int i = 0; i < bufferRight.getLength() / 2; i++) {
+                            bufferRight.setRGB(i, 0, 0, 0);
+                        }
+                        controlRight.setData(bufferRight);
+                    }
+
+                    else if (policeModeControl3 % 4 == 0) {
+                        for (int i = 0; i < bufferRight.getLength() / 2; i++) {
+                            bufferRight.setRGB(i, 0, 0, 255);
+                        }
+                        controlRight.setData(bufferRight);
+
+
+                        if (policeModeControl3 == 20) {
+                            policeModeControl3 = 0;
+                            policeModeColorControl3++;
+                        }
+                    }
+
+                    for (int i = bufferRight.getLength() / 2; i < bufferRight.getLength(); i++) {
+                        bufferRight.setRGB(i, 0, 0, 0);
+                    }
+                    controlRight.setData(bufferRight);
+                }
+                else {
+                    if (policeModeControl3 % 8 == 0) {
+                        for (int i = bufferRight.getLength() / 2; i < bufferRight.getLength(); i++) {
+                            bufferRight.setRGB(i, 0, 0, 0);
+                        }
+                        controlRight.setData(bufferRight);
+                    }
+
+                    else if (policeModeControl3 % 4 == 0) {
+                        for (int i = bufferRight.getLength() / 2; i < bufferRight.getLength(); i++) {
+                            bufferRight.setRGB(i, 255, 0, 0);
+                        }
+                        controlRight.setData(bufferRight);
+
+
+                        if (policeModeControl3 == 20) {
+                            policeModeControl3 = 0;
+                            policeModeColorControl3++;
+                        }
+                    }
+
+                    for (int i = 0; i < bufferRight.getLength() / 2; i++) {
+                        bufferRight.setRGB(i, 0, 0, 0);
+                    }
+                    controlRight.setData(bufferRight);
+                }
+            }
+            else if (policeMode == 4) {//segmented flashes
+
             }
         }
 
@@ -172,113 +281,6 @@ public class LED extends SubsystemBase{
         //     this.setState(State.HAS_NOTE);
         // }
         //123, 231, 244 giorgio blue :)
-
-        // if (this.policeModeEnabled) {
-        //     if (policeMode == 0) {//solid color
-        //         for (int i = 0; i < bufferRight.getLength() / 2; i++) {
-        //             bufferRight.setRGB(i, 255, 0, 0);
-        //         }
-        //         for (int i = bufferRight.getLength() / 2; i < bufferRight.getLength(); i++) {
-        //             bufferRight.setRGB(i, 0, 0, 255);
-        //         }
-        //         controlRight.setData(bufferRight);
-        //     }
-        //     if (policeMode == 1) {//solid alternating color
-        //         policeModeControl1++;
-        //         if (policeModeControl1 % 50 == 0) {
-        //             for (int i = 0; i < bufferRight.getLength(); i++) {
-        //                 bufferRight.setRGB(i, 255, 0, 0);
-        //             }
-        //             controlRight.setData(bufferRight);
-        //         }
-        //         else if (policeModeControl1 % 25 == 0) {
-        //             for (int i = 0; i < bufferRight.getLength(); i++) {
-        //                 bufferRight.setRGB(i, 0, 0, 255);
-        //             }
-        //             controlRight.setData(bufferRight);
-        //         }
-        //     }
-            // else if (policeMode == 2) {//one flash each color on two halves
-            //     policeModeControl2++;
-            //     if (policeModeControl2 % 40 == 0) {
-            //         for (int i = 0; i < buffer.getLength() / 2; i++) {
-            //             buffer.setRGB(i, 255, 0, 0);
-            //         }
-            //         for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-            //             buffer.setRGB(i, 0, 0, 0);
-            //         }
-            //         control.setData(buffer);
-            //     }
-            //     else if (policeModeControl2 % 20 == 0) {
-            //         for (int i = 0; i < buffer.getLength() / 2; i++) {
-            //             buffer.setRGB(i, 0, 0, 0);
-            //         }
-            //         for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-            //             buffer.setRGB(i, 0, 0, 255);
-            //         }
-            //         control.setData(buffer);
-            //     }
-            // }
-            // else if (policeMode == 3) {//three flashes each color on two halves
-            //     policeModeControl3++;
-            //     if (policeModeColorControl3 % 2 == 0) {
-            //         if (policeModeControl3 % 8 == 0) {
-            //             for (int i = 0; i < buffer.getLength() / 2; i++) {
-            //                 buffer.setRGB(i, 0, 0, 0);
-            //             }
-            //             control.setData(buffer);
-            //         }
-
-            //         else if (policeModeControl3 % 4 == 0) {
-            //             for (int i = 0; i < buffer.getLength() / 2; i++) {
-            //                 buffer.setRGB(i, 0, 0, 255);
-            //             }
-            //             control.setData(buffer);
-
-
-            //             if (policeModeControl3 == 20) {
-            //                 policeModeControl3 = 0;
-            //                 policeModeColorControl3++;
-            //             }
-            //         }
-
-            //         for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-            //             buffer.setRGB(i, 0, 0, 0);
-            //         }
-            //         control.setData(buffer);
-            //     }
-            //     else {
-            //         if (policeModeControl3 % 8 == 0) {
-            //             for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-            //                 buffer.setRGB(i, 0, 0, 0);
-            //             }
-            //             control.setData(buffer);
-            //         }
-
-            //         else if (policeModeControl3 % 4 == 0) {
-            //             for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-            //                 buffer.setRGB(i, 255, 0, 0);
-            //             }
-            //             control.setData(buffer);
-
-
-            //             if (policeModeControl3 == 20) {
-            //                 policeModeControl3 = 0;
-            //                 policeModeColorControl3++;
-            //             }
-            //         }
-
-            //         for (int i = 0; i < buffer.getLength() / 2; i++) {
-            //             buffer.setRGB(i, 0, 0, 0);
-            //         }
-            //         control.setData(buffer);
-            //     }
-            // }
-            // else if (policeMode == 4) {//segmented flashes
-
-            // }
-        // }
-
 
     }
 

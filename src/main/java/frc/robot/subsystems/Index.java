@@ -101,7 +101,7 @@ import frc.robot.Constants;
 
 public class Index extends SubsystemBase{
 
-    public static final double kReverseTime = 0.2;
+    public static final double kReverseTime = 0.1;
     
     private static Index instance = null;
 
@@ -158,7 +158,7 @@ public class Index extends SubsystemBase{
     }
 
     public boolean noteInIndex() {
-        return this.indexTOFSensor.getRange() < this.clearThresholdIndex - this.hasNoteThresholdDeviation && this.indexTOFSensor.isRangeValid();
+        return this.indexTOFSensor.getRange() < this.clearThresholdIndex - this.hasNoteThresholdDeviation;
     }
 
     public boolean hasNote() {
@@ -170,9 +170,9 @@ public class Index extends SubsystemBase{
     public void periodic() {
         SmartDashboard.putNumber("TOF Range ", this.indexTOFSensor.getRange());
         SmartDashboard.putBoolean("Range Valid ", this.indexTOFSensor.isRangeValid());
-        SmartDashboard.putBoolean("IS TRANSFERRING ", this.getTransferring());
+        // SmartDashboard.putBoolean("IS TRANSFERRING ", this.getTransferring());
 
-        if (this.hasNote() && this.getTransferring() && this.indexTOFSensor.isRangeValid()) {
+        if (this.hasNote() && this.getTransferring()) {
             Intake.getInstance().setHoming(false);
             Intake.getInstance().stopIntake();
             this.stopTransfer();

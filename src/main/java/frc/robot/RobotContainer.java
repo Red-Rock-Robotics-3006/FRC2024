@@ -11,6 +11,8 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,7 +37,8 @@ public class RobotContainer {
   private double MaxSpeed = 4.5; 
   private double MaxAngularRate = 0.5 * Math.PI; 
 
-  public static double kAngle = 51.7;
+  public static double kAngle = 60;
+  public static final double kShooterSpeed = 1;
 
   private final CommandXboxController joystick = new CommandXboxController(0);
   private final CommandXboxController mechstick = new CommandXboxController(1);
@@ -132,7 +135,7 @@ public class RobotContainer {
     // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     // joystick.b().whileTrue(drivetrain
     //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-
+        
     joystick.start().onTrue(
       drivetrain.resetHeading()
     );
@@ -175,15 +178,35 @@ public class RobotContainer {
       led
     ));
 
-    // mechstick.povLeft().onTrue(new InstantCommand(
-    //   () -> led.setPoliceMode(0),
-    //   led
-    // ));
+    mechstick.povLeft().onTrue(new InstantCommand(
+      () -> led.setPoliceMode(0),
+      led
+    ));
 
     // mechstick.povRight().onTrue(new InstantCommand(
     //   () -> led.setPoliceMode(1),
     //   led
     // ));
+
+    // mechstick.povLeft().onTrue(new InstantCommand(
+    //   () -> led.setPoliceMode(0),
+    //   led
+    // ));
+
+    // mechstick.povUp().onTrue(new InstantCommand(
+    //   () -> led.setPoliceMode(3),
+    //   led
+    // ));
+
+    // mechstick.povDown().onTrue(new InstantCommand(
+    //   () -> led.setPoliceMode(2),
+    //   led
+    // ));
+
+    mechstick.povRight().onTrue(new InstantCommand(
+      () -> led.setPoliceMode(1),
+      led
+    ));
 
     
 
@@ -191,8 +214,16 @@ public class RobotContainer {
       new InstantCommand(() -> intake.reverseIntake(), intake).andThen(new InstantCommand(() -> index.reverseTransfer(), index))
     );
 
-    joystick.x().onTrue(
+    mechstick.x().onTrue(
           new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(1), Shooter.getInstance())
+    );
+
+    joystick.x().onTrue(
+          new InstantCommand(() -> Index.getInstance().startTransfer(), index)
+    );
+
+    joystick.y().onTrue(
+      new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), Shooter.getInstance())
     );
     
     // joystick.y()
@@ -211,9 +242,9 @@ public class RobotContainer {
     //   new InstantCommand(() -> shooter.stow())
     // );
 
-    joystick.y().onTrue(
-      new InstantCommand(() -> index.startTransfer(), index)
-    );
+    // joystick.y().onTrue(
+    //   new InstantCommand(() -> index.startTransfer(), index)
+    // );
 
     joystick.b().onTrue(
       new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> shooter.setShooterSpeed(0), shooter))
@@ -298,9 +329,13 @@ public class RobotContainer {
         climber
       )
     );
+
+    mechstick.povLeft().whileTrue(
+      drivetrain.applyRequest(() -> brake));
+    
   }
 
-  /**
+  /** 
    * Sets up desired values to be displayed to the Smart Dashboard
    */
   public void configureDashboard(){
@@ -316,6 +351,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("amp speed", 0.12);
 
     SmartDashboard.putNumber("shoot angle", kAngle);
+    SmartDashboard.putNumber("shooter test speed", kShooterSpeed);
   }
 
   public RobotContainer() {
@@ -352,8 +388,8 @@ public class RobotContainer {
           angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
           angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
         } else {
-          angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 12));
-          angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.01));
+          angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 4.25));
+          angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.2));
         
       }
 
@@ -366,9 +402,9 @@ public class RobotContainer {
   }
 
   public void configureSelector(){
-    m_chooser.setDefaultOption("straight", drivetrain.getAuto("StraightLineAuto"));
+    m_chooser.setDefaultOption("no auto", Commands.print("good luck drivers!"));
+    m_chooser.addOption("straight", drivetrain.getAuto("StraightLineAuto"));
     // m_chooser.addOption("four note", runAuto);
-    m_chooser.addOption("no auto", Commands.print("good luck drivers!"));
     m_chooser.addOption("alliance neutral: one note pick up mid", Autos.oneNoteGrabAuto());
     m_chooser.addOption("blkue: one note source side", Autos.oneNoteSourceSide());
     m_chooser.addOption("alliance neutral: two note", Autos.twoNoteAuto());
@@ -377,6 +413,9 @@ public class RobotContainer {
     m_chooser.addOption("red: source side one note to center", Autos.redSourceToCenter());
     m_chooser.addOption("blue: amp side no pickup", Autos.blueAmpNoPickup());
     m_chooser.addOption("red: amp side no pickup", Autos.redAmpNoPickup());
+    m_chooser.addOption("two note dont run at comp", Autos.twoNoteAuto2());
+    m_chooser.addOption("just shoot sides", Autos.justShootSides());
+                                                                                                                                                                                                                                                                                                                                                                                                                m_chooser.addOption("test", Autos.test());
     
     SmartDashboard.putData("auto chooser", m_chooser);
   }

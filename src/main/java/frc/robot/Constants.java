@@ -23,4 +23,9 @@ public final class Constants {
     public static final int LEFT_ANGLE_MOTOR_ID = 13;
     public static final int RIGHT_ANGLE_MOTOR_ID = 45;
   }
+  public static class Settings {
+    public static final boolean INTAKE_HOMING_ENABLED = false;
+    public static final boolean SHOOTER_PITCH_HOMING_ENABLED = false;
+    public static final boolean POLICE_MODE_ENABLED = false;
+  }
 }

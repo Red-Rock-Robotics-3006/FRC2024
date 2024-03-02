@@ -49,7 +49,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private Field2d field = new Field2d();
 
     public static final double kDriveSpeed = 5.0;
-    public static final double kTurnSpeed = 1.25;
+    public static final double kTurnSpeed = 2;
 
     public enum DriveState{
         FIELD_CENTRIC,

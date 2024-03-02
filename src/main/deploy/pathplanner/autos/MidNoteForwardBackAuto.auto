@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.72,
-      "y": 6.78
+      "x": 1.34,
+      "y": 5.53
     },
-    "rotation": 60.0
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BlueAmpNoPickup"
+            "pathName": "MidNoteForwardBackPath"
           }
         }
       ]
