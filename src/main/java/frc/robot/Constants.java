@@ -9,10 +9,10 @@ public final class Constants {
     public static final int INTAKE_MOTOR_ID = 17;
   }
   public static class Index {
-    public static final int INTAKE_BB_SENSOR_ID = 0;//FILLER
+    // public static final int INTAKE_BB_SENSOR_ID = 0;//FILLER
     public static final int INDEX_BB_SENSOR_ID = 0;//FILLER
-    public static final int INTAKE_TOF_SENSOR_ID = 0;//FILLER
-    public static final int INDEX_TOF_SENSOR_ID = 0;//FILLER
+    // public static final int INTAKE_TOF_SENSOR_ID = 0;//FILLER
+    // public static final int INDEX_TOF_SENSOR_ID = 0;//FILLER
     public static final int INDEX_MOTOR_ID = 60;
   }
   public static class LED {
