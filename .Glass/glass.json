@@ -1,5 +1,6 @@
 {
-  "NetworkTables Info": {
-    "visible": true
+  "NetworkTables Settings": {
+    "serverTeam": "localhost",
+    "visible": false
   }
 }
