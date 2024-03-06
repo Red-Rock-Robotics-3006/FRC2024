@@ -6,6 +6,10 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.swerve.SwerveIO;
@@ -162,5 +166,21 @@ public class Intake extends SubsystemBase{
     public static Intake getInstance(){
         if (instance == null) instance = new Intake();
         return instance;
+    }
+
+    public Command intakeNoteCommand(){
+        return new SequentialCommandGroup(
+            new FunctionalCommand(
+                () -> this.startIntake(), 
+                () -> {},
+                (interrupted) -> this.stopIntake(), 
+                () -> index.hasNote(), 
+                this, index),
+            new StartEndCommand(
+                () -> index.reverseFastTransfer(), 
+                () -> index.stopTransfer(),
+                index 
+            ).withTimeout(SmartDashboard.getNumber("index reverse time", Index.kReverseTime))
+        );
     }
 }

@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -364,6 +365,10 @@ public class RobotContainer {
     SmartDashboard.putNumber("shooter target", 45);
   } 
 
+  public void configurePathPlanner(){
+    NamedCommands.registerCommand("IntakeCommand", intake.intakeNoteCommand());
+  }
+
   public Command getAutonomousCommand() {
     // return Commands.print("No autonomous command configured");  
     return m_chooser.getSelected();
@@ -415,6 +420,7 @@ public class RobotContainer {
     m_chooser.addOption("red: amp side no pickup", Autos.redAmpNoPickup());
     m_chooser.addOption("two note dont run at comp", Autos.twoNoteAuto2());
     m_chooser.addOption("just shoot sides", Autos.justShootSides());
+    m_chooser.addOption("blue: troll auto", Autos.trollAuto());
                                                                                                                                                                                                                                                                                                                                                                                                                 m_chooser.addOption("test", Autos.test());
     
     SmartDashboard.putData("auto chooser", m_chooser);
