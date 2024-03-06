@@ -296,7 +296,7 @@ public class Autos {
             new WaitCommand(1.5),
             new InstantCommand(() -> intake.startIntake(), intake),
             new InstantCommand(() -> shooter.setShooterSpeed(0.3), shooter),
-            TunerConstants.DriveTrain.getAuto("Troll"),
+            TunerConstants.DriveTrain.getAuto("TrollAuto"),
             new InstantCommand(() -> intake.stopIntake(), intake)
         );
     }

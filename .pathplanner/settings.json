@@ -5,7 +5,9 @@
   "pathFolders": [
     "4 Note Paths"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "post utah"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
