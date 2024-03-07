@@ -1,8 +1,6 @@
 {
-  "NetworkTables Info": {
-    "Connections": {
-      "open": true
-    },
-    "visible": true
+  "NetworkTables Settings": {
+    "serverTeam": "localhost",
+    "visible": false
   }
 }
