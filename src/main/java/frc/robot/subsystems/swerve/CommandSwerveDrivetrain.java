@@ -3,8 +3,11 @@ package frc.robot.subsystems.swerve;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -38,6 +41,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+
+    private static final TalonFXConfiguration kDriveConfig = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(60)
+                .withSupplyCurrentLimitEnable(true)
+            );   
+
+    private static final TalonFXConfiguration kTurnConfig = new TalonFXConfiguration()
+            .withCurrentLimits(new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(40)
+                .withSupplyCurrentLimitEnable(true)
+            );   
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
 
@@ -73,6 +88,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
 
+        for (SwerveModule module : this.Modules){
+            module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+            module.getSteerMotor().getConfigurator().apply(kTurnConfig);
+        }
+
         SmartDashboard.putData("field", this.field);
     }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
@@ -80,6 +100,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         configurePathPlanner();
         if (Utils.isSimulation()) {
             startSimThread();
+        }
+        for (SwerveModule module : this.Modules){
+            module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+            module.getSteerMotor().getConfigurator().apply(kTurnConfig);
         }
         SmartDashboard.putData("field", this.field);
     }
