@@ -359,6 +359,7 @@ public class RobotContainer {
     configureDashboard();
     configureBindings();    
     configureSelector();
+    configurePathPlanner();
     SmartDashboard.putNumber("kF", 0.025);
     SmartDashboard.putNumber("kP", -5.0); // -1.1
     SmartDashboard.putNumber("encoder target", 0.7);
