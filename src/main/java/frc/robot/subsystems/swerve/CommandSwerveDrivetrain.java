@@ -2,6 +2,7 @@ package frc.robot.subsystems.swerve;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -41,6 +42,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private static final double kSimLoopPeriod = 0.005; // 5 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+
+    private Orchestra orchestra;
 
     private static final TalonFXConfiguration kDriveConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
@@ -88,12 +91,21 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
 
+        orchestra = new Orchestra();
+
         for (SwerveModule module : this.Modules){
             module.getDriveMotor().getConfigurator().apply(kDriveConfig);
             module.getSteerMotor().getConfigurator().apply(kTurnConfig);
+            orchestra.addInstrument(module.getDriveMotor());
+            orchestra.addInstrument(module.getSteerMotor());
         }
 
+        orchestra.loadMusic("music/siren.chrp");
+
         SmartDashboard.putData("field", this.field);
+
+        
+        
     }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
@@ -101,10 +113,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
+        orchestra = new Orchestra();
         for (SwerveModule module : this.Modules){
             module.getDriveMotor().getConfigurator().apply(kDriveConfig);
             module.getSteerMotor().getConfigurator().apply(kTurnConfig);
+            orchestra.addInstrument(module.getDriveMotor());
+            orchestra.addInstrument(module.getSteerMotor());
         }
+        orchestra.loadMusic("music/siren.chrp");
         SmartDashboard.putData("field", this.field);
     }
 
@@ -209,7 +225,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return this.driveState;
     }
 
-
+    public void toggleChrp(){
+        if (orchestra.isPlaying()) orchestra.stop();
+        else orchestra.play();
+    }
     
 
     @Override

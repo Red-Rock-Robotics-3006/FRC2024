@@ -333,6 +333,10 @@ public class RobotContainer {
 
     mechstick.povLeft().whileTrue(
       drivetrain.applyRequest(() -> brake));
+
+    mechstick.a().onTrue(
+      new InstantCommand(() -> drivetrain.toggleChrp(), drivetrain)
+    );
     
   }
 
