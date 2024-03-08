@@ -20,10 +20,7 @@ public class LED extends SubsystemBase{
     private int policeMode = 0;
     private int policeModeControl1 = 0;
     private int policeModeControl2 = 0;
-    private int policeModeControl3 = 0;
-    private int policeModeColorControl3 = 0;
-    private int policeModeControl4 = 0;
-    private int policeModeAltControl4 = 0;
+    private int policeModeConfigControl2 = 0;
 
     /**
      * Constructor for LED which registers the subsystem and sets a specified portion of the LED lights to the alliance color
@@ -82,6 +79,21 @@ public class LED extends SubsystemBase{
         }
     }
 
+    public void setLights(int start, int end, int r, int g, int b) {
+        if (r > 255 || g > 255 || b > 255) {
+            for (int i = start; i <= end; i++) {
+                this.buffer.setRGB(i, 255, 255, 255);
+            }
+            control.setData(buffer);
+        }
+        else {
+            for (int i = start; i <= end; i++) {
+                this.buffer.setRGB(i, r, g, b);
+            }
+            control.setData(buffer);
+        }
+    }
+
     int blinkControl = 0;
     public void periodic() {
         if (index.hasNote()) this.setState(State.HAS_NOTE);
@@ -122,108 +134,37 @@ public class LED extends SubsystemBase{
         }
         else if (Constants.Settings.POLICE_MODE_ENABLED) {
             if (policeMode == 0) {//solid color
-                for (int i = 0; i < buffer.getLength() / 2; i++) {
-                    buffer.setRGB(i, 255, 0, 0);
-                }
-                for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                    buffer.setRGB(i, 0, 0, 255);
-                }
-                control.setData(buffer);
+                this.setLights(0, buffer.getLength() / 2, 255, 0, 0);
+                this.setLights(buffer.getLength() / 2, buffer.getLength(), 0, 0, 255);
             }
             if (policeMode == 1) {//solid alternating color
                 policeModeControl1++;
-                if (policeModeControl1 % 50 == 0) {
-                    for (int i = 0; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 255, 0, 0);
-                    }
-                    control.setData(buffer);
-                }
-                else if (policeModeControl1 % 25 == 0) {
-                    for (int i = 0; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 0, 0, 255);
-                    }
-                    control.setData(buffer);
-                }
+                if (policeModeControl1 % 50 == 0) this.setLights(255, 0, 0);
+                else if (policeModeControl1 % 25 == 0) this.setLights(0, 0, 255);
             }
-            else if (policeMode == 2) {//one flash each color on two halves
+            else if (policeMode == 2) {//really cool mode
                 policeModeControl2++;
-                if (policeModeControl2 % 40 == 0) {
-                    for (int i = 0; i < buffer.getLength() / 2; i++) {
-                        buffer.setRGB(i, 255, 0, 0);
+                if (policeModeConfigControl2 % 2 == 0) {
+                    if (policeModeControl2 % 8 == 0) {
+                        this.setLights(0, 2, 0, 0, 255);
+                        this.setLights(3, 5, 255, 0, 0);
+                        this.setLights(6, 8, 255, 255, 255);
+                        this.setLights(9, 11, 0, 0, 255);
+                        this.setLights(12, 14, 255, 0, 0);
                     }
-                    for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 0, 0, 0);
-                    }
-                    control.setData(buffer);
-                }
-                else if (policeModeControl2 % 20 == 0) {
-                    for (int i = 0; i < buffer.getLength() / 2; i++) {
-                        buffer.setRGB(i, 0, 0, 0);
-                    }
-                    for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 0, 0, 255);
-                    }
-                    control.setData(buffer);
-                }
-            }
-            else if (policeMode == 3) {//three flashes each color on two halves
-                policeModeControl3++;
-                if (policeModeColorControl3 % 2 == 0) {
-                    if (policeModeControl3 % 8 == 0) {
-                        for (int i = 0; i < buffer.getLength() / 2; i++) {
-                            buffer.setRGB(i, 0, 0, 0);
-                        }
-                        control.setData(buffer);
-                    }
+                    else if (policeModeControl2 % 4 == 0) this.setLights(0, 0, 0);
 
-                    else if (policeModeControl3 % 4 == 0) {
-                        for (int i = 0; i < buffer.getLength() / 2; i++) {
-                            buffer.setRGB(i, 0, 0, 255);
-                        }
-                        control.setData(buffer);
-
-
-                        if (policeModeControl3 == 20) {
-                            policeModeControl3 = 0;
-                            policeModeColorControl3++;
-                        }
-                    }
-
-                    for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                        buffer.setRGB(i, 0, 0, 0);
-                    }
-                    control.setData(buffer);
                 }
                 else {
-                    if (policeModeControl3 % 8 == 0) {
-                        for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                            buffer.setRGB(i, 0, 0, 0);
-                        }
-                        control.setData(buffer);
+                    if (policeModeControl2 % 8 == 0) {
+                        this.setLights(0, 2, 255, 0, 0);
+                        this.setLights(3, 5, 0, 0, 255);
+                        this.setLights(6, 8, 255, 255, 255);
+                        this.setLights(9, 11, 255, 0, 0);
+                        this.setLights(12, 14, 0, 0, 255);
                     }
-
-                    else if (policeModeControl3 % 4 == 0) {
-                        for (int i = buffer.getLength() / 2; i < buffer.getLength(); i++) {
-                            buffer.setRGB(i, 255, 0, 0);
-                        }
-                        control.setData(buffer);
-
-
-                        if (policeModeControl3 == 20) {
-                            policeModeControl3 = 0;
-                            policeModeColorControl3++;
-                        }
-                    }
-
-                    for (int i = 0; i < buffer.getLength() / 2; i++) {
-                        buffer.setRGB(i, 0, 0, 0);
-                    }
-                    control.setData(buffer);
+                    else if (policeModeControl2 % 4 == 0) this.setLights(0, 0, 0);
                 }
-            }
-            else if (policeMode == 4) {//finalized main robot cop lights
-                policeModeControl4++;
-                
             }
         }
     }

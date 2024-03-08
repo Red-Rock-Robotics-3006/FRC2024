@@ -258,7 +258,7 @@ public class Autos {
             // ),
             TunerConstants.DriveTrain.getAuto("BlueAmpNoPickupAuto")
         );
-    }
+    }   
     
     public static Command redAmpNoPickup(){
         return new SequentialCommandGroup(
