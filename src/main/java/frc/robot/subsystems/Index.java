@@ -178,12 +178,12 @@ public class Index extends SubsystemBase{
             this.stopTransfer();
             stopped = true;
 
-            CommandScheduler.getInstance().schedule(new StartEndCommand(
-                () -> this.reverseFastTransfer(), 
-                () -> this.stopTransfer(),
-                this
-                ).withTimeout(SmartDashboard.getNumber("index reverse time", kReverseTime))
-            );
+            // CommandScheduler.getInstance().schedule(new StartEndCommand(
+            //     () -> this.reverseFastTransfer(), 
+            //     () -> this.stopTransfer(),
+            //     this
+            //     ).withTimeout(SmartDashboard.getNumber("index reverse time", kReverseTime))
+            // );
         }
     }
 

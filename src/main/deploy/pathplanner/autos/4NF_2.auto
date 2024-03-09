@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2,
-      "y": 2
+      "x": 2.5,
+      "y": 5.53
     },
     "rotation": 0
   },
@@ -12,14 +12,14 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "IntakeCommand"
+            "pathName": "2_MidReturn"
           }
         }
       ]
     }
   },
-  "folder": "post utah",
+  "folder": "4Note Follow",
   "choreoAuto": false
 }

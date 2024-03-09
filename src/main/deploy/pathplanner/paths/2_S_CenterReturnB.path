@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.92,
+        "y": 0.75
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.92,
+        "y": 0.7499999999999999
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.363416027825703,
+        "y": 1.9439988665945918
+      },
+      "prevControl": {
+        "x": 4.804802366041531,
+        "y": 1.3433274768540597
+      },
+      "nextControl": {
+        "x": 1.9220296896098774,
+        "y": 2.544670256335121
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.8,
+        "y": 4.46
+      },
+      "prevControl": {
+        "x": 1.6185013825042585,
+        "y": 3.2673233962679022
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -60.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "3Note Source Paths",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}

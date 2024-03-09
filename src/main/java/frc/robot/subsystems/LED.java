@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -21,6 +22,12 @@ public class LED extends SubsystemBase{
     private int policeModeControl1 = 0;
     private int policeModeControl2 = 0;
     private int policeModeConfigControl2 = 0;
+
+    private final Color NOTE_ORANGE = new Color(255, 15, 0);
+    private final Color WHITE = new Color(255, 255, 255);
+    private final Color BLUE = new Color(0, 0, 255);
+    private final Color RED = new Color(255, 0, 0);
+    private final Color OFF = new Color(0, 0, 0);
 
     /**
      * Constructor for LED which registers the subsystem and sets a specified portion of the LED lights to the alliance color
@@ -94,6 +101,20 @@ public class LED extends SubsystemBase{
         }
     }
 
+    public void setLights(Color c) {
+        for (int i = 0; i < buffer.getLength(); i++) {
+            buffer.setLED(i, c);
+        }
+        control.setData(buffer);
+    }
+
+    public void setLights(int start, int end, Color c) {
+        for (int i = start; i < end; i++) {
+            buffer.setLED(i, c);
+        }
+        control.setData(buffer);
+    }
+
     int blinkControl = 0;
     public void periodic() {
         if (index.hasNote()) this.setState(State.HAS_NOTE);
@@ -102,12 +123,12 @@ public class LED extends SubsystemBase{
         if (!Constants.Settings.POLICE_MODE_ENABLED) {
             switch(this.RobotState) {
                 case RESTING:
-                    this.setLights(255, 255, 255);
+                    this.setLights(WHITE);
                     break;
                 case HAS_NOTE:
                     blinkControl++;
-                    if (blinkControl % 50 < 25) this.setLights(255, 0, 255);
-                    else this.setLights(0, 0, 0);
+                    if (blinkControl % 50 < 25) this.setLights(NOTE_ORANGE);
+                    else this.setLights(OFF);
                     break;
 
                 //other states are currently unused
@@ -134,36 +155,43 @@ public class LED extends SubsystemBase{
         }
         else if (Constants.Settings.POLICE_MODE_ENABLED) {
             if (policeMode == 0) {//solid color
-                this.setLights(0, buffer.getLength() / 2, 255, 0, 0);
-                this.setLights(buffer.getLength() / 2, buffer.getLength(), 0, 0, 255);
+                this.setLights(0, buffer.getLength() / 2, RED);
+                this.setLights(buffer.getLength() / 2, buffer.getLength(), BLUE);
             }
             if (policeMode == 1) {//solid alternating color
                 policeModeControl1++;
-                if (policeModeControl1 % 50 == 0) this.setLights(255, 0, 0);
-                else if (policeModeControl1 % 25 == 0) this.setLights(0, 0, 255);
+                if (policeModeControl1 % 50 == 0) this.setLights(RED);
+                else if (policeModeControl1 % 25 == 0) this.setLights(BLUE);
             }
             else if (policeMode == 2) {//really cool mode
                 policeModeControl2++;
                 if (policeModeConfigControl2 % 2 == 0) {
                     if (policeModeControl2 % 8 == 0) {
-                        this.setLights(0, 2, 0, 0, 255);
-                        this.setLights(3, 5, 255, 0, 0);
-                        this.setLights(6, 8, 255, 255, 255);
-                        this.setLights(9, 11, 0, 0, 255);
-                        this.setLights(12, 14, 255, 0, 0);
+                        this.setLights(0, 3, BLUE);
+                        this.setLights(3, 6, RED);
+                        this.setLights(6, 9, WHITE);
+                        this.setLights(9, 12, BLUE);
+                        this.setLights(12, 15, RED);
                     }
-                    else if (policeModeControl2 % 4 == 0) this.setLights(0, 0, 0);
-
+                    else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
+                    if (policeModeControl2 == 16) {
+                        policeModeConfigControl2++;
+                        policeModeControl2 = 0;
+                    }
                 }
                 else {
                     if (policeModeControl2 % 8 == 0) {
-                        this.setLights(0, 2, 255, 0, 0);
-                        this.setLights(3, 5, 0, 0, 255);
-                        this.setLights(6, 8, 255, 255, 255);
-                        this.setLights(9, 11, 255, 0, 0);
-                        this.setLights(12, 14, 0, 0, 255);
+                        this.setLights(0, 3, RED);
+                        this.setLights(3, 6, BLUE);
+                        this.setLights(6, 9, WHITE);
+                        this.setLights(9, 12, RED);
+                        this.setLights(12, 15, BLUE);
                     }
-                    else if (policeModeControl2 % 4 == 0) this.setLights(0, 0, 0);
+                    else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
+                    if (policeModeControl2 == 16) {
+                        policeModeConfigControl2++;
+                        policeModeControl2 = 0;
+                    }
                 }
             }
         }

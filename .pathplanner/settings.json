@@ -3,10 +3,13 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "4 Note Paths"
+    "4 Note Paths",
+    "3Note Source Paths"
   ],
   "autoFolders": [
-    "post utah"
+    "4 notes",
+    "4Note Follow",
+    "3 Notes source"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

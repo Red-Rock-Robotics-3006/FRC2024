@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 2.49,
+      "y": 6.99
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4_AmpReturn"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "4Note Follow",
+  "choreoAuto": false
+}

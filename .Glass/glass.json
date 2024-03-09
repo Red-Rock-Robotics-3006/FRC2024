@@ -1,18 +1,8 @@
 {
-  "NetworkTables": {
-    "types": {
-      "/FMSInfo": "FMSInfo",
-      "/Pose": "Field2d",
-      "/SmartDashboard/Module 0": "Mechanism2d",
-      "/SmartDashboard/Module 1": "Mechanism2d",
-      "/SmartDashboard/Module 2": "Mechanism2d",
-      "/SmartDashboard/Module 3": "Mechanism2d",
-      "/SmartDashboard/auto chooser": "String Chooser",
-      "/SmartDashboard/field": "Field2d"
-    }
-  },
-  "NetworkTables Settings": {
-    "serverTeam": "localhost",
-    "visible": false
+  "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    },
+    "visible": true
   }
 }

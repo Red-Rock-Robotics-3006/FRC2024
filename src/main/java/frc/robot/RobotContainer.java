@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.commands.Autos;
+import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
@@ -367,7 +368,11 @@ public class RobotContainer {
   } 
 
   public void configurePathPlanner(){
-    NamedCommands.registerCommand("IntakeCommand", intake.intakeNoteCommand());
+    NamedCommands.registerCommand("IntakeCommand", CommandFactory.intakeCommand());
+    NamedCommands.registerCommand("StartShootCommand", CommandFactory.shootCenterCommand());
+    NamedCommands.registerCommand("ShootCommand", CommandFactory.shootCommand());
+    NamedCommands.registerCommand("SpinUpCommand", CommandFactory.spinUpCommand());
+    NamedCommands.registerCommand("StartShootSidesCommand", CommandFactory.shootSideCommand());
   }
 
   public Command getAutonomousCommand() {
@@ -422,6 +427,12 @@ public class RobotContainer {
     m_chooser.addOption("two note dont run at comp", Autos.twoNoteAuto2());
     m_chooser.addOption("just shoot sides", Autos.justShootSides());
     m_chooser.addOption("blue: troll auto", Autos.trollAuto());
+
+    m_chooser.addOption("alliance neutral: really a fournote this time", drivetrain.getAuto("4N_1"));
+    m_chooser.addOption("4note paths: dont run at comp", drivetrain.getAuto("4N_P"));
+    m_chooser.addOption("4note paths not pp", Autos.m_4_1p_3w());
+    m_chooser.addOption("blue: 3 note source side", drivetrain.getAuto("3NS_1B"));
+    m_chooser.addOption("blue: 3 note source side alt", drivetrain.getAuto("3NS_1B_Alt"));
                                                                                                                                                                                                                                                                                                                                                                                                                 m_chooser.addOption("test", Autos.test());
     
     SmartDashboard.putData("auto chooser", m_chooser);
