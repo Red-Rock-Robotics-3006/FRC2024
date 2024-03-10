@@ -2,6 +2,7 @@ package frc.robot.subsystems.swerve;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -20,6 +21,8 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -42,16 +45,25 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
+    // private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
+    //             .getStructTopic("pose", Pose2d.struct).publish();
+
+    // private Orchestra orchestra = new Orchestra();
+
     private static final TalonFXConfiguration kDriveConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(60)
                 .withSupplyCurrentLimitEnable(true)
+                .withStatorCurrentLimit(120)
+                .withStatorCurrentLimitEnable(true)
             );   
 
     private static final TalonFXConfiguration kTurnConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(40)
+                .withSupplyCurrentLimit(60)
                 .withSupplyCurrentLimitEnable(true)
+                .withStatorCurrentLimit(120)
+                .withStatorCurrentLimitEnable(true)
             );   
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
@@ -87,11 +99,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
-
-        for (SwerveModule module : this.Modules){
-            module.getDriveMotor().getConfigurator().apply(kDriveConfig);
-            module.getSteerMotor().getConfigurator().apply(kTurnConfig);
-        }
+        // if (!Utils.isSimulation()){
+            // for (SwerveModule module : this.Modules){
+            //     module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+            //     module.getSteerMotor().getConfigurator().apply(kTurnConfig);
+            //     // orchestra.addInstrument(module.getDriveMotor());
+            //     // orchestra.addInstrument(module.getSteerMotor());
+            // }
+            // orchestra.loadMusic("music/siren.chrp");
+        // }
 
         SmartDashboard.putData("field", this.field);
     }
@@ -101,10 +117,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        for (SwerveModule module : this.Modules){
-            module.getDriveMotor().getConfigurator().apply(kDriveConfig);
-            module.getSteerMotor().getConfigurator().apply(kTurnConfig);
-        }
+        // if (!Utils.isSimulation()){
+            // for (SwerveModule module : this.Modules){
+            //     module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+            //     module.getSteerMotor().getConfigurator().apply(kTurnConfig);
+            //     // orchestra.addInstrument(module.getDriveMotor());
+            //     // orchestra.addInstrument(module.getSteerMotor());
+            // }
+            // orchestra.loadMusic("music/siren.chrp");
+        // }
         SmartDashboard.putData("field", this.field);
     }
 
@@ -200,6 +221,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return this.getPigeon2().getRate();
     }
 
+    // public void toggleChrp(){
+    //     if (orchestra.isPlaying()) orchestra.stop();
+    //     else orchestra.play();
+    // }
+
     @Override
     public void setDriveState(DriveState state){
         this.driveState = state;
@@ -230,6 +256,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     @Override
     public void periodic(){
         this.field.setRobotPose(this.getState().Pose);
+        // posePublisher.set(this.getState().Pose);
         SmartDashboard.putNumber("field heading", this.getState().Pose.getRotation().getDegrees());
     }
 

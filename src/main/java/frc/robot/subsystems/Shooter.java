@@ -37,15 +37,18 @@ public class Shooter extends SubsystemBase {
     private CANSparkFlex leftShooter = new CANSparkFlex(Constants.Shooter.LEFT_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
     private CANSparkFlex rightShooter = new CANSparkFlex(Constants.Shooter.RIGHT_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
     
-    private CANSparkFlex m_leftAngleMotor = new CANSparkFlex(Constants.Shooter.LEFT_ANGLE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
+    // private CANSparkFlex m_leftAngleMotor = new CANSparkFlex(Constants.Shooter.LEFT_ANGLE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
     private CANSparkFlex m_rightAngleMotor = new CANSparkFlex(Constants.Shooter.RIGHT_ANGLE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
 
-    private DutyCycleEncoder shooterEncoder = new DutyCycleEncoder(9); // TODO Check that this works
+    private DutyCycleEncoder shooterEncoder = new DutyCycleEncoder(0); // TODO Check that this works
 
     public static double kP = 0.025; // NOT THE REAL VALUE // TODO FILLER
     private double kI = 0.0;
     private double kD = 0.0; // TODO FILLER
     public static double kF = 0.025; // TODO FILLER
+
+    public static final double kFinalP = 5.5;
+    public static final double kFinalF = 0.048;
 
     private PIDController controller = new PIDController(kP, kI, kD);
 
@@ -127,18 +130,22 @@ public class Shooter extends SubsystemBase {
         this.leftShooter.restoreFactoryDefaults();
         this.leftShooter.setInverted(true);
         this.leftShooter.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.leftShooter.setSmartCurrentLimit(Constants.Shooter.SHOOT_CURRENT_LIMIT);
+        this.leftShooter.burnFlash();
 
         this.rightShooter.restoreFactoryDefaults();
         this.rightShooter.setInverted(false);
         this.rightShooter.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.rightShooter.setSmartCurrentLimit(Constants.Shooter.SHOOT_CURRENT_LIMIT);
+        this.rightShooter.burnFlash();
 
         this.m_rightAngleMotor.restoreFactoryDefaults();
         this.m_rightAngleMotor.setInverted(true);
         this.m_rightAngleMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        this.m_leftAngleMotor.restoreFactoryDefaults();
-        this.m_leftAngleMotor.setInverted(false);
-        this.m_leftAngleMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        // this.m_leftAngleMotor.restoreFactoryDefaults();
+        // this.m_leftAngleMotor.setInverted(false);
+        // this.m_leftAngleMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         this.isOnBlue = false;
 
@@ -226,12 +233,12 @@ public class Shooter extends SubsystemBase {
         if(this.seek)
             swerve.setTargetHeading(this.targetYaw);
         
-        kP = SmartDashboard.getNumber("kP", -1.3);
-        kF = SmartDashboard.getNumber("kF", 0.049);
+        kP = SmartDashboard.getNumber("kP", kFinalP);
+        kF = SmartDashboard.getNumber("kF", kFinalF);
 
         SmartDashboard.putNumber("encoder target", eTarget);
         SmartDashboard.putNumber("shooter target", this.targetPitch);
-        SmartDashboard.putNumber("power", this.m_leftAngleMotor.getAppliedOutput());
+        // SmartDashboard.putNumber("power", this.m_leftAngleMotor.getAppliedOutput());
         SmartDashboard.putNumber("current encoder", currentPos);
         SmartDashboard.putNumber("current angle", angle);
         SmartDashboard.putNumber("TargetX", this.target[0]);
@@ -531,8 +538,8 @@ public class Shooter extends SubsystemBase {
     public void setAngleSpeed(double speed)
     {
         // System.out.println(speed);
-        this.m_rightAngleMotor.set(speed); // TODO FIX
-        this.m_leftAngleMotor.set(speed);
+        // this.m_rightAngleMotor.set(speed); // TODO FIX
+        // this.m_leftAngleMotor.set(speed);
     }
 
 

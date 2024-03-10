@@ -65,7 +65,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
   public Intake intake = Intake.getInstance();//TODO for now
   public Index index = Index.getInstance();
-  public LED led = LED.getInstance();
+  // public LED led = LED.getInstance();
   public Shooter shooter = Shooter.getInstance();
   public Climber climber = Climber.getInstance();
 
@@ -117,6 +117,7 @@ public class RobotContainer {
                     SmartDashboard.putBoolean("facing angle", true);
                     SmartDashboard.putBoolean("robot centric", false);
 
+
                     return angle.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
                                 .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
                                 .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
@@ -164,7 +165,7 @@ public class RobotContainer {
 
 
     joystick.leftBumper().onTrue(
-      new InstantCommand(() -> {intake.toggleHoming(); System.out.println("left bumper");}, intake).andThen(new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_LEFT), shooter))
+      CommandFactory.intakeCommand()
     );
 
     joystick.rightBumper()
@@ -175,15 +176,10 @@ public class RobotContainer {
       ).withTimeout(0.1)
       );
 
-    joystick.back().onTrue(new InstantCommand(
-      () -> led.toggleHasNote(),
-      led
-    ));
-
-    mechstick.povLeft().onTrue(new InstantCommand(
-      () -> led.setPoliceMode(0),
-      led
-    ));
+    // mechstick.povLeft().onTrue(new InstantCommand(
+    //   () -> led.setPoliceMode(0),
+    //   led
+    // ));
 
     // mechstick.povRight().onTrue(new InstantCommand(
     //   () -> led.setPoliceMode(1),
@@ -205,10 +201,10 @@ public class RobotContainer {
     //   led
     // ));
 
-    mechstick.povRight().onTrue(new InstantCommand(
-      () -> led.setPoliceMode(1),
-      led
-    ));
+    // mechstick.povRight().onTrue(new InstantCommand(
+    //   () -> led.setPoliceMode(1),
+    //   led
+    // ));
 
     
 
@@ -217,15 +213,15 @@ public class RobotContainer {
     );
 
     mechstick.x().onTrue(
-          new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(1), Shooter.getInstance())
+          new InstantCommand(() -> shooter.setShooterSpeed(1), shooter)
     );
 
     joystick.x().onTrue(
-          new InstantCommand(() -> Index.getInstance().startTransfer(), index)
+          new InstantCommand(() -> index.startTransfer(), index)
     );
 
     joystick.y().onTrue(
-      new InstantCommand(() -> Shooter.getInstance().setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), Shooter.getInstance())
+      new InstantCommand(() -> shooter.setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), shooter)
     );
     
     // joystick.y()
@@ -265,12 +261,12 @@ public class RobotContainer {
       drivetrain.resetFieldHeading()
     );
 
-    mechstick.a().onTrue(
-      new InstantCommand(
-        () -> led.reset(),
-        led
-      )
-    );
+    // mechstick.a().onTrue(
+    //   new InstantCommand(
+    //     () -> led.reset(),
+    //     led
+    //   )
+    // );
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
@@ -286,31 +282,11 @@ public class RobotContainer {
     );
 
 
-
-    // mechstick.y().onTrue(
-    //   new InstantCommand(
-    //     () -> climber.resetLeftEncoder(), climber
-    //   )
-    // );
-    
-    // mechstick.a().onTrue(
-    //   new InstantCommand(
-    //     () -> climber.resetRightEncoder(), climber
-    //   )
-    // );
-    // m_driverController.x().onTrue(
-    //   m_climber.setIdleMode(IdleMode.kCoast)
-    // );
-
-    // m_driverController.b().onTrue(
-    //   m_climber.setIdleMode(IdleMode.kBrake)
-    // );
-
     joystick.povLeft().onTrue(
       new InstantCommand(
-        () -> Shooter.getInstance().setTarget(
+        () -> shooter.setTarget(
           SmartDashboard.getNumber("shoot angle", kAngle)
-          ), Shooter.getInstance()
+          ), shooter
       )
     );
 
@@ -334,6 +310,10 @@ public class RobotContainer {
 
     mechstick.povLeft().whileTrue(
       drivetrain.applyRequest(() -> brake));
+
+    // mechstick.a().onTrue(
+    //   new InstantCommand(() -> drivetrain.toggleChrp(), drivetrain)
+    // );
     
   }
 
@@ -361,8 +341,8 @@ public class RobotContainer {
     configureBindings();    
     configureSelector();
     configurePathPlanner();
-    SmartDashboard.putNumber("kF", 0.025);
-    SmartDashboard.putNumber("kP", -5.0); // -1.1
+    SmartDashboard.putNumber("kF", Shooter.kFinalF);
+    SmartDashboard.putNumber("kP", Shooter.kFinalP); // -1.1
     SmartDashboard.putNumber("encoder target", 0.7);
     SmartDashboard.putNumber("shooter target", 45);
   } 
@@ -394,7 +374,7 @@ public class RobotContainer {
    * Called in the main Robot class
    */
     public void updateDashboard(){
-      if (!Intake.getInstance().getHoming()){
+      if (!intake.getHoming()){
 
           angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
           angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
@@ -427,8 +407,15 @@ public class RobotContainer {
     m_chooser.addOption("two note dont run at comp", Autos.twoNoteAuto2());
     m_chooser.addOption("just shoot sides", Autos.justShootSides());
     m_chooser.addOption("blue: troll auto", Autos.trollAuto());
+    m_chooser.addOption("blue: troll auto paths", Autos.trollAutoPath());
 
-    m_chooser.addOption("alliance neutral: really a fournote this time", drivetrain.getAuto("4N_1"));
+    //DO NOT RUN THESE THREE AUTOS
+    m_chooser.addOption("DO NOT RUN: tysens idea", Autos.tysensIdeaAuto());
+    m_chooser.addOption("DO NOT RUN: grand prix", Autos.grandPrixAuto());
+    m_chooser.addOption("DO NOT RUN: max ver", Autos.superMaxAuto());
+    //DO NOT RUN THESE THREE AUTOS
+
+    m_chooser.addOption("alliance neutral: really a fournote this time", Autos.m_4note());
     m_chooser.addOption("4note paths: dont run at comp", drivetrain.getAuto("4N_P"));
     m_chooser.addOption("4note paths not pp", Autos.m_4_1p_3w());
     m_chooser.addOption("blue: 3 note source side", drivetrain.getAuto("3NS_1B"));

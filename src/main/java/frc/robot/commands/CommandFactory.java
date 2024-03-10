@@ -21,7 +21,7 @@ public class CommandFactory {
     public static Command intakeCommand(){
         return new SequentialCommandGroup(
             new FunctionalCommand(
-                () -> intake.startIntake(), 
+                () -> {intake.startIntake(); shooter.presetShoot(Shooter.Positions.SUB_LEFT);}, 
                 () -> {},
                 (interrupted) -> intake.stopIntake(), 
                 () -> index.hasNote(), 
@@ -43,7 +43,7 @@ public class CommandFactory {
             new WaitCommand(Autos.kSpinUpTime),
             new StartEndCommand(
                 () -> index.startTransfer(), 
-                () -> index.stopTransfer(), 
+                () -> {index.stopTransfer(); shooter.setShooterSpeed(0);}, 
                 index).withTimeout(Autos.kShootTime)
         );
     }
@@ -63,7 +63,7 @@ public class CommandFactory {
     }
 
     public static Command shootCommand(){
-        return             new StartEndCommand(
+        return new StartEndCommand(
                 () -> index.startTransfer(), 
                 () -> {index.stopTransfer(); shooter.setShooterSpeed(0);}, 
                 index).withTimeout(Autos.kShootTime);

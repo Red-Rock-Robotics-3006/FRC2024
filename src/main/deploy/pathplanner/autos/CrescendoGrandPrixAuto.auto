@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.787031987758696,
-      "y": 4.42669621430541
+      "x": 0.9626945359454185,
+      "y": 4.133925300660873
     },
-    "rotation": -59.93141717813755
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Troll"
+            "pathName": "CrescendoGrandPrix"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "DONOTRUNTHESEAUTOS",
   "choreoAuto": false
 }

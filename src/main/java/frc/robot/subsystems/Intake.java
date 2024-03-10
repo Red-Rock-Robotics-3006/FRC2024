@@ -41,6 +41,7 @@ public class Intake extends SubsystemBase{
         this.m_intakeMotor.restoreFactoryDefaults();
         this.m_intakeMotor.setInverted(false);
         this.m_intakeMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.m_intakeMotor.burnFlash();
     }
 
     /**
@@ -166,21 +167,5 @@ public class Intake extends SubsystemBase{
     public static Intake getInstance(){
         if (instance == null) instance = new Intake();
         return instance;
-    }
-
-    public Command intakeNoteCommand(){
-        return new SequentialCommandGroup(
-            new FunctionalCommand(
-                () -> this.startIntake(), 
-                () -> {},
-                (interrupted) -> this.stopIntake(), 
-                () -> index.hasNote(), 
-                this, index),
-            new StartEndCommand(
-                () -> index.reverseFastTransfer(), 
-                () -> index.stopTransfer(),
-                index 
-            ).withTimeout(SmartDashboard.getNumber("index reverse time", Index.kReverseTime))
-        );
     }
 }

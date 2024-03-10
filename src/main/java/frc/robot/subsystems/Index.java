@@ -88,6 +88,7 @@
 package frc.robot.subsystems;
 
 import com.playingwithfusion.TimeOfFlight;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -105,7 +106,7 @@ public class Index extends SubsystemBase{
     
     private static Index instance = null;
 
-    private final CANSparkMax m_indexMotor = new CANSparkMax(Constants.Index.INDEX_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+    private final CANSparkFlex m_indexMotor = new CANSparkFlex(Constants.Index.INDEX_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
     private final TimeOfFlight indexTOFSensor = new TimeOfFlight(Constants.Index.INDEX_TOF_SENSOR_ID);
     
     private boolean isTransferring = false;
@@ -119,6 +120,7 @@ public class Index extends SubsystemBase{
         this.m_indexMotor.restoreFactoryDefaults();
         this.m_indexMotor.setInverted(true);
         this.m_indexMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.m_indexMotor.burnFlash();
 
         this.indexTOFSensor.setRangeOfInterest(8, 8, 12, 12);
         this.indexTOFSensor.setRangingMode(TimeOfFlight.RangingMode.Short, 24);
@@ -169,8 +171,8 @@ public class Index extends SubsystemBase{
 
     public void periodic() {
         SmartDashboard.putNumber("TOF Range ", this.indexTOFSensor.getRange());
-        SmartDashboard.putBoolean("Range Valid ", this.indexTOFSensor.isRangeValid());
-        // SmartDashboard.putBoolean("IS TRANSFERRING ", this.getTransferring());
+        SmartDashboard.putBoolean("Has note ", this.hasNote());
+        // SmartDashboard.putBoolean("IS TRANSFERRING ", this.getTrPansferring());
 
         if (this.hasNote() && this.getTransferring()) {
             Intake.getInstance().setHoming(false);

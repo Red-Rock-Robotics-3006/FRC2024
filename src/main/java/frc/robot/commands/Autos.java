@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -25,9 +27,37 @@ public class Autos {
     public static Shooter shooter = Shooter.getInstance();
     public static CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
-    public static double kSpinUpTime = 1;
-    public static double kShootTime = 0.3;
+    public static double kSpinUpTime = 2;
+    public static double kShootTime = 2;
 
+    // public static Command oneNoteGrabAuto(){
+    //     return new SequentialCommandGroup(
+    //         new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
+    //         new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_LEFT), shooter),
+    //         new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
+    //         new WaitCommand(2.5),
+    //         new InstantCommand(
+    //             () -> index.startTransfer(),
+    //             index
+    //         ),
+    //         new WaitCommand(2),
+    //         new InstantCommand(
+    //             () -> {
+    //                 index.stopTransfer();
+    //                 shooter.setShooterSpeed(0);
+    //             },
+    //             index,
+    //             shooter
+    //         ),
+    //         new InstantCommand(
+    //             () -> {
+    //                 intake.setHoming(true);
+    //             }
+    //         ),
+    //         TunerConstants.DriveTrain.getAuto("MidNote")
+    //     );
+    // }
+    
     public static Command oneNoteGrabAuto(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
@@ -47,15 +77,18 @@ public class Autos {
                 index,
                 shooter
             ),
-            new InstantCommand(
-                () -> {
-                    intake.setHoming(true);
-                }
-            ),
-            TunerConstants.DriveTrain.getAuto("MidNote")
+            // new InstantCommand(
+            //     () -> {
+            //         intake.setHoming(true);
+            //     }
+            // ),
+            // TunerConstants.DriveTrain.getAuto("MidNote")
+            new ParallelCommandGroup(
+                CommandFactory.intakeCommand(),
+                TunerConstants.DriveTrain.getAuto("MidNote")
+            )
         );
     }
-    
     public static Command justShootSides(){
         return new SequentialCommandGroup(
             new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
@@ -304,11 +337,42 @@ public class Autos {
             new WaitCommand(kSpinUpTime),
             new InstantCommand(() -> index.startTransfer(), index),
             new WaitCommand(kShootTime),
-            new InstantCommand(() -> intake.stopIntake()),
             new InstantCommand(() -> intake.startIntake(), intake),
             new InstantCommand(() -> shooter.setShooterSpeed(0.3), shooter),
             TunerConstants.DriveTrain.getAuto("TrollAuto"),
             new InstantCommand(() -> intake.stopIntake(), intake)
+        );
+    }
+
+    public static Command trollAutoPath() {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
+            TunerConstants.DriveTrain.getAuto("TrollAuto")
+
+        );
+    }
+
+    public static Command grandPrixAuto() {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
+            TunerConstants.DriveTrain.getAuto("CrescendoGrandPrixAuto")
+
+        );
+    }
+
+    public static Command tysensIdeaAuto() {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
+            TunerConstants.DriveTrain.getAuto("TysensIdeaAuto")
+
+        );
+    }
+
+    public static Command superMaxAuto() {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
+            TunerConstants.DriveTrain.getAuto("TUTUTUDUMAXVERSTAPPENAuto")
+
         );
     }
 
@@ -330,6 +394,50 @@ public class Autos {
             drivetrain.getAuto("4NF_4"),
             drivetrain.getAuto("4NF_5"),
             drivetrain.getAuto("4NF_6")
+        );
+    }
+
+    public static final double kWaitTime = 0.5;
+
+    public static Command m_4note(){
+        return new SequentialCommandGroup(
+            CommandFactory.shootCenterCommand(),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    CommandFactory.intakeCommand(),
+                    CommandFactory.spinUpCommand()
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_1"),
+                    drivetrain.getAuto("4NF_2")
+                )
+            ),
+            new WaitCommand(kWaitTime),
+            CommandFactory.shootCommand(),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    CommandFactory.intakeCommand(),
+                    CommandFactory.spinUpCommand()
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_3"),
+                    drivetrain.getAuto("4NF_4")
+                )
+            ),
+            new WaitCommand(kWaitTime),
+            CommandFactory.shootCommand(),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    CommandFactory.intakeCommand(),
+                    CommandFactory.spinUpCommand()
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_5"),
+                    drivetrain.getAuto("4NF_6")
+                )
+            ),
+            new WaitCommand(kWaitTime),
+            CommandFactory.shootCenterCommand()
         );
     }
 
