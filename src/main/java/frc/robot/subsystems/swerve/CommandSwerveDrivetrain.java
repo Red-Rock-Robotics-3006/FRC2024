@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.swerve.generated.*;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.shooter.Shooter;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem

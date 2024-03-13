@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.shooter;
 
 import com.revrobotics.CANSparkMax;
 
@@ -20,8 +20,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
-
+import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.swerve.SwerveIO;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
@@ -206,7 +205,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Homing Offset", this.homingOffset);
         // this.setTarget(targetAngle);
         // Set Target angles
-        if(!Constants.Settings.SHOOTER_PITCH_HOMING_ENABLED || !this.seek)
+        if(!Constants.Settings.SHOOTER_HOMING_ENABLED || !this.seek)
             targetAngle = this.targetPitch;
         this.setTarget(targetAngle, yaw);
         // else

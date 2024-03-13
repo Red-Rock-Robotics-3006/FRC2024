@@ -12,8 +12,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -21,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -29,6 +26,12 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.index.Index;
+import frc.robot.subsystems.index.IndexCommands;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeCommands;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterCommands;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 
@@ -51,7 +54,6 @@ public class RobotContainer {
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); 
 
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
   
   private final SwerveRequest.FieldCentricFacingAngle angle = new SwerveRequest.FieldCentricFacingAngle()
       .withDeadband(MaxSpeed * kDeadBand)
@@ -70,8 +72,6 @@ public class RobotContainer {
   public Climber climber = Climber.getInstance();
 
   private double targetHeadingD = 0;
-
-  private Command runAuto = drivetrain.getAuto("fournote");
 
   private SendableChooser<Command> m_chooser = new SendableChooser<>();
   private void configureBindings() {
@@ -147,149 +147,65 @@ public class RobotContainer {
         drivetrain.resetFieldHeading()
     );
 
-    joystick.povDown().onTrue(
-      new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_CENTER))//Shooter.encoderTarget = 0.8)
-    );
-
-    joystick.povUp().onTrue(
-      new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_LEFT))//Shooter.encoderTarget = 0.7)
-    );
-
     // joystick.povLeft().onTrue(
     //   new InstantCommand(() -> shooter.setHoming(true))//Shooter.encoderTarget = 0.7)
     // );
 
+    //SHOOTER ANGLE BINDINGS
+
+    joystick.povDown().onTrue(
+      ShooterCommands.setAngle(Shooter.Positions.SUB_CENTER)//Shooter.encoderTarget = 0.8)
+    );
+    joystick.povUp().onTrue(
+      ShooterCommands.setAngle(Shooter.Positions.SUB_LEFT)//Shooter.encoderTarget = 0.7)
+    );
     joystick.povRight().onTrue(
-      new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_RIGHT))//Shooter.encoderTarget = 0.7)
+      ShooterCommands.setAngle(Shooter.Positions.SUB_RIGHT)//Shooter.encoderTarget = 0.7)
     );
 
+    //INTAKE PROCESS BINDINGS
 
     joystick.leftBumper().onTrue(
-      CommandFactory.intakeCommand()
+      CommandFactory.intakeCommand()//TODO for new shooter this can just be IntakeCommands.intake();
     );
-
-    joystick.rightBumper()
-      .onTrue(new StartEndCommand(
-        () -> {intake.setHoming(false);intake.reverseIntake(); System.out.println("right bumper");}, 
-        () -> intake.stopIntake(),
-        intake
-      ).withTimeout(0.1)
-      );
-
-    // mechstick.povLeft().onTrue(new InstantCommand(
-    //   () -> led.setPoliceMode(0),
-    //   led
-    // ));
-
-    // mechstick.povRight().onTrue(new InstantCommand(
-    //   () -> led.setPoliceMode(1),
-    //   led
-    // ));
-
-    // mechstick.povLeft().onTrue(new InstantCommand(
-    //   () -> led.setPoliceMode(0),
-    //   led
-    // ));
-
-    // mechstick.povUp().onTrue(new InstantCommand(
-    //   () -> led.setPoliceMode(3),
-    //   led
-    // ));
-
-    // mechstick.povDown().onTrue(new InstantCommand(
-    //   () -> led.setPoliceMode(2),
-    //   led
-    // ));
-
-    // mechstick.povRight().onTrue(new InstantCommand(
-    //   () -> led.setPoliceMode(1),
-    //   led
-    // ));
-
-    
-
+    joystick.rightBumper().onTrue(
+      new SequentialCommandGroup(
+        IntakeCommands.stop(),
+        IndexCommands.retract()
+      )
+    );
     joystick.a().onTrue(
-      new InstantCommand(() -> intake.reverseIntake(), intake).andThen(new InstantCommand(() -> index.reverseTransfer(), index))
+      new SequentialCommandGroup(
+        IntakeCommands.reverse(),
+        IndexCommands.reverse()
+      )
     );
+
+    //SHOOT PROCESS BINDINGS
 
     mechstick.x().onTrue(
-          new InstantCommand(() -> shooter.setShooterSpeed(1), shooter)
+      ShooterCommands.spinUp()
     );
-
     joystick.x().onTrue(
-          new InstantCommand(() -> index.startTransfer(), index)
+      IndexCommands.start()
     );
-
     joystick.y().onTrue(
       new InstantCommand(() -> shooter.setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), shooter)
     );
-    
-    // joystick.y()
-    //   .onTrue(new StartEndCommand(
-    //     () -> shooter.setShooterSpeed(ampSpeed), 
-    //     () -> index.startTransfer(),
-    //     index
-    //   ).withTimeout(2.5)
-    // );
-
-    // joystick.x().onTrue(
-    //   new InstantCommand(() -> shooter.setHoming(true))
-    // );
-
-    // joystick.y().onTrue(
-    //   new InstantCommand(() -> shooter.stow())
-    // );
-
-    // joystick.y().onTrue(
-    //   new InstantCommand(() -> index.startTransfer(), index)
-    // );
-
     joystick.b().onTrue(
-      new InstantCommand(() -> index.stopTransfer(), index).andThen(new InstantCommand(() -> shooter.setShooterSpeed(0), shooter))
+      new SequentialCommandGroup(
+        ShooterCommands.stop(),
+        IndexCommands.stop()
+      )
     );
 
-    
-
-        
-    mechstick.back().onTrue(
-      new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC_NO_LOCK), drivetrain)
-    ).onFalse(
-      new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC), drivetrain)
-    );
-    
-    mechstick.start().onTrue(
-      drivetrain.resetFieldHeading()
-    );
-
-    // mechstick.a().onTrue(
-    //   new InstantCommand(
-    //     () -> led.reset(),
-    //     led
-    //   )
-    // );
-
-    if (Utils.isSimulation()) {
-      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
-    }
-    drivetrain.registerTelemetry(logger::telemeterize);
-
-
+    //CLIMB PROCESS BINDINGS
 
     climber.setDefaultCommand(
       new RunCommand(
         () -> climber.move(mechstick.getRightTriggerAxis() - mechstick.getLeftTriggerAxis()), 
         climber)
     );
-
-
-    joystick.povLeft().onTrue(
-      new InstantCommand(
-        () -> shooter.setTarget(
-          SmartDashboard.getNumber("shoot angle", kAngle)
-          ), shooter
-      )
-    );
-
     mechstick.leftBumper().whileTrue(
       new RunCommand(() -> climber.setLeftSpeed(SmartDashboard.getNumber("reset speed", Climber.kResetSpeed)), climber)
     ).onFalse(
@@ -298,7 +214,6 @@ public class RobotContainer {
         climber
       )
     );
-
     mechstick.rightBumper().whileTrue(
       new RunCommand(() -> climber.setRightSpeed(SmartDashboard.getNumber("reset speed", Climber.kResetSpeed)), climber)
     ).onFalse(
@@ -308,8 +223,25 @@ public class RobotContainer {
       )
     );
 
+    //MECH CONTROLLER SETTINGS BINDINGS
+        
+    mechstick.back().onTrue(
+      new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC_NO_LOCK), drivetrain)
+    ).onFalse(
+      new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC), drivetrain)
+    );
+    mechstick.start().onTrue(
+      drivetrain.resetFieldHeading()
+    );
     mechstick.povLeft().whileTrue(
       drivetrain.applyRequest(() -> brake));
+
+
+
+    if (Utils.isSimulation()) {
+      drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
+    }
+    drivetrain.registerTelemetry(logger::telemeterize);  
 
     // mechstick.a().onTrue(
     //   new InstantCommand(() -> drivetrain.toggleChrp(), drivetrain)
@@ -350,8 +282,8 @@ public class RobotContainer {
   public void configurePathPlanner(){
     NamedCommands.registerCommand("IntakeCommand", CommandFactory.intakeCommand());
     NamedCommands.registerCommand("StartShootCommand", CommandFactory.shootCenterCommand());
-    NamedCommands.registerCommand("ShootCommand", CommandFactory.shootCommand());
-    NamedCommands.registerCommand("SpinUpCommand", CommandFactory.spinUpCommand());
+    NamedCommands.registerCommand("ShootCommand", ShooterCommands.shoot());
+    NamedCommands.registerCommand("SpinUpCommand", ShooterCommands.spinUp());
     NamedCommands.registerCommand("StartShootSidesCommand", CommandFactory.shootSideCommand());
   }
 
@@ -373,17 +305,11 @@ public class RobotContainer {
    * Updates values needed from the dashboard
    * Called in the main Robot class
    */
-    public void updateDashboard(){
-      if (!intake.getHoming()){
+  public void updateDashboard(){
 
-          angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
-          angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
-        } else {
-          angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 4.25));
-          angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.2));
-        
-      }
-
+    angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 4.25));
+    angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.2));
+  
     SmartDashboard.putNumber("current p", angle.HeadingController.getP());
     SmartDashboard.putNumber("current d", angle.HeadingController.getD());
 
@@ -438,9 +364,5 @@ public class RobotContainer {
     // double[] converted = {m_x, m_y};
     // return converted;
     return new double[]{x, y};
-  }
-
-  private double getPredictedHeading(double rate){
-    return drivetrain.getCurrentHeadingDegrees() - rate * 1;
   }
 }

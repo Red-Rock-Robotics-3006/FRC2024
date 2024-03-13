@@ -16,7 +16,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.Shooter.Positions;
+import frc.robot.subsystems.index.Index;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterCommands;
+import frc.robot.subsystems.shooter.Shooter.Positions;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
@@ -129,11 +133,7 @@ public class Autos {
                 index,
                 shooter
             ),
-            new InstantCommand(
-                () -> {
-                    intake.setHoming(true);
-                }
-            ),
+            CommandFactory.intakeCommand(),
             TunerConstants.DriveTrain.getAuto("MidNote"),
             new WaitCommand(0.3),
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
@@ -168,11 +168,7 @@ public class Autos {
                 index,
                 shooter
             ),
-            new InstantCommand(
-                () -> {
-                    intake.setHoming(true);
-                }
-            ),
+            CommandFactory.intakeCommand(),
             TunerConstants.DriveTrain.getAuto("MidNote"),
             new WaitCommand(0.3),
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
@@ -405,7 +401,7 @@ public class Autos {
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     CommandFactory.intakeCommand(),
-                    CommandFactory.spinUpCommand()
+                    ShooterCommands.spinUp()
                 ),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("4NF_1"),
@@ -413,11 +409,11 @@ public class Autos {
                 )
             ),
             new WaitCommand(kWaitTime),
-            CommandFactory.shootCommand(),
+            ShooterCommands.shoot(),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     CommandFactory.intakeCommand(),
-                    CommandFactory.spinUpCommand()
+                    ShooterCommands.spinUp()
                 ),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("4NF_3"),
@@ -425,11 +421,11 @@ public class Autos {
                 )
             ),
             new WaitCommand(kWaitTime),
-            CommandFactory.shootCommand(),
+            ShooterCommands.shoot(),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     CommandFactory.intakeCommand(),
-                    CommandFactory.spinUpCommand()
+                    ShooterCommands.spinUp()
                 ),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("4NF_5"),
