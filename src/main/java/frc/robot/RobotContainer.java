@@ -67,7 +67,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
   public Intake intake = Intake.getInstance();//TODO for now
   public Index index = Index.getInstance();
-  // public LED led = LED.getInstance();
+  public LED led = LED.getInstance();
   public Shooter shooter = Shooter.getInstance();
   public Climber climber = Climber.getInstance();
 
@@ -233,8 +233,35 @@ public class RobotContainer {
     mechstick.start().onTrue(
       drivetrain.resetFieldHeading()
     );
-    mechstick.povLeft().whileTrue(
+    mechstick.b().whileTrue(
       drivetrain.applyRequest(() -> brake));
+
+    //LED BINDINGS
+
+    mechstick.povLeft().onTrue(
+      new InstantCommand(
+        () -> led.setPoliceMode(0),
+        led
+      )
+    );
+    mechstick.povUp().onTrue(
+      new InstantCommand(
+        () -> led.setPoliceMode(1),
+        led
+      )
+    );
+    mechstick.povRight().onTrue(
+      new InstantCommand(
+        () -> led.setPoliceMode(2),
+        led
+      )
+    );
+    mechstick.povDown().onTrue(
+      new InstantCommand(
+        () -> led.togglePoliceModeEnabled(),
+        led
+      )
+    );
 
 
 
