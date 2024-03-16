@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.swerve.generated.*;
+import frc.robot.util.TalonUtils;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -46,6 +47,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
 
+    public static final double kPredictAngleCoeff = 0.15;
+    public static final double kPredictThreshold = 1;
+
+    public static final double kHigherPredictCoeff = 0.2;
+
     // private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
     //             .getStructTopic("pose", Pose2d.struct).publish();
 
@@ -53,7 +59,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private static final TalonFXConfiguration kDriveConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(60)
+                .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true)
                 .withStatorCurrentLimit(120)
                 .withStatorCurrentLimitEnable(true)
@@ -101,16 +107,26 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
         // if (!Utils.isSimulation()){
-            // for (SwerveModule module : this.Modules){
-            //     module.getDriveMotor().getConfigurator().apply(kDriveConfig);
-            //     module.getSteerMotor().getConfigurator().apply(kTurnConfig);
+            for (SwerveModule module : this.Modules){
+                module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+
+                
+
+            //     // TalonUtils.addMotor(module.getSteerMotor());
+            //     // module.getSteerMotor().getConfigurator().apply(kTurnConfig);
             //     // orchestra.addInstrument(module.getDriveMotor());
             //     // orchestra.addInstrument(module.getSteerMotor());
-            // }
+            }
             // orchestra.loadMusic("music/siren.chrp");
         // }
 
+        // System.out.println("configure orchestra: " + TalonUtils.configureOrchestra("music/sirens.chrp"));
+
         SmartDashboard.putData("field", this.field);
+
+        SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);
+        SmartDashboard.putNumber("predict heading pid threshold", kPredictThreshold);
+        SmartDashboard.putNumber("predict heading pid higher", kHigherPredictCoeff);
     }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
@@ -119,15 +135,25 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
         // if (!Utils.isSimulation()){
-            // for (SwerveModule module : this.Modules){
-            //     module.getDriveMotor().getConfigurator().apply(kDriveConfig);
-            //     module.getSteerMotor().getConfigurator().apply(kTurnConfig);
+            for (SwerveModule module : this.Modules){
+                module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+
+            //     // TalonUtils.addMotor(module.getSteerMotor());
+            //     // module.getSteerMotor().getConfigurator().apply(kTurnConfig);
             //     // orchestra.addInstrument(module.getDriveMotor());
             //     // orchestra.addInstrument(module.getSteerMotor());
-            // }
+            }
             // orchestra.loadMusic("music/siren.chrp");
         // }
+        // System.out.println("configure orchestra: " + TalonUtils.configureOrchestra("music/sirens.chrp"));
+
         SmartDashboard.putData("field", this.field);
+        SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);
+
+        SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);
+        SmartDashboard.putNumber("predict heading pid threshold", kPredictThreshold);
+        SmartDashboard.putNumber("predict heading pid higher", kHigherPredictCoeff);
+
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -141,7 +167,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
 
         AutoBuilder.configureHolonomic(
-            ()->this.getState().Pose, // Supplier of current robot pose
+            ()-> this.getPose(), // Supplier of current robot pose
             this::seedFieldRelative,  // Consumer for seeding pose against auto
             this::getCurrentRobotChassisSpeeds,
             (speeds)->this.setControl(autoRequest.withSpeeds(speeds)), // Consumer of ChassisSpeeds to drive the robot
@@ -164,6 +190,21 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public ChassisSpeeds getCurrentRobotChassisSpeeds() {
         return m_kinematics.toChassisSpeeds(getState().ModuleStates);
+    }
+
+    public Pose2d getPose(){
+        if (Shooter.getInstance().tagDetected()){
+            Pose2d pose = new Pose2d(
+                Shooter.getInstance().getCordinates()[0],
+                Shooter.getInstance().getCordinates()[1],
+                this.getState().Pose.getRotation()
+            );
+
+            this.seedFieldRelative(pose);
+            return pose;
+        }
+        
+         return this.getState().Pose;
     }
 
     private void startSimThread() {
@@ -218,8 +259,35 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Command goToPose(Pose2d pose){
         return AutoBuilder.pathfindToPose(pose, kConstraints);
     }
+
+    public double getPredictHeadingDegrees(){
+        // return this.getCurrentHeadingDegrees() + SmartDashboard.getNumber("predict heading pid coeff", kPredictAngleCoeff) * this.getRotationRate();
+        // double currentSpeed = this.getRotationRate();
+        // double threshold = SmartDashboard.getNumber("predict heading pid threshold", kPredictAngleCoeff);
+        // double lower = SmartDashboard.getNumber("predict heading pid coeff", kPredictAngleCoeff);
+        // double higher = SmartDashboard.getNumber("predict heading pid higher", kHigherPredictCoeff);
+
+        // double extra = 0;
+
+        // if (currentSpeed > threshold) {extra = higher;}
+        // else { extra = lower;}
+
+        // SmartDashboard.putNumber("current predict", extra);
+        // SmartDashboard.putNumber("threshold", threshold);
+
+        // return this.getCurrentHeadingDegrees() + extra * currentSpeed;
+
+        return this.getCurrentHeadingDegrees();
+    }
     public double getRotationRate(){
         return this.getPigeon2().getRate();
+    }
+
+    public void configureChrp(String filename){
+        for (SwerveModule module : this.Modules){
+            TalonUtils.addMotor(module.getDriveMotor());
+        }
+        System.out.println("enable chrp?: " + TalonUtils.configureOrchestra("music/sirens.chrp"));
     }
 
     // public void toggleChrp(){
@@ -257,6 +325,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     @Override
     public void periodic(){
         this.field.setRobotPose(this.getState().Pose);
+        SmartDashboard.putNumber("drivetrain rotation rate", this.getRotationRate());
         // posePublisher.set(this.getState().Pose);
         SmartDashboard.putNumber("field heading", this.getState().Pose.getRotation().getDegrees());
     }

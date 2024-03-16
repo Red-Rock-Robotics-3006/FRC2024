@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 2.75,
+      "y": 7
+    },
+    "rotation": -1.4817233497804592e-25
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "4N4"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "4Note Follow Choreo",
+  "choreoAuto": true
+}

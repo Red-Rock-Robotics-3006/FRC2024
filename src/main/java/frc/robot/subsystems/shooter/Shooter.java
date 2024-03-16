@@ -33,21 +33,21 @@ public class Shooter extends SubsystemBase {
 
 
     private static Shooter instance = null;
-    private CANSparkFlex leftShooter = new CANSparkFlex(Constants.Shooter.LEFT_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
-    private CANSparkFlex rightShooter = new CANSparkFlex(Constants.Shooter.RIGHT_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
+    private CANSparkFlex topShooter = new CANSparkFlex(Constants.Shooter.TOP_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
+    private CANSparkFlex bottomShooter = new CANSparkFlex(Constants.Shooter.BOTTOM_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
     
-    // private CANSparkFlex m_leftAngleMotor = new CANSparkFlex(Constants.Shooter.LEFT_ANGLE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
+    private CANSparkFlex m_leftAngleMotor = new CANSparkFlex(Constants.Shooter.LEFT_ANGLE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
     private CANSparkFlex m_rightAngleMotor = new CANSparkFlex(Constants.Shooter.RIGHT_ANGLE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
 
     private DutyCycleEncoder shooterEncoder = new DutyCycleEncoder(0); // TODO Check that this works
 
-    public static double kP = 0.025; // NOT THE REAL VALUE // TODO FILLER
+    public static double kP = 0.0; // NOT THE REAL VALUE // TODO FILLER
     private double kI = 0.0;
     private double kD = 0.0; // TODO FILLER
-    public static double kF = 0.025; // TODO FILLER
+    public static double kF = 0.0; // TODO FILLER
 
-    public static final double kFinalP = 5.5;
-    public static final double kFinalF = 0.048;
+    public static final double kFinalP = 6; //-5.5
+    public static final double kFinalF = 0; //0.048
 
     private PIDController controller = new PIDController(kP, kI, kD);
 
@@ -121,30 +121,34 @@ public class Shooter extends SubsystemBase {
     private final double HIGH_ENCODER = 0.69; // 67.5 degrees
 
 
+    public static final double kTopShooterAmpSpeed = 0.15;
+    public static final double kBottomShooterAmpSpeed = 0.25;
+    public static final double kAmpAngle = 47;
+
 
     private Shooter() {
         this.setName("Shooter");
         this.register();
 
-        this.leftShooter.restoreFactoryDefaults();
-        this.leftShooter.setInverted(true);
-        this.leftShooter.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        this.leftShooter.setSmartCurrentLimit(Constants.Shooter.SHOOT_CURRENT_LIMIT);
-        this.leftShooter.burnFlash();
+        this.topShooter.restoreFactoryDefaults();
+        this.topShooter.setInverted(false);
+        this.topShooter.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.topShooter.setSmartCurrentLimit(Constants.Shooter.SHOOT_CURRENT_LIMIT);
+        this.topShooter.burnFlash();
 
-        this.rightShooter.restoreFactoryDefaults();
-        this.rightShooter.setInverted(false);
-        this.rightShooter.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        this.rightShooter.setSmartCurrentLimit(Constants.Shooter.SHOOT_CURRENT_LIMIT);
-        this.rightShooter.burnFlash();
+        this.bottomShooter.restoreFactoryDefaults();
+        this.bottomShooter.setInverted(false);
+        this.bottomShooter.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.bottomShooter.setSmartCurrentLimit(Constants.Shooter.SHOOT_CURRENT_LIMIT);
+        this.bottomShooter.burnFlash();
 
         this.m_rightAngleMotor.restoreFactoryDefaults();
-        this.m_rightAngleMotor.setInverted(true);
+        this.m_rightAngleMotor.setInverted(false);
         this.m_rightAngleMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        // this.m_leftAngleMotor.restoreFactoryDefaults();
-        // this.m_leftAngleMotor.setInverted(false);
-        // this.m_leftAngleMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.m_leftAngleMotor.restoreFactoryDefaults();
+        this.m_leftAngleMotor.setInverted(true);
+        this.m_leftAngleMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         this.isOnBlue = false;
 
@@ -243,8 +247,21 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("TargetX", this.target[0]);
         SmartDashboard.putNumber("TargetY", this.target[1]);
 
-        SmartDashboard.putNumber("left v", leftShooter.getEncoder().getVelocity());
-        SmartDashboard.putNumber("right v", rightShooter.getEncoder().getVelocity());
+        SmartDashboard.putNumber("left v", topShooter.getEncoder().getVelocity());
+        SmartDashboard.putNumber("right v", bottomShooter.getEncoder().getVelocity());
+
+        // SmartDashboard.putNumber("top shooter amp speed", kTopShooterAmpSpeed);
+        // SmartDashboard.putNumber("bottom shooter amp speed", kBottomShooterAmpSpeed);
+        // SmartDashboard.putNumber("amp angle", kAmpAngle);
+    }
+
+    public void runAmpShot() {
+        this.topShooter.set(SmartDashboard.getNumber("top shooter amp speed", kTopShooterAmpSpeed));
+        this.bottomShooter.set(SmartDashboard.getNumber("bottom shooter amp speed", kBottomShooterAmpSpeed));
+    }
+
+    public void runAmpAngle() {
+        this.setTarget(SmartDashboard.getNumber("amp angle", kAmpAngle));
     }
 
 
@@ -537,14 +554,23 @@ public class Shooter extends SubsystemBase {
     public void setAngleSpeed(double speed)
     {
         // System.out.println(speed);
-        // this.m_rightAngleMotor.set(speed); // TODO FIX
-        // this.m_leftAngleMotor.set(speed);
+        SmartDashboard.putNumber("shooter pitch speed", speed);
+        this.m_rightAngleMotor.set(speed); // TODO FIX
+        this.m_leftAngleMotor.set(speed);
     }
 
 
     public void setShooterSpeed(double speed)
     {
-        this.leftShooter.set(speed);
-        this.rightShooter.set(speed);
+        this.topShooter.set(speed);
+        this.bottomShooter.set(speed);
+    }
+
+    public boolean tagDetected(){
+        return this.tagInVision;
+    }
+
+    public double[] getCordinates(){
+        return new double[]{this.robotX, this.robotY};
     }
 }

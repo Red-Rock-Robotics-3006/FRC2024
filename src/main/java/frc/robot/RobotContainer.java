@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
+import frc.robot.util.TalonUtils;
 import frc.robot.commands.Autos;
 import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.*;
@@ -43,7 +45,7 @@ public class RobotContainer {
   private double MaxAngularRate = 0.5 * Math.PI; 
 
   public static double kAngle = 60;
-  public static final double kShooterSpeed = 1;
+  public static final double kShooterSpeed = 0.5;
 
   private final CommandXboxController joystick = new CommandXboxController(0);
   private final CommandXboxController mechstick = new CommandXboxController(1);
@@ -127,9 +129,11 @@ public class RobotContainer {
     );
     new Trigger(
       () -> Math.abs(joystick.getRightX()) > kRotationDeadband
-    ).onFalse(
-      new InstantCommand(() -> drivetrain.setTargetHeading(drivetrain.getCurrentHeadingDegrees()), drivetrain)
-    );
+    ).onTrue(
+            new FunctionalCommand(
+        () -> {}, () -> {drivetrain.setTargetHeading(drivetrain.getCurrentHeadingDegrees());}, (interrupted) -> {drivetrain.setTargetHeading(drivetrain.getCurrentHeadingDegrees());}, 
+        () -> {return Math.abs(joystick.getRightX()) < kRotationDeadband && Math.abs(drivetrain.getRotationRate()) < SmartDashboard.getNumber("predict heading pid threshold", CommandSwerveDrivetrain.kPredictThreshold);})
+    );  
 
 
     angle.HeadingController.setPID(CommandSwerveDrivetrain.kHeadingP, CommandSwerveDrivetrain.kHeadingI, CommandSwerveDrivetrain.kHeadingD);
@@ -160,13 +164,20 @@ public class RobotContainer {
       ShooterCommands.setAngle(Shooter.Positions.SUB_LEFT)//Shooter.encoderTarget = 0.7)
     );
     joystick.povRight().onTrue(
-      ShooterCommands.setAngle(Shooter.Positions.SUB_RIGHT)//Shooter.encoderTarget = 0.7)
+      new InstantCommand(
+        () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
+        shooter
+      )
     );
 
     //INTAKE PROCESS BINDINGS
 
     joystick.leftBumper().onTrue(
-      CommandFactory.intakeCommand()//TODO for new shooter this can just be IntakeCommands.intake();
+      new SequentialCommandGroup(
+        IntakeCommands.intake()
+        
+        // IntakeCommands.rollForward()
+      )
     );
     joystick.rightBumper().onTrue(
       new SequentialCommandGroup(
@@ -186,16 +197,24 @@ public class RobotContainer {
     mechstick.x().onTrue(
       ShooterCommands.spinUp()
     );
-    joystick.x().onTrue(
-      IndexCommands.start()
+    mechstick.y().onTrue(
+      ShooterCommands.ampSpinUp()
     );
+    // joystick.x().onTrue(
+    //   IndexCommands.start()
+    // );
+    joystick.x().onTrue(
+      IndexCommands.shootStart()
+    );
+
     joystick.y().onTrue(
       new InstantCommand(() -> shooter.setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), shooter)
     );
     joystick.b().onTrue(
       new SequentialCommandGroup(
         ShooterCommands.stop(),
-        IndexCommands.stop()
+        IndexCommands.stop(),
+        IntakeCommands.stop()
       )
     );
 
@@ -252,7 +271,7 @@ public class RobotContainer {
     );
     mechstick.povRight().onTrue(
       new InstantCommand(
-        () -> led.setPoliceMode(2),
+        () -> led.setPoliceMode(3),
         led
       )
     );
@@ -262,6 +281,26 @@ public class RobotContainer {
         led
       )
     );
+
+    // mechstick.povDown().onTrue(
+    //   new InstantCommand(() -> TalonUtils.play())
+    // );
+
+    // mechstick.povUp().onTrue(
+    //   new InstantCommand(() -> TalonUtils.stop())
+    // );
+
+    // mechstick.povDown().onTrue(
+    //   new InstantCommand(() -> TalonUtils.stop())
+    // );
+
+    //TEST BINDINGS
+
+    // shooter.setDefaultCommand(
+    //   new RunCommand(
+    //     () -> shooter.setAngleSpeed((joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis()) / 10), 
+    //     shooter)
+    // );
 
 
 
@@ -293,6 +332,8 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("shoot angle", kAngle);
     SmartDashboard.putNumber("shooter test speed", kShooterSpeed);
+
+    SmartDashboard.putNumber("roll forward time", Intake.kRollForwardTime);
   }
 
   public RobotContainer() {
@@ -304,6 +345,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("kP", Shooter.kFinalP); // -1.1
     SmartDashboard.putNumber("encoder target", 0.7);
     SmartDashboard.putNumber("shooter target", 45);
+
+    // drivetrain.configureChrp("music/sirens.chrp");
   } 
 
   public void configurePathPlanner(){

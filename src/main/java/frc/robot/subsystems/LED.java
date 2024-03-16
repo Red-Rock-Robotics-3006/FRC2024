@@ -19,10 +19,12 @@ public class LED extends SubsystemBase{
     private enum State {RESTING, NOTE_DETECTED, HOMING_NOTE, HAS_NOTE, HOMING_APRILTAG}
     private State RobotState = State.RESTING;
 
-    private boolean policeModeEnabled = false;
+    private boolean policeModeEnabled = true;
     private int policeMode = 0;
     private int policeModeControl1 = 0;
     private int policeModeControl2 = 0;
+    private int policeModeControl3 = 0;
+    private int policeModeColorControl3 = 0;
     private int policeModeConfigControl2 = 0;
 
     private final Color NOTE_ORANGE = new Color(255, 15, 0);
@@ -128,7 +130,7 @@ public class LED extends SubsystemBase{
                     break;
                 case HAS_NOTE:
                     blinkControl++;
-                    if (blinkControl % 30 < 15) this.setLights(NOTE_ORANGE);
+                    if (blinkControl % 14 < 7) this.setLights(NOTE_ORANGE);
                     else this.setLights(OFF);
                     break;
 
@@ -189,6 +191,32 @@ public class LED extends SubsystemBase{
                     if (policeModeControl2 == 16) {
                         policeModeConfigControl2++;
                         policeModeControl2 = 0;
+                    }
+                }
+            }
+
+            else if (policeMode == 3) {//three flashes each color on two halves
+                policeModeControl3++;
+                if (policeModeColorControl3 % 2 == 0) {
+                    if (policeModeControl3 % 8 == 0) {
+                        this.setLights(0, 8, BLUE);
+                        this.setLights(16, 24, BLUE);
+                    }
+                    else if (policeModeControl3 % 4 == 0) this.setLights(OFF);
+                    if (policeModeControl3 == 16) {
+                        policeModeColorControl3++;
+                        policeModeControl3 = 0;
+                    }
+                }
+                else {
+                    if (policeModeControl3 % 8 == 0) {
+                        this.setLights(8, 16, RED);
+                        this.setLights(24, buffer.getLength(), RED);
+                    }
+                    else if (policeModeControl3 % 4 == 0) this.setLights(OFF);
+                    if (policeModeControl3 == 16) {
+                        policeModeColorControl3++;
+                        policeModeControl3 = 0;
                     }
                 }
             }

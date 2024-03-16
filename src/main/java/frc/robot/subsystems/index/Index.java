@@ -17,6 +17,11 @@ public class Index extends SubsystemBase{
     
     public static final double kReverseTime = 0.1;
 
+    public static final double kIndexSpeed = 0.4;
+    public static final double kRollerSpeed = 0.95;
+
+    public static final double kIndexShootSpeed = 0.12;
+
     private boolean isTransferring = false;
 
     private Index() {
@@ -32,6 +37,10 @@ public class Index extends SubsystemBase{
         this.m_rollerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         SmartDashboard.putNumber("index reverse time", kReverseTime);
+
+        SmartDashboard.putNumber("index speed", kIndexSpeed);
+        SmartDashboard.putNumber("roller speed", kRollerSpeed);
+        SmartDashboard.putNumber("index shoot speed", kIndexShootSpeed);
     }
 
     public void setTransferring(boolean b) {
@@ -48,7 +57,13 @@ public class Index extends SubsystemBase{
     }
 
     public void startTransfer() {
-        this.setSpeed(0.85);
+        this.m_rollerMotor.set(SmartDashboard.getNumber("index speed", kRollerSpeed));
+        this.m_indexMotor.set(SmartDashboard.getNumber("roller speed", kIndexSpeed));
+    }
+
+    public void shootTransfer(){
+        this.m_rollerMotor.set(SmartDashboard.getNumber("roller speed", kRollerSpeed));
+        this.m_indexMotor.set(SmartDashboard.getNumber("index shoot speed", kIndexShootSpeed));
     }
 
     public void stopTransfer() {

@@ -13,6 +13,13 @@ public class IndexCommands {
         );
     }
 
+    public static Command shootStart() {
+        return new InstantCommand(
+            () -> index.shootTransfer(),
+            index
+        );
+    }
+
     public static Command stop() {
         return new InstantCommand(
             () -> index.stopTransfer(),

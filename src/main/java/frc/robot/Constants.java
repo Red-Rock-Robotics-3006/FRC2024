@@ -19,15 +19,15 @@ public final class Constants {
     public static final int LED_CHANNEL_ID = 9;
   }
   public static class Shooter {
-    public static final int LEFT_MOTOR_ID = 42;
-    public static final int RIGHT_MOTOR_ID = 59;
-    public static final int LEFT_ANGLE_MOTOR_ID = 13;
-    public static final int RIGHT_ANGLE_MOTOR_ID = 45;
+    public static final int TOP_MOTOR_ID = 42;
+    public static final int BOTTOM_MOTOR_ID = 59;
+    public static final int LEFT_ANGLE_MOTOR_ID = 45;
+    public static final int RIGHT_ANGLE_MOTOR_ID = 13;
     public static final int SHOOT_CURRENT_LIMIT = 80;
   }
   public static class Settings {
     public static final boolean INTAKE_HOMING_ENABLED = false;
     public static final boolean SHOOTER_HOMING_ENABLED = false;
-    public static final boolean POLICE_MODE_ENABLED = false;
+    public static final boolean POLICE_MODE_ENABLED = true;
   }
 }

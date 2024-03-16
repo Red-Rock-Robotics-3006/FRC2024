@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterCommands;
 import frc.robot.subsystems.shooter.Shooter.Positions;
@@ -88,7 +89,7 @@ public class Autos {
             // ),
             // TunerConstants.DriveTrain.getAuto("MidNote")
             new ParallelCommandGroup(
-                CommandFactory.intakeCommand(),
+                IntakeCommands.intake(),
                 TunerConstants.DriveTrain.getAuto("MidNote")
             )
         );
@@ -133,7 +134,7 @@ public class Autos {
                 index,
                 shooter
             ),
-            CommandFactory.intakeCommand(),
+            IntakeCommands.intake(),
             TunerConstants.DriveTrain.getAuto("MidNote"),
             new WaitCommand(0.3),
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
@@ -168,7 +169,7 @@ public class Autos {
                 index,
                 shooter
             ),
-            CommandFactory.intakeCommand(),
+            IntakeCommands.intake(),
             TunerConstants.DriveTrain.getAuto("MidNote"),
             new WaitCommand(0.3),
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
@@ -384,12 +385,12 @@ public class Autos {
 
     public static Command m_4_1p_3w(){
         return new SequentialCommandGroup(
-            drivetrain.getAuto("4NF_1"),
-            drivetrain.getAuto("4NF_2"),
-            drivetrain.getAuto("4NF_3"),
-            drivetrain.getAuto("4NF_4"),
-            drivetrain.getAuto("4NF_5"),
-            drivetrain.getAuto("4NF_6")
+            drivetrain.getAuto("4NFC_1"),
+            drivetrain.getAuto("4NFC_2"),
+            drivetrain.getAuto("4NFC_3"),
+            drivetrain.getAuto("4NFC_4"),
+            drivetrain.getAuto("4NFC_5"),
+            drivetrain.getAuto("4NFC_6")
         );
     }
 
@@ -400,40 +401,40 @@ public class Autos {
             CommandFactory.shootCenterCommand(),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
-                    CommandFactory.intakeCommand(),
-                    ShooterCommands.spinUp()
+                    IntakeCommands.intake(),
+                    ShooterCommands.spinUp(),
+                    new WaitCommand(kWaitTime)
                 ),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("4NF_1"),
                     drivetrain.getAuto("4NF_2")
                 )
             ),
-            new WaitCommand(kWaitTime),
             ShooterCommands.shoot(),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
-                    CommandFactory.intakeCommand(),
-                    ShooterCommands.spinUp()
+                    IntakeCommands.intake(),
+                    ShooterCommands.spinUp(),
+                    new WaitCommand(kWaitTime)
                 ),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("4NF_3"),
                     drivetrain.getAuto("4NF_4")
                 )
             ),
-            new WaitCommand(kWaitTime),
             ShooterCommands.shoot(),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
-                    CommandFactory.intakeCommand(),
-                    ShooterCommands.spinUp()
+                    IntakeCommands.intake(),
+                    ShooterCommands.spinUp(),
+                    new WaitCommand(kWaitTime)
                 ),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("4NF_5"),
                     drivetrain.getAuto("4NF_6")
                 )
             ),
-            new WaitCommand(kWaitTime),
-            CommandFactory.shootCenterCommand()
+            ShooterCommands.shoot()
         );
     }
 

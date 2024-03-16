@@ -1,5 +1,6 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.index.TOFSensor;
@@ -36,12 +37,20 @@ public class IntakeCommands {
 
     public static Command intake() {
         return new FunctionalCommand(
-            () -> {intake.startIntake(); index.startTransfer(); shooter.presetShoot(Shooter.Positions.SUB_LEFT);}, 
+            () -> {intake.startIntake(); index.startTransfer(); shooter.presetShoot(Shooter.Positions.SUB_CENTER);}, 
             () -> {},
             (interrupted) -> {intake.stopIntake(); index.stopTransfer();}, 
             () -> sensor.hasNote(),
             intake, index, sensor, shooter
         );
+    }
+
+    public static Command rollForward() {
+        return new StartEndCommand(
+            () -> index.startTransfer(),
+            () -> index.stopTransfer(),
+            index
+        ).withTimeout(SmartDashboard.getNumber("roll forward time", Intake.kRollForwardTime));
     }
 
     public static Command toggleHoming() {
