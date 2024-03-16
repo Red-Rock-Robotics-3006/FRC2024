@@ -20,10 +20,10 @@ public class ShooterCommands {
         //     () -> {index.stopTransfer(); shooter.setShooterSpeed(0);}, 
         //     index).withTimeout(Autos.kShootTime);
         return new FunctionalCommand(
-            () -> index.startTransfer(), 
+            () -> index.shootTransfer(), 
             () -> {}, 
-            (interrupted) -> {index.stopTransfer(); shooter.setShooterSpeed(0);}, 
-            () -> sensor.hasNote(), 
+            (interrupted) -> {shooter.stow(); index.stopTransfer();}, 
+            () -> !sensor.hasNote(), 
             index, shooter, sensor);
     }
 

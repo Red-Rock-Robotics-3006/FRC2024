@@ -37,7 +37,7 @@ public class IntakeCommands {
 
     public static Command intake() {
         return new FunctionalCommand(
-            () -> {intake.startIntake(); index.startTransfer(); shooter.presetShoot(Shooter.Positions.SUB_CENTER);}, 
+            () -> {intake.startIntake(); index.startTransfer(); shooter.presetShoot(Shooter.Positions.INTAKE);}, 
             () -> {},
             (interrupted) -> {intake.stopIntake(); index.stopTransfer();}, 
             () -> sensor.hasNote(),

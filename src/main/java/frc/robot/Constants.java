@@ -9,7 +9,7 @@ public final class Constants {
     public static final int INTAKE_MOTOR_ID = 17;
   }
   public static class Index {
-    public static final int INDEX_TOF_SENSOR_ID = 0;
+    public static final int INDEX_TOF_SENSOR_ID = 46;
     public static final int INDEX_MOTOR_ID = 60;
     public static final int ROLLER_MOTOR_ID = 51;
     public static final int ROLLER_CURRENT_LIMIT = 60;
@@ -27,7 +27,7 @@ public final class Constants {
   }
   public static class Settings {
     public static final boolean INTAKE_HOMING_ENABLED = false;
-    public static final boolean SHOOTER_HOMING_ENABLED = false;
+    public static final boolean SHOOTER_HOMING_ENABLED = true;
     public static final boolean POLICE_MODE_ENABLED = true;
   }
 }

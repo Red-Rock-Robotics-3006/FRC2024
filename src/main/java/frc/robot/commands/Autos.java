@@ -399,42 +399,48 @@ public class Autos {
     public static Command m_4note(){
         return new SequentialCommandGroup(
             CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     IntakeCommands.intake(),
-                    ShooterCommands.spinUp(),
-                    new WaitCommand(kWaitTime)
+                    new InstantCommand(() -> shooter.presetShoot(Positions.SUB_LEFT), shooter)
+                    // ShooterCommands.spinUp(),
+                    // new WaitCommand(kWaitTime)
                 ),
                 new SequentialCommandGroup(
-                    drivetrain.getAuto("4NF_1"),
-                    drivetrain.getAuto("4NF_2")
+                    drivetrain.getAuto("4NFC_1"),
+                    drivetrain.getAuto("4NFC_2")
                 )
             ),
             ShooterCommands.shoot(),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     IntakeCommands.intake(),
-                    ShooterCommands.spinUp(),
-                    new WaitCommand(kWaitTime)
+                    new InstantCommand(() -> shooter.presetShoot(Positions.SUB_LEFT), shooter)
+
+                    // ShooterCommands.spinUp(),
+                    // new WaitCommand(kWaitTime)
                 ),
                 new SequentialCommandGroup(
-                    drivetrain.getAuto("4NF_3"),
-                    drivetrain.getAuto("4NF_4")
+                    drivetrain.getAuto("4NFC_3"),
+                    drivetrain.getAuto("4NFC_4")
                 )
             ),
             ShooterCommands.shoot(),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     IntakeCommands.intake(),
-                    ShooterCommands.spinUp(),
-                    new WaitCommand(kWaitTime)
+                    new InstantCommand(() -> shooter.presetShoot(Positions.SUB_LEFT), shooter)
+                    // ShooterCommands.spinUp(),
+                    // new WaitCommand(kWaitTime)
                 ),
                 new SequentialCommandGroup(
-                    drivetrain.getAuto("4NF_5"),
-                    drivetrain.getAuto("4NF_6")
+                    drivetrain.getAuto("4NFC_5"), 
+                    drivetrain.getAuto("4NFC_6")
                 )
             ),
-            ShooterCommands.shoot()
+            ShooterCommands.shoot(),
+            ShooterCommands.stop()
         );
     }
 

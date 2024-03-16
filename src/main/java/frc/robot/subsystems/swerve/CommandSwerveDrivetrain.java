@@ -11,6 +11,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathConstraints;
@@ -36,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.subsystems.swerve.generated.*;
 import frc.robot.util.TalonUtils;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.shooter.Localization;
 import frc.robot.subsystems.shooter.Shooter;
 
 /**
@@ -57,9 +59,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     // private Orchestra orchestra = new Orchestra();
 
-    private static final TalonFXConfiguration kDriveConfig = new TalonFXConfiguration()
+    public static final TalonFXConfiguration kDriveConfig = new TalonFXConfiguration()
             .withCurrentLimits(new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(80)
+                .withSupplyCurrentLimit(60  )
                 .withSupplyCurrentLimitEnable(true)
                 .withStatorCurrentLimit(120)
                 .withStatorCurrentLimitEnable(true)
@@ -107,16 +109,18 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
         // if (!Utils.isSimulation()){
-            for (SwerveModule module : this.Modules){
-                module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+            // for (SwerveModule module : this.Modules){
+            //     module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+            //     module.getDriveMotor().getConfigurator().apply(TunerConstants.driveGains);
+
 
                 
 
-            //     // TalonUtils.addMotor(module.getSteerMotor());
-            //     // module.getSteerMotor().getConfigurator().apply(kTurnConfig);
-            //     // orchestra.addInstrument(module.getDriveMotor());
-            //     // orchestra.addInstrument(module.getSteerMotor());
-            }
+            // //     // TalonUtils.addMotor(module.getSteerMotor());
+            // //     // module.getSteerMotor().getConfigurator().apply(kTurnConfig);
+            // //     // orchestra.addInstrument(module.getDriveMotor());
+            // //     // orchestra.addInstrument(module.getSteerMotor());
+            // }
             // orchestra.loadMusic("music/siren.chrp");
         // }
 
@@ -135,14 +139,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             startSimThread();
         }
         // if (!Utils.isSimulation()){
-            for (SwerveModule module : this.Modules){
-                module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+            // for (SwerveModule module : this.Modules){
+            //     module.getDriveMotor().getConfigurator().apply(kDriveConfig);
+            //     module.getDriveMotor().getConfigurator().apply(TunerConstants.driveGains);
 
-            //     // TalonUtils.addMotor(module.getSteerMotor());
-            //     // module.getSteerMotor().getConfigurator().apply(kTurnConfig);
-            //     // orchestra.addInstrument(module.getDriveMotor());
-            //     // orchestra.addInstrument(module.getSteerMotor());
-            }
+            // //     // TalonUtils.addMotor(module.getSteerMotor());
+            // //     // module.getSteerMotor().getConfigurator().apply(kTurnConfig);
+            // //     // orchestra.addInstrument(module.getDriveMotor());
+            // //     // orchestra.addInstrument(module.getSteerMotor());
+            // }
             // orchestra.loadMusic("music/siren.chrp");
         // }
         // System.out.println("configure orchestra: " + TalonUtils.configureOrchestra("music/sirens.chrp"));
@@ -193,10 +198,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Pose2d getPose(){
-        if (Shooter.getInstance().tagDetected()){
+        if (Localization.tagInVision()){
             Pose2d pose = new Pose2d(
-                Shooter.getInstance().getCordinates()[0],
-                Shooter.getInstance().getCordinates()[1],
+                Localization.getPose().getX(),
+                Localization.getPose().getY(),
                 this.getState().Pose.getRotation()
             );
 
@@ -258,6 +263,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command goToPose(Pose2d pose){
         return AutoBuilder.pathfindToPose(pose, kConstraints);
+    }
+
+    public void configureCurrentLimits(){
+        System.out.println(this.ModuleCount);
+        for (int i = 0; i < this.ModuleCount; i++){
+            this.Modules[i].getDriveMotor().getConfigurator().apply(kDriveConfig);
+            if (i == 1 || i == 3){
+                this.Modules[i].getDriveMotor().setInverted(true);
+            }
+            this.Modules[i].getDriveMotor().setNeutralMode(NeutralModeValue.Brake);
+        }
     }
 
     public double getPredictHeadingDegrees(){

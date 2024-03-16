@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.index.TOFSensor;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class LED extends SubsystemBase{
 
@@ -15,11 +16,12 @@ public class LED extends SubsystemBase{
     private AddressableLEDBuffer buffer = new AddressableLEDBuffer(Constants.LED.NUM_LEDS);
 
     private TOFSensor sensor = TOFSensor.getInstance();
+    private Shooter shooter = Shooter.getInstance();
 
-    private enum State {RESTING, NOTE_DETECTED, HOMING_NOTE, HAS_NOTE, HOMING_APRILTAG}
+    private enum State {RESTING, NOTE_DETECTED, HOMING_NOTE, HAS_NOTE, HOMING_APRILTAG, IN_RANGE}
     private State RobotState = State.RESTING;
 
-    private boolean policeModeEnabled = true;
+    private boolean policeModeEnabled = false;
     private int policeMode = 0;
     private int policeModeControl1 = 0;
     private int policeModeControl2 = 0;
@@ -120,7 +122,9 @@ public class LED extends SubsystemBase{
     int blinkControl = 0;
     @SuppressWarnings("unused")
     public void periodic() {
-        if (sensor.hasNote()) this.setState(State.HAS_NOTE);
+        if (shooter.getHoming() && shooter.inRange()) this.setState(State.IN_RANGE);
+        else if (shooter.getHoming()) this.setState(State.HOMING_APRILTAG);
+        else if (sensor.hasNote()) this.setState(State.HAS_NOTE);
         else this.setState(State.RESTING);
 
         if (!policeModeEnabled) {
@@ -133,6 +137,16 @@ public class LED extends SubsystemBase{
                     if (blinkControl % 14 < 7) this.setLights(NOTE_ORANGE);
                     else this.setLights(OFF);
                     break;
+                case HOMING_APRILTAG:
+                    blinkControl++;
+                    if (blinkControl % 14 < 7) this.setLights(BLUE);
+                    else this.setLights(OFF);
+                    break;
+                case IN_RANGE:
+                    blinkControl++;
+                    if (blinkControl % 8 < 4) this.setLights(BLUE);
+                    else this.setLights(OFF);
+                    break;
 
                 //other states are currently unused
                 case NOTE_DETECTED:
@@ -143,12 +157,6 @@ public class LED extends SubsystemBase{
                 case HOMING_NOTE:
                     for (int i = 0; i < buffer.getLength(); i++) {
                         this.buffer.setRGB(i, 255, 183, 3);//cone yellow
-                    }
-                    break;
-                
-                case HOMING_APRILTAG:
-                    for (int i = 0; i < buffer.getLength(); i++) {
-                        this.buffer.setRGB(i, 30, 225, 30);//limelight green
                     }
                     break;
             }

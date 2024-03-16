@@ -32,8 +32,7 @@ import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.index.IndexCommands;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeCommands;
-import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.ShooterCommands;
+import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 
@@ -72,6 +71,7 @@ public class RobotContainer {
   public LED led = LED.getInstance();
   public Shooter shooter = Shooter.getInstance();
   public Climber climber = Climber.getInstance();
+  public Localization localization = new Localization();
 
   private double targetHeadingD = 0;
 
@@ -165,7 +165,7 @@ public class RobotContainer {
     );
     joystick.povRight().onTrue(
       new InstantCommand(
-        () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
+        () -> shooter.setHoming(false),//shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
         shooter
       )
     );
@@ -204,7 +204,7 @@ public class RobotContainer {
     //   IndexCommands.start()
     // );
     joystick.x().onTrue(
-      IndexCommands.shootStart()
+      ShooterCommands.shoot()
     );
 
     joystick.y().onTrue(
@@ -215,6 +215,12 @@ public class RobotContainer {
         ShooterCommands.stop(),
         IndexCommands.stop(),
         IntakeCommands.stop()
+      )
+    );
+    joystick.povLeft().onTrue(
+      new InstantCommand(
+        () -> shooter.setHoming(true),
+        shooter
       )
     );
 
@@ -326,7 +332,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("heading d", 0.2);
 
     SmartDashboard.putNumber("homing p", 12);
-    SmartDashboard.putNumber("homing d", 0.01);
+    SmartDashboard.putNumber("homing d", 0.2);
 
     SmartDashboard.putNumber("amp speed", 0.12);
 
@@ -345,6 +351,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("kP", Shooter.kFinalP); // -1.1
     SmartDashboard.putNumber("encoder target", 0.7);
     SmartDashboard.putNumber("shooter target", 45);
+
+
+    drivetrain.configureCurrentLimits();
 
     // drivetrain.configureChrp("music/sirens.chrp");
   } 
@@ -376,9 +385,14 @@ public class RobotContainer {
    * Called in the main Robot class
    */
   public void updateDashboard(){
-
-    angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 4.25));
-    angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.2));
+    if (Constants.Settings.SHOOTER_HOMING_ENABLED && shooter.getHoming()) {
+      angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 12));
+      angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.2));
+    }
+    else {
+      angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
+      angle.HeadingController.setD(SmartDashboard.getNumber("heading d", 0.2));
+    }
   
     SmartDashboard.putNumber("current p", angle.HeadingController.getP());
     SmartDashboard.putNumber("current d", angle.HeadingController.getD());
