@@ -7,27 +7,37 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class RobotContainer {
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  // private final Shooter m_shooter = Shooter.getInstance();
+  // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+  private final Shooter m_shooter = Shooter.getInstance();
 
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   public RobotContainer() {
     configureBindings();
+    SmartDashboard.putNumber("kF", 0.046);
+    SmartDashboard.putNumber("kP", 0);
+    SmartDashboard.putNumber("encoder target", 0.7);
   }
 
   private void configureBindings() {
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
+    // new Trigger(m_exampleSubsystem::exampleCondition)
+    //     .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
+    m_driverController.b().onTrue(new InstantCommand(() -> {m_shooter.presetShoot(Shooter.Positions.SUB_CENTER);}));
+    m_driverController.a().onTrue(new InstantCommand(() -> {
+      m_shooter.setAngleSpeed(0.1);
+    })).onFalse(new InstantCommand(() -> {
+      m_shooter.setAngleSpeed(0);
+    }));  
   }
 
   public Command getAutonomousCommand() {

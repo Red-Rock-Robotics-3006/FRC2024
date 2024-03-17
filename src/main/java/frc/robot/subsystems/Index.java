@@ -31,8 +31,8 @@ public class Index extends SubsystemBase{
     }
 
     public void periodic() {
-        if (this.intaking && this.hasNote())
-            this.stopTransfer();
+        // if (this.intaking && this.hasNote())
+        //     this.stopTransfer();
     }
 
     public void setSpeed(double speed) {

@@ -48,7 +48,7 @@ public final class Constants {
     public static final int LEFT_ANGLE_MOTOR_ID = 13;
     public static final int RIGHT_ANGLE_MOTOR_ID = 45;
 
-    public static final double CENTER_ANGLE = 0.0; // TODO FILLER
+    public static final double CENTER_ANGLE = 45.0; // TODO FILLER
     public static final double LEFT_ANGLE = 0.0; // TODO FILLER
     public static final double RIGHT_ANGLE = 0.0; // TODO FILLER
     public static final double PODIUM_ANGLE = 0.0; // TODO FILLER

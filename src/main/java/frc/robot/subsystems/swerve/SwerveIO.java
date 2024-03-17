@@ -11,6 +11,5 @@ public interface SwerveIO {
     public double getTargetHeading();
     // public double getCurrentHeadingDegrees();
     public void setTargetHeading(double degrees);
-    public boolean isStill();
     // public void setDriveState(DriveState state);
 }
