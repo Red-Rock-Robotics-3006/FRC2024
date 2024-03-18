@@ -397,7 +397,6 @@ public class RobotContainer {
   public void configureSelector(){
     m_chooser.setDefaultOption("no auto", Commands.print("good luck drivers!"));
     m_chooser.addOption("straight", drivetrain.getAuto("StraightLineAuto"));
-    // m_chooser.addOption("four note", runAuto);
     m_chooser.addOption("alliance neutral: one note pick up mid", Autos.oneNoteGrabAuto());
     m_chooser.addOption("blue: one note source side", Autos.oneNoteSourceSide());
     m_chooser.addOption("alliance neutral: two note", Autos.twoNoteAuto());
@@ -417,11 +416,12 @@ public class RobotContainer {
     m_chooser.addOption("DO NOT RUN: max ver", Autos.superMaxAuto());
     //DO NOT RUN THESE THREE AUTOS
 
-    m_chooser.addOption("alliance neutral: really a fournote this time", Autos.m_4note());
+    m_chooser.addOption("FOUR NOTE", Autos.m_4note());
     m_chooser.addOption("4note paths: dont run at comp", drivetrain.getAuto("4N_P"));
     m_chooser.addOption("4note paths not pp", Autos.m_4_1p_3w());
     m_chooser.addOption("blue: 3 note source side", drivetrain.getAuto("3NS_1B"));
     m_chooser.addOption("blue: 3 note source side alt", drivetrain.getAuto("3NS_1B_Alt"));
+    m_chooser.addOption("three note paths", Autos.m_3note_paths());
                                                                                                                                                                                                                                                                                                                                                                                                                 m_chooser.addOption("test", Autos.test());
     
     SmartDashboard.putData("auto chooser", m_chooser);

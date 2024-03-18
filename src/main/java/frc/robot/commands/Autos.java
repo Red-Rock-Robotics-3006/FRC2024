@@ -440,7 +440,16 @@ public class Autos {
         );
     }
 
-    public static Command m_3note() {
+    public static Command m_3note_paths() {
+        return new SequentialCommandGroup(
+            drivetrain.getAuto("3N_CB_1"), 
+            drivetrain.getAuto("3N_CB_2"),
+            drivetrain.getAuto("3N_CB_3"), 
+            drivetrain.getAuto("3N_CB_4")
+        );
+    }
+
+    public static Command m_3note_b() {
         return new SequentialCommandGroup(
             
             //FIRST NOTE
@@ -454,8 +463,8 @@ public class Autos {
                     ShooterCommands.setAngle(Positions.AUTO_SIDES)
                 ),
                 new SequentialCommandGroup(
-                    drivetrain.getAuto("3NF_1"), 
-                    drivetrain.getAuto("3NF_2")
+                    drivetrain.getAuto("3N_CB_1"), 
+                    drivetrain.getAuto("3N_CB_2")
                 )
             ),
             ShooterCommands.shootAuto(),
@@ -467,11 +476,80 @@ public class Autos {
                     ShooterCommands.setAngle(Positions.AUTO_SIDES)
                 ),
                 new SequentialCommandGroup(
-                    drivetrain.getAuto("3NF_3"), 
-                    drivetrain.getAuto("3NF_4")
+                    drivetrain.getAuto("3N_CB_3"), 
+                    drivetrain.getAuto("3N_CB_4")
                 )
             ),
             ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_3note_alt_b() {
+        return new SequentialCommandGroup(
+            
+            //FIRST NOTE
+            CommandFactory.shootSideCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.AUTO_SIDES)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CB_1"), 
+                    drivetrain.getAuto("3N_CB_2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.AUTO_SIDES)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_WB_3"), 
+                    drivetrain.getAuto("3N_WB_4")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_2note_1grab_b() {
+        return new SequentialCommandGroup(
+            
+            //FIRST NOTE
+            CommandFactory.shootSideCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.AUTO_SIDES)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CB_1"), 
+                    drivetrain.getAuto("3N_CB_2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE (grab)
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("3N_CB_3")
+            ),
 
             //END
             ShooterCommands.stop()
