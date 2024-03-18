@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.3,
-      "y": 5.53
+      "x": 0.77,
+      "y": 4.42
     },
-    "rotation": -8.701689032576804e-27
+    "rotation": -58.72504383198391
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4N3"
+            "pathName": "3N_CB_3"
           }
         }
       ]
     }
   },
-  "folder": null,
-  "choreoAuto": true
+  "folder": "3 Notes source",
+  "choreoAuto": false
 }

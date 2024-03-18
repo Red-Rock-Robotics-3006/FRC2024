@@ -8,24 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3959954881393342,
-        "y": 3.3024559059103855
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.3517051912848466,
-        "y": 2.0376855589659812
-      },
-      "prevControl": {
-        "x": 1.795717031290415,
-        "y": 2.6055644494748975
-      },
-      "nextControl": {
-        "x": 4.956089798056913,
-        "y": 1.4521437316769061
+        "x": 2.803611425404669,
+        "y": 0.3451635994181082
       },
       "isLocked": false,
       "linkedName": null
@@ -51,7 +35,7 @@
       "rotateFast": false
     },
     {
-      "waypointRelativePos": 1.25,
+      "waypointRelativePos": 0.4,
       "rotationDegrees": 0,
       "rotateFast": false
     }
@@ -59,8 +43,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
-    "maxAcceleration": 1.0,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -72,8 +56,8 @@
   "reversed": false,
   "folder": "3Note Source Paths",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": -58.03550171971015,
     "velocity": 0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
