@@ -57,8 +57,8 @@ public class Index extends SubsystemBase{
     }
 
     public void startTransfer() {
-        this.m_rollerMotor.set(SmartDashboard.getNumber("index speed", kRollerSpeed));
-        this.m_indexMotor.set(SmartDashboard.getNumber("roller speed", kIndexSpeed));
+        this.m_rollerMotor.set(SmartDashboard.getNumber("roller speed", kRollerSpeed));
+        this.m_indexMotor.set(SmartDashboard.getNumber("index speed", kIndexSpeed));
     }
 
     public void shootTransfer(){
