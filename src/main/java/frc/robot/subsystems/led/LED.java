@@ -89,12 +89,12 @@ public class LED extends SubsystemBase{
 
     public void setLights(int start, int end, int r, int g, int b) {
         if (r > 255 || g > 255 || b > 255) {
-            for (int i = start + 1; i <= end; i++) {
+            for (int i = start; i < end; i++) {
                 this.buffer.setRGB(i, 255, 255, 255);
             }
         }
         else {
-            for (int i = start + 1; i <= end; i++) {
+            for (int i = start; i < end; i++) {
                 this.buffer.setRGB(i, r, g, b);
             }
         }
@@ -107,7 +107,7 @@ public class LED extends SubsystemBase{
     }
 
     public void setLights(int start, int end, Color c) {
-        for (int i = start + 1; i < end; i++) {
+        for (int i = start; i < end; i++) {
             buffer.setLED(i, c);
         }
     }
@@ -142,10 +142,10 @@ public class LED extends SubsystemBase{
                 case SCORING_AMP:
                     blinkControl++;
                     if (blinkControl % 14 < 7) {
-                        this.setLights(1, 7, OFF);
-                        this.setLights(8, 15, NOTE_ORANGE);
-                        this.setLights(16, 23, OFF);
-                        this.setLights(24, 29, NOTE_ORANGE);
+                        this.setLights(0, 7, OFF);
+                        this.setLights(7, 15, NOTE_ORANGE);
+                        this.setLights(15, 22, OFF);
+                        this.setLights(22, 30, NOTE_ORANGE);
                     }
                     else this.setLights(OFF);
                     break;
