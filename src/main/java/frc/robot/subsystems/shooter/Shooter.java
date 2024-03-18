@@ -93,12 +93,13 @@ public class Shooter extends SubsystemBase {
     private boolean isOnBlue; // True if on blue alliance, false if on red alliance // TODO get value from smart dashboard or something else
     private boolean hasNote; // If the robot has a note
     private double homingOffset;
+    private double horizontalDistance;
+    private boolean isInRange;
 
     private boolean snapshot; // For toggling snapshots
 
 
     private double[] target;
-    private double horizontalDistance;
 
     public static double encoderTarget = 0.8;
 
@@ -369,13 +370,13 @@ public class Shooter extends SubsystemBase {
 
     public boolean isReady()
     {
-        return this.isAimed();
+        return this.isAimed() && this.inRange();
     }
 
 
     public boolean inRange()
     {
-        return this.horizontalDistance < RANGE;
+        return this.isInRange;
     }
 
     // Private Interface Methods : Methods that allow Shooter to interface with fundamental components / set values
@@ -397,29 +398,32 @@ public class Shooter extends SubsystemBase {
 
     private void setTarget()
     {
-        double xDiff = this.robotX - this.target[0] - 0.1;
+        double xDiff = this.robotX - this.target[0];
         double yDiff = this.robotY - this.target[1];
         double zDiff = this.target[2] - this.SHOOTER_HEIGHT;
 
         
-        this.horizontalDistance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
-        SmartDashboard.putNumber("HDist", this.horizontalDistance);
+        // this.horizontalDistance = Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+        // SmartDashboard.putNumber("HDist", this.horizontalDistance);
         // Set values
         if(Constants.Settings.SHOOTER_HOMING_ENABLED && this.seek)
         {
+            // Only auto aim if the robot is in range
+            if(this.isInRange)
+            {
+                // Calculate robot angle
+                double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff )) - this.homingOffset) % 360; //  + (isOnBlue?0:180)
 
-            // Calculate robot angle
-            double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff )) - this.homingOffset) % 360; //  + (isOnBlue?0:180)
 
-
-            double targetAngle = this.calculateAngle(Math.abs(xDiff), Math.abs(yDiff), zDiff);
-            SmartDashboard.putNumber("Calculated Encoder", this.degreesToPos(targetAngle));
-            SmartDashboard.putNumber("Calculated Angle", targetAngle);
-            SmartDashboard.putNumber("Target Heading", yaw);
-            SmartDashboard.putNumber("Homing Offset", this.homingOffset);
-            SmartDashboard.putBoolean("In Range", this.inRange());
-            if(this.inRange())
+                double targetAngle = this.calculateAngle(Math.abs(xDiff), Math.abs(yDiff), zDiff);
+                SmartDashboard.putNumber("Calculated Encoder", this.degreesToPos(targetAngle));
+                SmartDashboard.putNumber("Calculated Angle", targetAngle);
+                SmartDashboard.putNumber("Target Heading", yaw);
+                SmartDashboard.putNumber("Homing Offset", this.homingOffset);
                 this.setTarget(targetAngle, yaw);
+            }
+            else
+                this.setTarget(STOW_ANGLE); // TODO Change to this.targetPitch
         }
     }
 
@@ -511,31 +515,6 @@ public class Shooter extends SubsystemBase {
         return theta;
     }
 
-    // /**
-    //  * Sets the stored location of the robot using data from apriltags.
-    //  * @param pose the array containing position and orientation of the robot
-    //  */
-    // public void setLocation(double[] pose)
-    // {
-    //     this.setLocation(pose[0], pose[1]);
-    // }
-
-    // /**
-    //  * Sets the stored location of the robot.
-    //  * @param botX the robot's field relative x coordinate
-    //  * @param botY the robot's field relative y coordinate
-    //  * @param botYaw the robot's field relative yaw
-    //  */
-    // public void setLocation(double botX, double botY)
-    // {
-    //     // SmartDashboard.putNumber("TrueX", botX);
-    //     // SmartDashboard.putNumber("TrueY", botY);
-    //     // SmartDashboard.putNumber("OffsetX", this.field[0]/2);
-    //     // SmartDashboard.putNumber("OffsetY", this.field[1]/2);
-    //     this.robotX = botX; // - this.field[0]/2;
-    //     this.robotY = botY; // - this.field[1]/2;
-    // }
-
 
     /**
      * Sets the target angle of the shooter and target rotation of the robot.
@@ -585,5 +564,10 @@ public class Shooter extends SubsystemBase {
         this.tagInVision = Localization.tagInVision();
         this.robotX = pose.getX();
         this.robotY = pose.getY();
+        double h = Math.abs(this.robotX - this.target[0]);
+        double y = Math.abs(this.robotY - this.target[1]);
+        this.horizontalDistance = Math.sqrt(h*h + y*y);
+        this.isInRange = this.horizontalDistance < RANGE;
+        SmartDashboard.putBoolean("In Range", this.inRange());
     }
 }
