@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.8221644973960404,
+      "y": 4.42669621430541
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TUTUTUDUMAXVERSTAPPEN"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "DONOTRUNTHESEAUTOS",
+  "choreoAuto": false
+}

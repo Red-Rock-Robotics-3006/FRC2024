@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.9626945359454185,
+      "y": 4.133925300660873
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CrescendoGrandPrix"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "DONOTRUNTHESEAUTOS",
+  "choreoAuto": false
+}

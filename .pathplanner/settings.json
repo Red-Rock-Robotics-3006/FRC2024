@@ -1,0 +1,22 @@
+{
+  "robotWidth": 0.9,
+  "robotLength": 0.9,
+  "holonomicMode": true,
+  "pathFolders": [
+    "3Note Source Paths",
+    "4 Note Paths",
+    "DONOTUSETHESEAUTOS"
+  ],
+  "autoFolders": [
+    "3 Notes source",
+    "4 notes",
+    "4Note Follow",
+    "DONOTRUNTHESEAUTOS",
+    "4Note Follow Choreo"
+  ],
+  "defaultMaxVel": 1.0,
+  "defaultMaxAccel": 1.0,
+  "defaultMaxAngVel": 540.0,
+  "defaultMaxAngAccel": 720.0,
+  "maxModuleSpeed": 4.5
+}

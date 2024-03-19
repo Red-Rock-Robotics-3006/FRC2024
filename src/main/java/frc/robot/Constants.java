@@ -6,15 +6,28 @@ package frc.robot;
 
 public final class Constants {
   public static class Intake {
-    public static final int INTAKE_MOTOR_ID = 1000;//FILLER
+    public static final int INTAKE_MOTOR_ID = 17;
   }
   public static class Index {
-    public static final int SWITCH_CHANNEL_ID = 1;//FILLER
-    public static final int TOP_MOTOR_ID = 1000;//FILLER
-    public static final int BOTTOM_MOTOR_ID = 1000;//FILLER
+    public static final int INDEX_TOF_SENSOR_ID = 10;
+    public static final int INDEX_MOTOR_ID = 60;
+    public static final int ROLLER_MOTOR_ID = 51;
+    public static final int ROLLER_CURRENT_LIMIT = 60;
   }
   public static class LED {
-    public static final int NUM_LEDS = 60;//FILLER
-    public static final int LED_CHANNEL_ID = 1000;//FILLER
+    public static final int NUM_LEDS = 30;
+    public static final int LED_CHANNEL_ID = 9;
+  }
+  public static class Shooter {
+    public static final int TOP_MOTOR_ID = 42;
+    public static final int BOTTOM_MOTOR_ID = 59;
+    public static final int LEFT_ANGLE_MOTOR_ID = 45;
+    public static final int RIGHT_ANGLE_MOTOR_ID = 13;
+    public static final int SHOOT_CURRENT_LIMIT = 80;
+  }
+  public static class Settings {
+    public static final boolean INTAKE_HOMING_ENABLED = false;
+    public static final boolean SHOOTER_HOMING_ENABLED = true;
+    public static final boolean POLICE_MODE_ENABLED = true;
   }
 }
