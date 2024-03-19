@@ -19,7 +19,7 @@ public class ShooterCommands {
         return new FunctionalCommand(
             () -> index.shootTransfer(), 
             () -> {}, 
-            (interrupted) -> {shooter.stow(); index.stopTransfer(); led.setState(State.RESTING);},
+            (interrupted) -> {shooter.stow(); index.stopTransfer(); led.setState(State.RESTING); led.setIsAmping(false);},
             () -> !sensor.hasNote(), 
             index, shooter, sensor);
     }
@@ -50,6 +50,13 @@ public class ShooterCommands {
                 () -> shooter.runAmpShot(),
                 shooter
             )
+        );
+    }
+
+    public static Command setShooterSpeed(double speed) {
+        return new InstantCommand(
+            () -> shooter.setShooterSpeed(speed),
+            shooter
         );
     }
 

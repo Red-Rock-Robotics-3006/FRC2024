@@ -26,7 +26,10 @@ public class LED extends SubsystemBase{
     private int policeModeControl2 = 0;
     private int policeModeColorControl2 = 0;
 
+    private boolean isAmping = false;
+
     private final Color NOTE_ORANGE = new Color(255, 15, 0);
+    private final Color GREEN = new Color(0, 255, 30);
     private final Color WHITE = new Color(255, 255, 255);
     private final Color BLUE = new Color(0, 0, 255);
     private final Color RED = new Color(255, 0, 0);
@@ -48,8 +51,13 @@ public class LED extends SubsystemBase{
         this.control.start();
     }
 
+    public void setIsAmping(boolean b) {
+        isAmping = b;
+    }
+
     public void setState(State s) {
         this.RobotState = s;
+        if (s == State.SCORING_AMP) isAmping = true;
     }
 
     public State getState(State s) {
@@ -120,7 +128,8 @@ public class LED extends SubsystemBase{
     int blinkControl = 0;
     @SuppressWarnings("unused")
     public void periodic() {
-        if (shooter.getHoming() && shooter.inRange()) this.setState(State.AUTO_AIM);
+        if (isAmping) this.setState(State.SCORING_AMP);
+        else if (shooter.getHoming() && shooter.inRange()) this.setState(State.AUTO_AIM);
         else if (sensor.hasNote()) this.setState(State.HAS_NOTE);
         else this.setState(State.RESTING);
 
@@ -135,18 +144,13 @@ public class LED extends SubsystemBase{
                     else this.setLights(OFF);
                     break;
                 case AUTO_AIM:
-                    blinkControl++;
-                    if (blinkControl % 6 < 3) this.setLights(NOTE_ORANGE);
+                    blinkControl++; 
+                    if (blinkControl % 6 < 3) this.setLights(GREEN);
                     else this.setLights(OFF);
                     break;
                 case SCORING_AMP:
                     blinkControl++;
-                    if (blinkControl % 14 < 7) {
-                        this.setLights(0, 7, OFF);
-                        this.setLights(7, 15, NOTE_ORANGE);
-                        this.setLights(15, 22, OFF);
-                        this.setLights(22, 30, NOTE_ORANGE);
-                    }
+                    if (blinkControl % 6 < 3) this.setLights(BLUE);
                     else this.setLights(OFF);
                     break;
             }

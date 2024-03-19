@@ -216,7 +216,9 @@ public class RobotContainer {
         ShooterCommands.stop(),
         IndexCommands.stop(),
         IntakeCommands.stop(),
-        ShooterCommands.setHoming(false)
+        ShooterCommands.setHoming(false),
+        LEDCommands.setState(State.RESTING),
+        LEDCommands.setIsAmping(false)
       )
     );
     joystick.rightTrigger(0.25).whileTrue(
@@ -236,9 +238,14 @@ public class RobotContainer {
 
     //CLIMB PROCESS BINDINGS
 
+    // climber.setDefaultCommand(
+    //   new RunCommand(
+    //     () -> climber.move(mechstick.getRightTriggerAxis() - mechstick.getLeftTriggerAxis()), 
+    //     climber)
+    // );
     climber.setDefaultCommand(
       new RunCommand(
-        () -> climber.move(mechstick.getRightTriggerAxis() - mechstick.getLeftTriggerAxis()), 
+        () -> {climber.moveLeft(mechstick.getLeftTriggerAxis()); climber.moveRight(mechstick.getRightTriggerAxis());}, 
         climber)
     );
     mechstick.leftBumper().whileTrue(
