@@ -107,7 +107,7 @@ public class Shooter extends SubsystemBase {
     private final double STOW_ANGLE = 37; // TODO FILLER
     private double EXIT_VELOCITY = 7.0; // m/s // TODO FILLER
     private final double SHOOTER_HEIGHT = 0.13; // Meters // 20 Inches // TODO FILLER
-    private final double DISTANCE_FEED = 0.8;
+    private double DISTANCE_FEED = -0.5;
     private final double RANGE = 4;
 
     private final double CENTER_ANGLE = 0.0; // TODO FILLER
@@ -124,7 +124,7 @@ public class Shooter extends SubsystemBase {
 
 
     public static final double kTopShooterAmpSpeed = 0.15;
-    public static final double kBottomShooterAmpSpeed = 0.25;
+    public static final double kBottomShooterAmpSpeed = 0.3;
     public static final double kAmpAngle = 49;
 
 
@@ -161,6 +161,7 @@ public class Shooter extends SubsystemBase {
         this.targetPitch = STOW_ANGLE;
 
         SmartDashboard.putNumber("Exit Velocity", this.EXIT_VELOCITY);
+        SmartDashboard.putNumber("Distance Feed", this.DISTANCE_FEED);
 
         
     } 
@@ -183,6 +184,8 @@ public class Shooter extends SubsystemBase {
         kP = SmartDashboard.getNumber("kP", kFinalP);
         kF = SmartDashboard.getNumber("kF", kFinalF);
         this.controller.setP(kP);
+
+        this.DISTANCE_FEED = SmartDashboard.getNumber("Distance Feed", this.DISTANCE_FEED);
         
 
 
@@ -500,7 +503,6 @@ public class Shooter extends SubsystemBase {
         // double theta = Math.atan(hDist - Math.sqrt(hDist * hDist - 2 * 9.8 * hDist * hDist / this.EXIT_VELOCITY * this.EXIT_VELOCITY * (9.8 * hDist * hDist / 2 / this.EXIT_VELOCITY + vDist)) / (9.8 * hDist * hDist / this.EXIT_VELOCITY * this.EXIT_VELOCITY));
         
         // Equation to estimate the angle that the shooter needs to be at.
-        SmartDashboard.putNumber("Horizontal Distance", hDist);
         SmartDashboard.putNumber("Vertical Distance", vDist);
 
         /* Too fancy
@@ -554,7 +556,7 @@ public class Shooter extends SubsystemBase {
     public void setShooterSpeed(double speed)
     {
         this.topShooter.set(speed);
-        this.bottomShooter.set(speed);
+        this.bottomShooter.set(speed * 0.8);
     }
 
 
@@ -568,6 +570,7 @@ public class Shooter extends SubsystemBase {
         double y = Math.abs(this.robotY - this.target[1]);
         this.horizontalDistance = Math.sqrt(h*h + y*y);
         this.isInRange = this.horizontalDistance < RANGE;
+        SmartDashboard.putNumber("Horizontal Distance", this.horizontalDistance);
         SmartDashboard.putBoolean("In Range", this.inRange());
     }
 }

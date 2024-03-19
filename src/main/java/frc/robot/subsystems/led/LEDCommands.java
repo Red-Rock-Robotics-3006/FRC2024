@@ -13,6 +13,13 @@ public class LEDCommands {
         );
     }
 
+    public static Command setIsAmping(boolean b) {
+        return new InstantCommand(
+            () -> led.setIsAmping(b),
+            led
+        );
+    }
+
     public static Command togglePoliceMode() {
         return new InstantCommand(
             () -> led.togglePoliceModeEnabled(),

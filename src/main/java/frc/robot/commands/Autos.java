@@ -403,8 +403,8 @@ public class Autos {
                     ShooterCommands.setAngle(Positions.SUB_LEFT)
                 ),
                 new SequentialCommandGroup(
-                    drivetrain.getAuto("4NFC_1"),
-                    drivetrain.getAuto("4NFC_2")
+                    drivetrain.getAuto("4NF_1"),
+                    drivetrain.getAuto("4NF_2")
                 )
             ),
             ShooterCommands.shootAuto(),
@@ -416,8 +416,8 @@ public class Autos {
                     ShooterCommands.setAngle(Positions.SUB_LEFT)
                 ),
                 new SequentialCommandGroup(
-                    drivetrain.getAuto("4NFC_3"),
-                    drivetrain.getAuto("4NFC_4")
+                    drivetrain.getAuto("4NF_3"),
+                    drivetrain.getAuto("4NF_4")
                 )
             ),
             ShooterCommands.shootAuto(),
@@ -429,8 +429,8 @@ public class Autos {
                     ShooterCommands.setAngle(Positions.SUB_LEFT)
                 ),
                 new SequentialCommandGroup(
-                    drivetrain.getAuto("4NFC_5"), 
-                    drivetrain.getAuto("4NFC_6")
+                    drivetrain.getAuto("4NF_5"), 
+                    drivetrain.getAuto("4NF_6")
                 )
             ),
             ShooterCommands.shootAuto(),

@@ -216,7 +216,9 @@ public class RobotContainer {
         ShooterCommands.stop(),
         IndexCommands.stop(),
         IntakeCommands.stop(),
-        ShooterCommands.setHoming(false)
+        ShooterCommands.setHoming(false),
+        LEDCommands.setState(State.RESTING),
+        LEDCommands.setIsAmping(false)
       )
     );
     joystick.rightTrigger(0.25).whileTrue(
@@ -224,12 +226,26 @@ public class RobotContainer {
     ).whileFalse(
         ShooterCommands.setHoming(false)
     );
+    mechstick.povUp().onTrue(
+      new SequentialCommandGroup(
+        ShooterCommands.setShooterSpeed(0.6),
+        new InstantCommand(
+          () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
+          shooter
+        )
+      )
+    );
 
     //CLIMB PROCESS BINDINGS
 
+    // climber.setDefaultCommand(
+    //   new RunCommand(
+    //     () -> climber.move(mechstick.getRightTriggerAxis() - mechstick.getLeftTriggerAxis()), 
+    //     climber)
+    // );
     climber.setDefaultCommand(
       new RunCommand(
-        () -> climber.move(mechstick.getRightTriggerAxis() - mechstick.getLeftTriggerAxis()), 
+        () -> {climber.moveLeft(mechstick.getLeftTriggerAxis()); climber.moveRight(mechstick.getRightTriggerAxis());}, 
         climber)
     );
     mechstick.leftBumper().whileTrue(
@@ -265,13 +281,6 @@ public class RobotContainer {
 
     //LED BINDINGS
 
-    mechstick.povLeft().onTrue(
-      LEDCommands.setPoliceMode(0)
-    );
-    mechstick.povUp().onTrue(
-      LEDCommands.setPoliceMode(1)
-
-    );
     mechstick.povRight().onTrue(
       LEDCommands.setPoliceMode(2)
 
