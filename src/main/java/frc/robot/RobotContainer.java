@@ -35,7 +35,6 @@ import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.led.LEDCommands;
 import frc.robot.subsystems.led.State;
 import frc.robot.subsystems.shooter.*;
-import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 
