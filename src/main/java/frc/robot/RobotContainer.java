@@ -228,7 +228,7 @@ public class RobotContainer {
       new SequentialCommandGroup(
         new InstantCommand(() -> shooter.setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), shooter),
         new InstantCommand(
-          () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
+          () -> shooter.setTarget(SmartDashboard.getNumber("lob shot angle", 20)),
           shooter
         )
       )
