@@ -224,6 +224,15 @@ public class RobotContainer {
     ).whileFalse(
         ShooterCommands.setHoming(false)
     );
+    mechstick.povLeft().onTrue(
+      new SequentialCommandGroup(
+        new InstantCommand(() -> shooter.setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), shooter),
+        new InstantCommand(
+          () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
+          shooter
+        )
+      )
+    );
 
     //CLIMB PROCESS BINDINGS
 
@@ -265,20 +274,20 @@ public class RobotContainer {
 
     //LED BINDINGS
 
-    mechstick.povLeft().onTrue(
-      LEDCommands.setPoliceMode(0)
-    );
-    mechstick.povUp().onTrue(
-      LEDCommands.setPoliceMode(1)
+    // mechstick.povLeft().onTrue(
+    //   LEDCommands.setPoliceMode(0)
+    // );
+    // mechstick.povUp().onTrue(
+    //   LEDCommands.setPoliceMode(1)
 
-    );
-    mechstick.povRight().onTrue(
-      LEDCommands.setPoliceMode(2)
+    // );
+    // mechstick.povRight().onTrue(
+    //   LEDCommands.setPoliceMode(2)
 
-    );
-    mechstick.povDown().onTrue(
-      LEDCommands.togglePoliceMode()
-    );
+    // );
+    // mechstick.povDown().onTrue(
+    //   LEDCommands.togglePoliceMode()
+    // );
 
     // mechstick.povDown().onTrue(
     //   new InstantCommand(() -> TalonUtils.play())
