@@ -284,17 +284,17 @@ public class RobotContainer {
     // mechstick.povLeft().onTrue(
     //   LEDCommands.setPoliceMode(0)
     // );
-    // mechstick.povUp().onTrue(
-    //   LEDCommands.setPoliceMode(1)
+    mechstick.povUp().onTrue(
+      LEDCommands.setPoliceMode(1)
 
-    // );
-    // mechstick.povRight().onTrue(
-    //   LEDCommands.setPoliceMode(2)
+    );
+    mechstick.povRight().onTrue(
+      LEDCommands.setPoliceMode(2)
 
-    // );
-    // mechstick.povDown().onTrue(
-    //   LEDCommands.togglePoliceMode()
-    // );
+    );
+    mechstick.povDown().onTrue(
+      LEDCommands.togglePoliceMode()
+    );
 
     // mechstick.povDown().onTrue(
     //   new InstantCommand(() -> TalonUtils.play())

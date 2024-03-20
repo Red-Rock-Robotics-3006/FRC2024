@@ -107,7 +107,7 @@ public class Shooter extends SubsystemBase {
     private final double STOW_ANGLE = 37; // TODO FILLER
     private double EXIT_VELOCITY = 7.0; // m/s // TODO FILLER
     private final double SHOOTER_HEIGHT = 0.13; // Meters // 20 Inches // TODO FILLER
-    private double DISTANCE_FEED = -0.5;
+    private double DISTANCE_FEED = -0.2;
     private final double RANGE = 4;
 
     private final double CENTER_ANGLE = 0.0; // TODO FILLER
@@ -124,7 +124,7 @@ public class Shooter extends SubsystemBase {
 
 
     public static final double kTopShooterAmpSpeed = 0.15;
-    public static final double kBottomShooterAmpSpeed = 0.3;
+    public static final double kBottomShooterAmpSpeed = 0.25;
     public static final double kAmpAngle = 49;
 
 
@@ -152,7 +152,10 @@ public class Shooter extends SubsystemBase {
         this.m_leftAngleMotor.setInverted(true);
         this.m_leftAngleMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        this.isOnBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+        // if (DriverStation.getAlliance().isPresent())
+        // this.isOnBlue = DriverStation.getAlliance().get() == Alliance.Blue;
+        // else this.isOnBlue = true;
+        this.isOnBlue = !DriverStation.getAlliance().isPresent() || DriverStation.getAlliance().get() == Alliance.Blue;
 
         this.setTarget(this.isOnBlue?this.blueSpeaker:this.redSpeaker);
         
@@ -160,10 +163,14 @@ public class Shooter extends SubsystemBase {
 
         this.targetPitch = STOW_ANGLE;
 
+        SmartDashboard.putBoolean("On Blue", this.isOnBlue);
+
         SmartDashboard.putNumber("Exit Velocity", this.EXIT_VELOCITY);
         SmartDashboard.putNumber("Distance Feed", this.DISTANCE_FEED);
 
-        
+        SmartDashboard.putNumber("top shooter amp speed", kTopShooterAmpSpeed);
+        SmartDashboard.putNumber("bottom shooter amp speed", kBottomShooterAmpSpeed);
+
     } 
 
 
@@ -281,6 +288,7 @@ public class Shooter extends SubsystemBase {
 
     public void setHoming(boolean homing)
     {
+        System.out.println("homing is " + homing);
         this.seek = homing;
         if(homing)
             SmartDashboard.putString("Shooter Status", "Homing");
@@ -447,7 +455,7 @@ public class Shooter extends SubsystemBase {
         double speed = this.controller.calculate(ePos, eTarget) + feedForward;
         this.setAngleSpeed(speed);
 
-        if(Settings.SHOOTER_HOMING_ENABLED && this.seek)
+        if(Settings.SHOOTER_HOMING_ENABLED && this.seek && this.isInRange)
             this.swerve.setTargetHeading(this.targetYaw);
 
             
@@ -549,14 +557,20 @@ public class Shooter extends SubsystemBase {
         // System.out.println(speed);
         SmartDashboard.putNumber("shooter pitch speed", speed);
         this.m_rightAngleMotor.set(speed); // TODO FIX
-        this.m_leftAngleMotor.set(speed);
+        this.m_leftAngleMotor.set(speed); 
     }
 
 
     public void setShooterSpeed(double speed)
     {
         this.topShooter.set(speed);
-        this.bottomShooter.set(speed * 0.8);
+        this.bottomShooter.set(speed);
+    }
+
+    public void setAmpSpeed(double speed)
+    {
+        this.topShooter.set(speed);
+        this.bottomShooter.set(speed);
     }
 
 
