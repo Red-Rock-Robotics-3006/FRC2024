@@ -12,16 +12,16 @@ public class CommandFactory {
             ShooterCommands.setAngle(Positions.SUB_LEFT),
             ShooterCommands.spinUp(),
             new WaitCommand(Autos.kSpinUpTime),
-            ShooterCommands.shoot()
+            ShooterCommands.shootAuto()
         );
     }
     
     public static Command shootSideCommand(){
         return new SequentialCommandGroup(
-            ShooterCommands.setAngle(Positions.AUTO_SIDES),
+            ShooterCommands.setAngle(Positions.SUB_LEFT),
             ShooterCommands.spinUp(),
-            new WaitCommand(Autos.kSpinUpTime),
-            ShooterCommands.shoot()
+            new WaitCommand(1),
+            ShooterCommands.shootAuto()
         );
     }
 }

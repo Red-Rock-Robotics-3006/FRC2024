@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.index.Index;
+import frc.robot.subsystems.index.IndexCommands;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.shooter.Shooter;
@@ -35,7 +36,7 @@ public class Autos {
     //         new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
     //         new WaitCommand(2.5),
     //         new InstantCommand(
-    //             () -> index.startTransfer(),
+    //             () -> index.shootTransfer(),
     //             index
     //         ),
     //         new WaitCommand(2),
@@ -63,7 +64,7 @@ public class Autos {
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
             new WaitCommand(2.5),
             new InstantCommand(
-                () -> index.startTransfer(),
+                () -> index.shootTransfer(),
                 index
             ),
             new WaitCommand(2),
@@ -94,7 +95,7 @@ public class Autos {
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
             new WaitCommand(2.5),
             new InstantCommand(
-                () -> index.startTransfer(),
+                () -> index.shootTransfer(),
                 index
             ),
             new WaitCommand(2),
@@ -115,7 +116,7 @@ public class Autos {
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
             new WaitCommand(2),
             new InstantCommand(
-                () -> index.startTransfer(),
+                () -> index.shootTransfer(),
                 index
             ),
             new WaitCommand(1),
@@ -135,7 +136,7 @@ public class Autos {
             new InstantCommand(() -> System.out.println("hi")),
             new WaitCommand(0.5),
             new StartEndCommand(
-                () -> index.startTransfer(), 
+                () -> index.shootTransfer(), 
                 () -> index.stopTransfer(), 
                 index
             ).withTimeout(1),
@@ -243,7 +244,7 @@ public class Autos {
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
             new WaitCommand(2.5),
             new InstantCommand(
-                () -> index.startTransfer(),
+                () -> index.shootTransfer(),
                 index
             ),
             new WaitCommand(2),
@@ -270,7 +271,7 @@ public class Autos {
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
             new WaitCommand(2.5),
             new InstantCommand(
-                () -> index.startTransfer(),
+                () -> index.shootTransfer(),
                 index
             ),
             new WaitCommand(2),
@@ -298,7 +299,7 @@ public class Autos {
             new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
             new WaitCommand(2.5),
             new InstantCommand(
-                () -> index.startTransfer(),
+                () -> index.shootTransfer(),
                 index
             ),
             new WaitCommand(2),
@@ -319,26 +320,24 @@ public class Autos {
         );
     }
 
-    public static Command trollAuto() {
+    public static Command trollAuto_b() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
-            new InstantCommand(() -> shooter.presetShoot(Shooter.Positions.SUB_LEFT), shooter),
-            new InstantCommand(() -> shooter.setShooterSpeed(1), shooter),
-            new WaitCommand(kSpinUpTime),
-            new InstantCommand(() -> index.startTransfer(), index),
-            new WaitCommand(kShootTime),
-            new InstantCommand(() -> intake.startIntake(), intake),
-            new InstantCommand(() -> shooter.setShooterSpeed(0.3), shooter),
+            CommandFactory.shootSideCommand(),
+            ShooterCommands.setAngle(Positions.SUB_LEFT),
+            ShooterCommands.setShooterSpeed(0.15),
+            IndexCommands.start(),
+            IntakeCommands.start(),
             TunerConstants.DriveTrain.getAuto("TrollAuto"),
-            new InstantCommand(() -> intake.stopIntake(), intake)
+            new WaitCommand(1),
+            ShooterCommands.stop(),
+            IndexCommands.stop(),
+            IntakeCommands.stop()
         );
     }
 
     public static Command trollAutoPath() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
             TunerConstants.DriveTrain.getAuto("TrollAuto")
-
         );
     }
 
@@ -460,7 +459,7 @@ public class Autos {
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     IntakeCommands.intake(),
-                    ShooterCommands.setAngle(Positions.AUTO_SIDES)
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
                 ),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("3N_CB_1"), 
@@ -473,7 +472,7 @@ public class Autos {
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     IntakeCommands.intake(),
-                    ShooterCommands.setAngle(Positions.AUTO_SIDES)
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
                 ),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("3N_CB_3"), 
@@ -486,6 +485,150 @@ public class Autos {
             ShooterCommands.stop()
         );
     }
+
+    public static Command m_2note_1g_b() {
+        return new SequentialCommandGroup(
+            
+            //FIRST NOTE
+            CommandFactory.shootSideCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CB_1"), 
+                    drivetrain.getAuto("3N_CB_2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake()
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CB_3")
+                )
+            ),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_3note_r() {
+        return new SequentialCommandGroup(
+            
+            //FIRST NOTE
+            CommandFactory.shootSideCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CR_1"), 
+                    drivetrain.getAuto("3N_CR_2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CR_3"), 
+                    drivetrain.getAuto("3N_CR_4")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_3note_a_r() {
+        return new SequentialCommandGroup(
+            // drivetrain.resetFieldHeading(),
+            // new InstantCommand(
+            //     () -> shooter.setOffset(60),
+            //     shooter
+            // ),
+            //FIRST NOTE
+            CommandFactory.shootSideCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CR_1"), 
+                    drivetrain.getAuto("3N_CR_2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CR_3"), 
+                    drivetrain.getAuto("3N_CRA_4")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    // public static Command m_2note_1g_r() {
+    //     return new SequentialCommandGroup(
+            
+    //         //FIRST NOTE
+    //         CommandFactory.shootSideCommand(),
+    //         ShooterCommands.spinUp(),
+
+    //         //SECOND NOTE
+    //         new ParallelCommandGroup(
+    //             new SequentialCommandGroup(
+    //                 IntakeCommands.intake(),
+    //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
+    //             ),
+    //             new SequentialCommandGroup(
+    //                 drivetrain.getAuto("3N_CR_1"), 
+    //                 drivetrain.getAuto("3N_CR_2")
+    //             )
+    //         ),
+    //         ShooterCommands.shootAuto(),
+    //         ShooterCommands.stop()
+
+    //         //THIRD NOTE
+    //         new ParallelCommandGroup(
+    //             IntakeCommands.intake(),
+    //             drivetrain.getAuto("3N_CR_3")
+    //         )
+    //         //END
+    //     );
+    // }
 
     public static Command m_3note_alt_b() {
         return new SequentialCommandGroup(

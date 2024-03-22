@@ -28,7 +28,7 @@ public class ShooterCommands {
         return new FunctionalCommand(
             () -> index.shootTransfer(), 
             () -> {}, 
-            (interrupted) -> {index.stopTransfer();}, 
+            (interrupted) -> {index.stopTransfer(); shooter.setHoming(false);}, 
             () -> !sensor.hasNote(), 
             index, shooter, sensor);
     }
@@ -77,6 +77,20 @@ public class ShooterCommands {
     public static Command setHoming(boolean e) {
         return new InstantCommand(
             () -> shooter.setHoming(e),
+            shooter
+        );
+    }
+
+    public static Command increaseDistanceFeed() {
+        return new InstantCommand(
+            () -> shooter.increaseDistanceFeed(),
+            shooter
+        );
+    }
+
+    public static Command decreaseDistanceFeed() {
+        return new InstantCommand(
+            () -> shooter.decreaseDistanceFeed(),
             shooter
         );
     }

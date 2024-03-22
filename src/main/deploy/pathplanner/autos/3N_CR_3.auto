@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 7.94,
-      "y": 2.65
+      "x": 15.5,
+      "y": 4.75
     },
-    "rotation": 36.44522035282037
+    "rotation": -120.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3N_CB_4"
+            "pathName": "3N_CR_3"
           }
         }
       ]

@@ -126,6 +126,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
         // System.out.println("configure orchestra: " + TalonUtils.configureOrchestra("music/sirens.chrp"));
 
+        this.setTargetHeading(0);
+        this.seedFieldRelative(new Pose2d());
+
         SmartDashboard.putData("field", this.field);
 
         SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);
@@ -151,6 +154,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             // orchestra.loadMusic("music/siren.chrp");
         // }
         // System.out.println("configure orchestra: " + TalonUtils.configureOrchestra("music/sirens.chrp"));
+
+        this.setTargetHeading(0);
+        this.seedFieldRelative(new Pose2d());
 
         SmartDashboard.putData("field", this.field);
         SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);

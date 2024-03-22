@@ -29,7 +29,8 @@ public class LED extends SubsystemBase{
     private boolean isAmping = false;
 
     private final Color NOTE_ORANGE = new Color(255, 15, 0);
-    private final Color GREEN = new Color(0, 255, 30);
+    private final Color INIT_YELLOW = new Color(255, 165, 0);
+    private final Color GREEN = new Color(0, 255, 0);
     private final Color WHITE = new Color(255, 255, 255);
     private final Color BLUE = new Color(0, 0, 255);
     private final Color RED = new Color(255, 0, 0);
@@ -43,9 +44,7 @@ public class LED extends SubsystemBase{
         this.register();
         this.control.setLength(this.buffer.getLength());
 
-        for (int i = 0; i < buffer.getLength(); i++) {
-            buffer.setRGB(i, 255, 165, 0);
-        }
+        this.setLights(INIT_YELLOW);
         this.control.setData(buffer);
         
         this.control.start();
@@ -151,7 +150,7 @@ public class LED extends SubsystemBase{
                 case SCORING_AMP:
                     blinkControl++;
                     if (blinkControl % 6 < 3) this.setLights(BLUE);
-                    else this.setLights(OFF);
+                    else this.setLights(OFF); 
                     break;
             }
         }

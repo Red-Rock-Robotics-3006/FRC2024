@@ -16,7 +16,7 @@ public class Climber extends SubsystemBase {
     private static Climber instance = null;
 
     public static final double kMaxSpeed = 0.85;
-    public static final double kResetSpeed = -0.8;
+    public static final double kResetSpeed = 0.8;
 
     private double maxSpeed = kMaxSpeed;
 

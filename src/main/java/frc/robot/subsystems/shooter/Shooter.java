@@ -107,7 +107,7 @@ public class Shooter extends SubsystemBase {
     private final double STOW_ANGLE = 37; // TODO FILLER
     private double EXIT_VELOCITY = 7.0; // m/s // TODO FILLER
     private final double SHOOTER_HEIGHT = 0.13; // Meters // 20 Inches // TODO FILLER
-    private double DISTANCE_FEED = -0.2;
+    private double DISTANCE_FEED = 0.1;
     private final double RANGE = 4;
 
     private final double CENTER_ANGLE = 0.0; // TODO FILLER
@@ -123,10 +123,9 @@ public class Shooter extends SubsystemBase {
     private final double HIGH_ENCODER = 0.72; // 54 degrees
 
 
-    public static final double kTopShooterAmpSpeed = 0.15;
-    public static final double kBottomShooterAmpSpeed = 0.25;
-    public static final double kAmpAngle = 49;
-
+    public static double kTopShooterAmpSpeed = 0.06;
+    public static double kBottomShooterAmpSpeed = 0.2;
+    public static double kAmpAngle = 51;
 
     private Shooter() {
         this.setName("Shooter");
@@ -251,7 +250,6 @@ public class Shooter extends SubsystemBase {
 
         // SmartDashboard.putNumber("top shooter amp speed", kTopShooterAmpSpeed);
         // SmartDashboard.putNumber("bottom shooter amp speed", kBottomShooterAmpSpeed);
-        // SmartDashboard.putNumber("amp angle", kAmpAngle);
     }
 
 
@@ -388,6 +386,20 @@ public class Shooter extends SubsystemBase {
     public boolean inRange()
     {
         return this.isInRange;
+    }
+
+
+    public void increaseDistanceFeed()
+    {
+        DISTANCE_FEED += 0.05;
+        SmartDashboard.putNumber("Distance Feed", DISTANCE_FEED);
+    }
+
+
+    public void decreaseDistanceFeed()
+    {
+        DISTANCE_FEED -= 0.05;
+        SmartDashboard.putNumber("Distance Feed", DISTANCE_FEED);
     }
 
     // Private Interface Methods : Methods that allow Shooter to interface with fundamental components / set values
