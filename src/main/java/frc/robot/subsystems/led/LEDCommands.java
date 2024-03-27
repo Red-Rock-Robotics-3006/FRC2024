@@ -19,6 +19,13 @@ public class LEDCommands {
             led
         );
     }
+    
+    public static Command setAutoEnd(boolean b) {
+        return new InstantCommand(
+            () -> led.setAutoEnd(b),
+            led
+        );
+    }
 
     public static Command togglePoliceMode() {
         return new InstantCommand(

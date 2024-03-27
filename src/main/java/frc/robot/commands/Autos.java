@@ -195,7 +195,7 @@ public class Autos {
             ShooterCommands.shootAuto(),
 
             //END
-            LEDCommands.setLights(0, 0, 255),
+            LEDCommands.setAutoEnd(true),
             ShooterCommands.stop()
         );
     }

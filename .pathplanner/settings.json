@@ -3,18 +3,17 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "3Note Source Paths",
+    "3 Note Source Paths",
     "4 Note Paths",
-    "DONOTUSETHESEAUTOS",
-    "6 Note Paths"
+    "6 Note Paths",
+    "DONOTUSETHESEAUTOS"
   ],
   "autoFolders": [
-    "3 Notes source",
-    "4 notes",
-    "4Note Follow",
-    "4Note Follow Choreo",
-    "DONOTRUNTHESEAUTOS",
-    "6 Note"
+    "3 Note Source",
+    "4 Note",
+    "4 Note Choreo",
+    "6 Note",
+    "DONOTRUNTHESEAUTOS"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

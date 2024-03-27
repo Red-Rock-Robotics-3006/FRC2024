@@ -27,6 +27,7 @@ public class LED extends SubsystemBase{
     private int policeModeColorControl2 = 0;
 
     private boolean isAmping = false;
+    private boolean autoEnd = false;
 
     private final Color NOTE_ORANGE = new Color(255, 15, 0);
     private final Color INIT_YELLOW = new Color(255, 165, 0);
@@ -52,6 +53,10 @@ public class LED extends SubsystemBase{
 
     public void setIsAmping(boolean b) {
         isAmping = b;
+    }
+
+    public void setAutoEnd(boolean b) {//TODO THIS IS FOR TEST
+        autoEnd = b;
     }
 
     public void setState(State s) {
@@ -127,7 +132,8 @@ public class LED extends SubsystemBase{
     int blinkControl = 0;
     @SuppressWarnings("unused")
     public void periodic() {
-        if (isAmping) this.setState(State.SCORING_AMP);
+        if (autoEnd) this.setState(State.AUTO_END);
+        else if (isAmping) this.setState(State.SCORING_AMP);
         else if (shooter.getHoming() && shooter.inRange()) this.setState(State.AUTO_AIM);
         else if (sensor.hasNote()) this.setState(State.HAS_NOTE);
         else this.setState(State.RESTING);
@@ -151,6 +157,9 @@ public class LED extends SubsystemBase{
                     blinkControl++;
                     if (blinkControl % 6 < 3) this.setLights(BLUE);
                     else this.setLights(OFF); 
+                    break;
+                case AUTO_END:
+                    this.setLights(BLUE);
                     break;
             }
         }
