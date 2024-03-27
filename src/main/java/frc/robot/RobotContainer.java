@@ -462,26 +462,9 @@ public class RobotContainer {
 
     m_chooser.addOption("BLUE 3 NOTE", Autos.m_3note_blue());
     m_chooser.addOption("RED 3 NOTE", Autos.m_3note_red());
-
-    m_chooser.addOption("straight", drivetrain.getAuto("StraightLineAuto"));
-    m_chooser.addOption("alliance neutral: one note pick up mid", Autos.oneNoteGrabAuto());
-    m_chooser.addOption("blue: one note source side", Autos.oneNoteSourceSide());
-    m_chooser.addOption("alliance neutral: two note", Autos.twoNoteAuto());
-    m_chooser.addOption("alliance neutral: two note paths", Autos.twoNotePaths());
-    m_chooser.addOption("blue: source side one note to center", Autos.blueSourceToCenter());
-    m_chooser.addOption("red: source side one note to center", Autos.redSourceToCenter());
-    m_chooser.addOption("blue: amp side no pickup", Autos.blueAmpNoPickup());
-    m_chooser.addOption("red: amp side no pickup", Autos.redAmpNoPickup());
-    m_chooser.addOption("two note dont run at comp", Autos.twoNoteAuto2());
-    m_chooser.addOption("just shoot sides", Autos.justShootSides());
+    
     m_chooser.addOption("blue: troll auto", Autos.trollAuto_b());
     m_chooser.addOption("blue: troll auto paths", Autos.trollAutoPath());
-
-    //DO NOT RUN THESE THREE AUTOS
-    m_chooser.addOption("DO NOT RUN: tysens idea", Autos.tysensIdeaAuto());
-    m_chooser.addOption("DO NOT RUN: grand prix", Autos.grandPrixAuto());
-    m_chooser.addOption("DO NOT RUN: max ver", Autos.superMaxAuto());
-    //DO NOT RUN THESE THREE AUTOS
 
     m_chooser.addOption("FOUR NOTE", Autos.m_4note());
     m_chooser.addOption("4note paths: dont run at comp", drivetrain.getAuto("4N_P"));
