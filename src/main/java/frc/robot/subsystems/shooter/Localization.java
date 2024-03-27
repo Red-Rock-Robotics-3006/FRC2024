@@ -26,7 +26,6 @@ public class Localization extends SubsystemBase{
     {
         this.updateLocation();
 
-        
         SmartDashboard.putBoolean("Tag in Vision", tagInVision);
         SmartDashboard.putNumber("Bot x", robotX);
         SmartDashboard.putNumber("Bot y", robotY);

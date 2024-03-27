@@ -16,7 +16,7 @@ public class Climber extends SubsystemBase {
     private static Climber instance = null;
 
     public static final double kMaxSpeed = 0.85;
-    public static final double kResetSpeed = -0.5;
+    public static final double kResetSpeed = 0.8;
 
     private double maxSpeed = kMaxSpeed;
 
@@ -75,9 +75,23 @@ public class Climber extends SubsystemBase {
             return;
         }
         this.setSpeed(speed * this.maxSpeed);
-        SmartDashboard.putNumber("speed", speed);
+        // SmartDashboard.putNumber("speed", speed);
     }
+    
+    public void moveLeft(double speed){
+        if (speed > 0 && this.leftClimber.getEncoder().getPosition() > ROTATIONS_AT_TOP) {this.leftClimber.set(0); return;}
+        else if (speed < 0 && this.leftClimber.getEncoder().getPosition() < ROTATIONS_AT_BOTTOM) {this.leftClimber.set(0); return;}
 
+        this.leftClimber.set(speed * maxSpeed);
+        // SmartDashboard.putNumber("speed", speed);
+    }
+    public void moveRight(double speed){
+        if (speed > 0 && this.rightClimber.getEncoder().getPosition() > ROTATIONS_AT_TOP) {this.rightClimber.set(0); return;}
+        else if (speed < 0 && this.rightClimber.getEncoder().getPosition() < ROTATIONS_AT_BOTTOM) {this.rightClimber.set(0); return;}
+
+        this.rightClimber.set(speed * maxSpeed);
+        // SmartDashboard.putNumber("speed", speed);
+    }
     public Command setIdleMode(IdleMode type){
         return new InstantCommand(
             () -> this.leftClimber.setIdleMode(type), this

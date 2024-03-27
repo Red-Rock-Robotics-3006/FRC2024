@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 8.5,
+      "y": 2.44
+    },
+    "rotation": -179.61803379527103
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3N_CRA_5"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "3 Notes source",
+  "choreoAuto": false
+}

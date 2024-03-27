@@ -35,6 +35,7 @@ import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.led.LEDCommands;
 import frc.robot.subsystems.led.State;
 import frc.robot.subsystems.shooter.*;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 
@@ -148,10 +149,18 @@ public class RobotContainer {
     joystick.start().onTrue(
       drivetrain.resetHeading()
     );
+
+    joystick.back().onTrue(
+      drivetrain.resetFieldHeading()
+    );
     
     RobotModeTriggers.teleop().onTrue(
         drivetrain.resetFieldHeading()
     );
+
+    // RobotModeTriggers.autonomous().onTrue(
+    //   drivetrain.resetFieldHeading()
+    // );
 
     //SHOOTER ANGLE BINDINGS
 
@@ -216,7 +225,9 @@ public class RobotContainer {
         ShooterCommands.stop(),
         IndexCommands.stop(),
         IntakeCommands.stop(),
-        ShooterCommands.setHoming(false)
+        ShooterCommands.setHoming(false),
+        LEDCommands.setState(State.RESTING),
+        LEDCommands.setIsAmping(false)
       )
     );
     joystick.rightTrigger(0.25).whileTrue(
@@ -226,37 +237,77 @@ public class RobotContainer {
     );
     mechstick.povLeft().onTrue(
       new SequentialCommandGroup(
-        new InstantCommand(() -> shooter.setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), shooter),
+        ShooterCommands.setShooterSpeed(SmartDashboard.getNumber("lob shot speed", 0.33)),
         new InstantCommand(
-          () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
+          () -> shooter.setTarget(SmartDashboard.getNumber("lob shot angle", 20)),
           shooter
         )
       )
     );
+    mechstick.povUp().onTrue(
+      ShooterCommands.increaseDistanceFeed()
+    );
+    mechstick.povDown().onTrue(
+      ShooterCommands.decreaseDistanceFeed()
+    );
 
     //CLIMB PROCESS BINDINGS
 
+    // climber.setDefaultCommand(
+    //   new RunCommand(
+    //     () -> climber.move(mechstick.getRightTriggerAxis() - mechstick.getLeftTriggerAxis()), 
+    //     climber)
+    // );
+
+    // climber.setDefaultCommand(
+    //   new RunCommand(
+    //     () -> {climber.moveLeft(mechstick.getLeftTriggerAxis()); climber.moveRight(mechstick.getRightTriggerAxis());}, 
+    //     climber)
+    // );
+    // mechstick.leftBumper().whileTrue(
+    //   new RunCommand(() -> climber.setLeftSpeed(SmartDashboard.getNumber("reset speed", Climber.kResetSpeed)), climber)
+    // ).onFalse(
+    //   new InstantCommand(
+    //     () -> {climber.stop(); climber.resetLeftEncoder();},
+    //     climber
+    //   )
+    // );
+    // mechstick.rightBumper().whileTrue(
+    //   new RunCommand(() -> climber.setRightSpeed(SmartDashboard.getNumber("reset speed", Climber.kResetSpeed)), climber)
+    // ).onFalse(
+    //   new InstantCommand(
+    //     () -> {climber.stop(); climber.resetRightEncoder();},
+    //     climber
+    //   )
+    // );
+
     climber.setDefaultCommand(
       new RunCommand(
-        () -> climber.move(mechstick.getRightTriggerAxis() - mechstick.getLeftTriggerAxis()), 
+        () -> {climber.moveLeft((mechstick.leftBumper().getAsBoolean()) ? SmartDashboard.getNumber("reset speed", Climber.kResetSpeed) : 0); climber.moveRight((mechstick.rightBumper().getAsBoolean()) ? SmartDashboard.getNumber("reset speed", Climber.kResetSpeed) : 0);}, 
         climber)
     );
-    mechstick.leftBumper().whileTrue(
-      new RunCommand(() -> climber.setLeftSpeed(SmartDashboard.getNumber("reset speed", Climber.kResetSpeed)), climber)
+    new Trigger(
+      () -> mechstick.getLeftTriggerAxis() > 0.02
+    ).whileTrue(
+      new RunCommand(() -> climber.setLeftSpeed(-mechstick.getLeftTriggerAxis()), climber)
     ).onFalse(
       new InstantCommand(
         () -> {climber.stop(); climber.resetLeftEncoder();},
         climber
       )
     );
-    mechstick.rightBumper().whileTrue(
-      new RunCommand(() -> climber.setRightSpeed(SmartDashboard.getNumber("reset speed", Climber.kResetSpeed)), climber)
+
+    new Trigger(
+      () -> mechstick.getRightTriggerAxis() > 0.02
+    ).whileTrue(
+      new RunCommand(() -> climber.setRightSpeed(-mechstick.getRightTriggerAxis()), climber)
     ).onFalse(
       new InstantCommand(
         () -> {climber.stop(); climber.resetRightEncoder();},
         climber
       )
     );
+
 
     //MECH CONTROLLER SETTINGS BINDINGS
         
@@ -341,6 +392,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("shooter test speed", kShooterSpeed);
 
     SmartDashboard.putNumber("roll forward time", Intake.kRollForwardTime);
+
+    SmartDashboard.putNumber("lob shot speed", .33);
+    SmartDashboard.getNumber("lob shot angle", 20);
   }
 
   public RobotContainer() {
@@ -405,6 +459,10 @@ public class RobotContainer {
 
   public void configureSelector(){
     m_chooser.setDefaultOption("no auto", Commands.print("good luck drivers!"));
+
+    m_chooser.addOption("BLUE 3 NOTE", Autos.m_3note_blue());
+    m_chooser.addOption("RED 3 NOTE", Autos.m_3note_red());
+
     m_chooser.addOption("straight", drivetrain.getAuto("StraightLineAuto"));
     m_chooser.addOption("alliance neutral: one note pick up mid", Autos.oneNoteGrabAuto());
     m_chooser.addOption("blue: one note source side", Autos.oneNoteSourceSide());
@@ -416,7 +474,7 @@ public class RobotContainer {
     m_chooser.addOption("red: amp side no pickup", Autos.redAmpNoPickup());
     m_chooser.addOption("two note dont run at comp", Autos.twoNoteAuto2());
     m_chooser.addOption("just shoot sides", Autos.justShootSides());
-    m_chooser.addOption("blue: troll auto", Autos.trollAuto());
+    m_chooser.addOption("blue: troll auto", Autos.trollAuto_b());
     m_chooser.addOption("blue: troll auto paths", Autos.trollAutoPath());
 
     //DO NOT RUN THESE THREE AUTOS
@@ -428,10 +486,13 @@ public class RobotContainer {
     m_chooser.addOption("FOUR NOTE", Autos.m_4note());
     m_chooser.addOption("4note paths: dont run at comp", drivetrain.getAuto("4N_P"));
     m_chooser.addOption("4note paths not pp", Autos.m_4_1p_3w());
-    m_chooser.addOption("blue: 3 note source side", drivetrain.getAuto("3NS_1B"));
+    m_chooser.addOption("blue: 3 note source side", Autos.m_3note_b());
+    m_chooser.addOption("blue: 2 note 1 grab source side", Autos.m_2note_1g_b());
     m_chooser.addOption("blue: 3 note source side alt", drivetrain.getAuto("3NS_1B_Alt"));
     m_chooser.addOption("three note paths", Autos.m_3note_paths());
-                                                                                                                                                                                                                                                                                                                                                                                                                m_chooser.addOption("test", Autos.test());
+    m_chooser.addOption("red: 3 note source side", Autos.m_3note_r());
+    m_chooser.addOption("red: auto aim 3 note source side", Autos.m_autoaim_3note_r());
+                                                                                                                                                                                                                                                                                                                                                                                                       m_chooser.addOption("test", Autos.test());
     
     SmartDashboard.putData("auto chooser", m_chooser);
   }

@@ -19,7 +19,7 @@ public class ShooterCommands {
         return new FunctionalCommand(
             () -> index.shootTransfer(), 
             () -> {}, 
-            (interrupted) -> {shooter.stow(); index.stopTransfer(); led.setState(State.RESTING);},
+            (interrupted) -> {shooter.stow(); index.stopTransfer(); led.setState(State.RESTING); led.setIsAmping(false);},
             () -> !sensor.hasNote(), 
             index, shooter, sensor);
     }
@@ -28,7 +28,7 @@ public class ShooterCommands {
         return new FunctionalCommand(
             () -> index.shootTransfer(), 
             () -> {}, 
-            (interrupted) -> {index.stopTransfer();}, 
+            (interrupted) -> {index.stopTransfer(); shooter.setHoming(false);}, 
             () -> !sensor.hasNote(), 
             index, shooter, sensor);
     }
@@ -53,6 +53,13 @@ public class ShooterCommands {
         );
     }
 
+    public static Command setShooterSpeed(double speed) {
+        return new InstantCommand(
+            () -> shooter.setShooterSpeed(speed),
+            shooter
+        );
+    }
+
     public static Command stop() {
         return new InstantCommand(
             () -> shooter.setShooterSpeed(0),
@@ -70,6 +77,20 @@ public class ShooterCommands {
     public static Command setHoming(boolean e) {
         return new InstantCommand(
             () -> shooter.setHoming(e),
+            shooter
+        );
+    }
+
+    public static Command increaseDistanceFeed() {
+        return new InstantCommand(
+            () -> shooter.increaseDistanceFeed(),
+            shooter
+        );
+    }
+
+    public static Command decreaseDistanceFeed() {
+        return new InstantCommand(
+            () -> shooter.decreaseDistanceFeed(),
             shooter
         );
     }

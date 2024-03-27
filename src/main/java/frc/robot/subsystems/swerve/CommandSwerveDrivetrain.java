@@ -126,6 +126,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
         // System.out.println("configure orchestra: " + TalonUtils.configureOrchestra("music/sirens.chrp"));
 
+        this.setTargetHeading(0);
+        this.seedFieldRelative(new Pose2d());
+
         SmartDashboard.putData("field", this.field);
 
         SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);
@@ -151,6 +154,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             // orchestra.loadMusic("music/siren.chrp");
         // }
         // System.out.println("configure orchestra: " + TalonUtils.configureOrchestra("music/sirens.chrp"));
+
+        this.setTargetHeading(0);
+        this.seedFieldRelative(new Pose2d());
 
         SmartDashboard.putData("field", this.field);
         SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);
@@ -181,14 +187,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             TunerConstants.kSpeedAt12VoltsMps,
                                             driveBaseRadius,
                                             new ReplanningConfig()),
-            // ()->false, // Change this if the path needs to be flipped on red vs blue
-            () -> {//TODO this is is testing and we hope it works
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                  return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-            },
+            ()->false, // Change this if the path needs to be flipped on red vs blue
+            // () -> {//TODO this is is testing and we hope it works
+            //     var alliance = DriverStation.getAlliance();
+            //     if (alliance.isPresent()) {
+            //       return alliance.get() == DriverStation.Alliance.Red;
+            //     }
+            //     return false;
+            // },
             this); // Subsystem for requirements
     }
 
@@ -197,16 +203,16 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Pose2d getPose(){
-        if (Localization.tagInVision()){
-            Pose2d pose = new Pose2d(
-                Localization.getPose().getX(),
-                Localization.getPose().getY(),
-                this.getState().Pose.getRotation()
-            );
+        // if (Localization.tagInVision()){
+        //     Pose2d pose = new Pose2d(
+        //         Localization.getPose().getX(),
+        //         Localization.getPose().getY(),
+        //         this.getState().Pose.getRotation()
+        //     );
 
-            this.seedFieldRelative(pose);
-            return pose;
-        }
+        //     this.seedFieldRelative(pose);
+        //     return pose;
+        // }
         
          return this.getState().Pose;
     }
