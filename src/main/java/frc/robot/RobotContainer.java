@@ -459,6 +459,10 @@ public class RobotContainer {
 
   public void configureSelector(){
     m_chooser.setDefaultOption("no auto", Commands.print("good luck drivers!"));
+
+    m_chooser.addOption("BLUE 3 NOTE", Autos.m_3note_blue());
+    m_chooser.addOption("RED 3 NOTE", Autos.m_3note_red());
+
     m_chooser.addOption("straight", drivetrain.getAuto("StraightLineAuto"));
     m_chooser.addOption("alliance neutral: one note pick up mid", Autos.oneNoteGrabAuto());
     m_chooser.addOption("blue: one note source side", Autos.oneNoteSourceSide());
@@ -487,7 +491,7 @@ public class RobotContainer {
     m_chooser.addOption("blue: 3 note source side alt", drivetrain.getAuto("3NS_1B_Alt"));
     m_chooser.addOption("three note paths", Autos.m_3note_paths());
     m_chooser.addOption("red: 3 note source side", Autos.m_3note_r());
-    m_chooser.addOption("red: auto aim 3 note source side", Autos.m_3note_a_r());
+    m_chooser.addOption("red: auto aim 3 note source side", Autos.m_autoaim_3note_r());
                                                                                                                                                                                                                                                                                                                                                                                                        m_chooser.addOption("test", Autos.test());
     
     SmartDashboard.putData("auto chooser", m_chooser);

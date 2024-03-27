@@ -439,6 +439,82 @@ public class Autos {
         );
     }
 
+    public static Command m_3note_blue() {
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_1"),
+                    drivetrain.getAuto("4NF_2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+            
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_5"), 
+                    drivetrain.getAuto("4NF_6")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_3note_red() {
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_1"),
+                    drivetrain.getAuto("4NF_2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+            
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intake(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_3"),
+                    drivetrain.getAuto("4NF_4")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
     public static Command m_3note_paths() {
         return new SequentialCommandGroup(
             drivetrain.getAuto("3N_CB_1"), 
@@ -596,6 +672,41 @@ public class Autos {
             ShooterCommands.shootAuto(),
 
             //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_autoaim_3note_r() {
+        return new SequentialCommandGroup(
+            ShooterCommands.spinUp(),
+            
+            drivetrain.getAuto("3N_CRA_1"),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CRA_2"), 
+                    drivetrain.getAuto("3N_CRA_3")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_CRA_4"), 
+                    drivetrain.getAuto("3N_CRA_5")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
             ShooterCommands.stop()
         );
     }

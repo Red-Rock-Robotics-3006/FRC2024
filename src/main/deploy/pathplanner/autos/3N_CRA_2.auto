@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.63,
-      "y": 4.1
+      "x": 13.7,
+      "y": 2.9
     },
-    "rotation": 0
+    "rotation": -138.51061690421255
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6_SourceReturn"
+            "pathName": "3N_CRA_2"
           }
         }
       ]
     }
   },
-  "folder": "4Note Follow",
+  "folder": "3 Notes source",
   "choreoAuto": false
 }
