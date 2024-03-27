@@ -6,7 +6,10 @@ package frc.robot.subsystems.shooter;
 
 import com.revrobotics.CANSparkMax;
 
-import java.sql.Driver;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.util.ArrayList;
 
 import com.revrobotics.CANSparkFlex;
 
@@ -31,6 +34,11 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 
 public class Shooter extends SubsystemBase {
+
+
+    private ArrayList<double[]> table;
+    private double[] pos;
+    private int n;
     
     private boolean pitchHoming = true;
 
@@ -598,5 +606,48 @@ public class Shooter extends SubsystemBase {
         this.isInRange = this.horizontalDistance < RANGE;
         SmartDashboard.putNumber("Horizontal Distance", this.horizontalDistance);
         SmartDashboard.putBoolean("In Range", this.inRange());
+    }
+
+    public void newLoc()
+    {
+        this.pos = new double[]{this.horizontalDistance, this.targetPitch, SmartDashboard.getNumber("current angle", -1), 1}; // Add shooter speed later
+    }
+
+    public void accept()
+    {
+        this.table.add(this.pos);
+        this.pos = new double[0];
+    }
+
+    public void deny()
+    {
+        this.pos[3] = 0;
+        this.accept();
+    }
+
+    public void exportTable()
+    {
+        while(true)
+        {
+            File lookup = new File("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
+            try {
+                if(lookup.createNewFile())
+                {
+                    System.out.println("Success!");
+                    break;
+                }
+                else
+                {
+                    System.out.println("Something went wrong...");
+                    n++;
+                }
+            } catch (IOException e) {}
+        }
+
+        try {
+            FileWriter writer = new FileWriter("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
+            writer.write(""+this.table);
+        } catch (IOException e) {}
+
     }
 }
