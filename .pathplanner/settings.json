@@ -5,7 +5,8 @@
   "pathFolders": [
     "3Note Source Paths",
     "4 Note Paths",
-    "DONOTUSETHESEAUTOS"
+    "DONOTUSETHESEAUTOS",
+    "6 Note Paths"
   ],
   "autoFolders": [
     "3 Notes source",
@@ -14,8 +15,8 @@
     "DONOTRUNTHESEAUTOS",
     "4Note Follow Choreo"
   ],
-  "defaultMaxVel": 1.0,
-  "defaultMaxAccel": 1.0,
+  "defaultMaxVel": 5.0,
+  "defaultMaxAccel": 4.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "maxModuleSpeed": 4.5

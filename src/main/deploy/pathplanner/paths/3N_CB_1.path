@@ -37,16 +37,16 @@
     {
       "waypointRelativePos": 0.4,
       "rotationDegrees": 0,
-      "rotateFast": false
+      "rotateFast": true
     }
   ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 4.0,
-    "maxAcceleration": 3.0,
-    "maxAngularVelocity": 540.0,
-    "maxAngularAcceleration": 720.0
+    "maxVelocity": 10.0,
+    "maxAcceleration": 10.0,
+    "maxAngularVelocity": 10000000000.0,
+    "maxAngularAcceleration": 1000000.0
   },
   "goalEndState": {
     "velocity": 0,
