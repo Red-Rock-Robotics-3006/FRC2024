@@ -11,7 +11,7 @@ public class CommandFactory {
         return new SequentialCommandGroup(
             ShooterCommands.setAngle(Positions.SUB_LEFT),
             ShooterCommands.spinUp(),
-            new WaitCommand(Autos.kSpinUpTime),
+            new WaitCommand(0.4),
             ShooterCommands.shootAuto()
         );
     }

@@ -1,0 +1,25 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 8.1,
+      "y": 5.85
+    },
+    "rotation": -27.228262963617194
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "6N_7"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "6 Note",
+  "choreoAuto": false
+}

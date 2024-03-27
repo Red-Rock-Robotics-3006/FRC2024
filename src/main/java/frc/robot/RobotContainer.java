@@ -460,9 +460,12 @@ public class RobotContainer {
   public void configureSelector(){
     m_chooser.setDefaultOption("no auto", Commands.print("good luck drivers!"));
 
+    m_chooser.addOption("SIX NOTE", Autos.m_6note());
+    m_chooser.addOption("AUTOAIM 4 NOTE", Autos.m_autoaim_4note());
+
     m_chooser.addOption("BLUE 3 NOTE", Autos.m_3note_blue());
     m_chooser.addOption("RED 3 NOTE", Autos.m_3note_red());
-    
+
     m_chooser.addOption("blue: troll auto", Autos.trollAuto_b());
     m_chooser.addOption("blue: troll auto paths", Autos.trollAutoPath());
 

@@ -12,6 +12,7 @@ import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.index.IndexCommands;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeCommands;
+import frc.robot.subsystems.led.LEDCommands;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterCommands;
 import frc.robot.subsystems.shooter.Shooter.Positions;
@@ -95,6 +96,109 @@ public class Autos {
     }
 
     public static final double kWaitTime = 0.5;
+
+    public static Command m_6note(){
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("6N_1")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("6N_2")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("6N_3")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //FIFTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_4"),
+                    drivetrain.getAuto("6N_5")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //SIXTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_6"),
+                    drivetrain.getAuto("6N_7")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_autoaim_4note(){
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("6N_1")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("6N_2")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("6N_3")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //END
+            LEDCommands.setLights(0, 0, 255),
+            ShooterCommands.stop()
+        );
+    }
 
     public static Command m_4note(){
         return new SequentialCommandGroup(

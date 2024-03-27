@@ -33,4 +33,11 @@ public class LEDCommands {
             led
         );
     }
+
+    public static Command setLights(int r, int g, int b) {
+        return new InstantCommand(
+            () -> led.setLights(r, g, b),
+            led
+        );
+    }
 }
