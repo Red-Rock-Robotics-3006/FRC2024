@@ -463,6 +463,7 @@ public class RobotContainer {
 
     m_chooser.addOption("SIX NOTE", Autos.m_6note());
     m_chooser.addOption("AUTOAIM 4 NOTE", Autos.m_autoaim_4note());
+    m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
 
     m_chooser.addOption("BLUE 3 NOTE", Autos.m_3note_blue());
     m_chooser.addOption("RED 3 NOTE", Autos.m_3note_red());
