@@ -200,6 +200,40 @@ public class Autos {
         );
     }
 
+    public static Command m_3note() {
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            ShooterCommands.spinUp(),
+            drivetrain.getAuto("3N_SA_1"),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("3N_SA_2")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+            
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("3N_SA_3")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //END
+            LEDCommands.setAutoEnd(true),
+            ShooterCommands.stop()
+        );
+    }
+
     public static Command m_4note(){
         return new SequentialCommandGroup(
 
