@@ -3,55 +3,49 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.9,
-        "y": 5.55
+        "x": 8.08,
+        "y": 2.37
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.9193769519794035,
-        "y": 5.96171818414046
+        "x": 5.492520518818393,
+        "y": 1.2954364253162387
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.9,
-        "y": 6.8
+        "x": 2.4,
+        "y": 3.0
       },
       "prevControl": {
-        "x": 2.903639070836658,
-        "y": 5.906635600140849
+        "x": 4.744971164537953,
+        "y": 1.40560159331546
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.0,
-      "rotationDegrees": 90.0,
-      "rotateFast": true
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 89.55862781321565,
+    "rotation": -38.96614629577051,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": "6 Note Paths",
+  "folder": "3 Note Source AA Paths",
   "previewStartingState": {
-    "rotation": -0.8645787372606775,
+    "rotation": 23.392638907975755,
     "velocity": 0
   },
   "useDefaultConstraints": false

@@ -28,7 +28,7 @@ public class ShooterCommands {
         return new FunctionalCommand(
             () -> index.shootTransfer(), 
             () -> {}, 
-            (interrupted) -> {index.stopTransfer(); shooter.setHoming(false);}, 
+            (interrupted) -> {index.stopTransfer(); shooter.setHoming(false); led.setState(State.RESTING);},
             () -> !sensor.hasNote(), 
             index, shooter, sensor);
     }
