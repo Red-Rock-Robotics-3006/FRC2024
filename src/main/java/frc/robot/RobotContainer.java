@@ -287,9 +287,10 @@ public class RobotContainer {
         climber)
     );
     new Trigger(
-      () -> mechstick.getLeftTriggerAxis() > 0.02
+      () -> mechstick.getLeftTriggerAxis() > 0.02 || mechstick.getRightTriggerAxis() > 0.02
     ).whileTrue(
-      new RunCommand(() -> climber.setLeftSpeed(-mechstick.getLeftTriggerAxis()), climber)
+      new RunCommand(() -> {climber.setLeftSpeed(-mechstick.getLeftTriggerAxis());
+            climber.setRightSpeed(-mechstick.getRightTriggerAxis());}, climber)
     ).onFalse(
       new InstantCommand(
         () -> {climber.stop(); climber.resetLeftEncoder();},
@@ -297,16 +298,16 @@ public class RobotContainer {
       )
     );
 
-    new Trigger(
-      () -> mechstick.getRightTriggerAxis() > 0.02
-    ).whileTrue(
-      new RunCommand(() -> climber.setRightSpeed(-mechstick.getRightTriggerAxis()), climber)
-    ).onFalse(
-      new InstantCommand(
-        () -> {climber.stop(); climber.resetRightEncoder();},
-        climber
-      )
-    );
+    // new Trigger(
+    //   () -> mechstick.getRightTriggerAxis() > 0.02
+    // ).whileTrue(
+    //   new RunCommand(() -> climber.setRightSpeed(-mechstick.getRightTriggerAxis()), climber)
+    // ).onFalse(
+    //   new InstantCommand(
+    //     () -> {climber.stop(); climber.resetRightEncoder();},
+    //     climber
+    //   )
+    // );
 
 
     //MECH CONTROLLER SETTINGS BINDINGS

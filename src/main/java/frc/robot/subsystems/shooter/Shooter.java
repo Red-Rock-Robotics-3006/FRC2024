@@ -135,6 +135,23 @@ public class Shooter extends SubsystemBase {
     public static double kBottomShooterAmpSpeed = 0.2;
     public static double kAmpAngle = 51;
 
+    public static final double kShootP = 0.6;
+    public static final double kShootI = 0;
+    public static final double kShootD = 0;
+
+    private double topShooterTarget = 0;
+    private double bottomShooterTarget = 0;
+
+    public static final double kMaxRPM = 6700;
+
+    private boolean runningAmp = false;
+
+
+
+    private PIDController topController = new PIDController(kShootP, kShootI, kShootD);
+    private PIDController bottomController = new PIDController(kShootP, kShootI, kShootD);
+    
+
     private Shooter() {
         this.setName("Shooter");
         this.register();
@@ -177,6 +194,10 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("top shooter amp speed", kTopShooterAmpSpeed);
         SmartDashboard.putNumber("bottom shooter amp speed", kBottomShooterAmpSpeed);
+
+        SmartDashboard.putNumber("shooter velo p", kShootP);
+        SmartDashboard.putNumber("shooter velo i", kShootI);
+        SmartDashboard.putNumber("shooter velo d", kShootD);
 
     } 
 
@@ -253,8 +274,11 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("TargetX", this.target[0]);
         SmartDashboard.putNumber("TargetY", this.target[1]);
 
-        SmartDashboard.putNumber("left v", topShooter.getEncoder().getVelocity());
-        SmartDashboard.putNumber("right v", bottomShooter.getEncoder().getVelocity());
+        SmartDashboard.putNumber("top v", topShooter.getEncoder().getVelocity());
+        SmartDashboard.putNumber("bottom v", bottomShooter.getEncoder().getVelocity());
+
+        this.updateTopPIDLoop();
+        this.updateBottomPIDLoop();
 
         // SmartDashboard.putNumber("top shooter amp speed", kTopShooterAmpSpeed);
         // SmartDashboard.putNumber("bottom shooter amp speed", kBottomShooterAmpSpeed);
@@ -268,8 +292,9 @@ public class Shooter extends SubsystemBase {
     // Public Interface Methods : Methods that allow outside classes to interface with Shooter
 
     public void runAmpShot() {
-        this.topShooter.set(SmartDashboard.getNumber("top shooter amp speed", kTopShooterAmpSpeed));
-        this.bottomShooter.set(SmartDashboard.getNumber("bottom shooter amp speed", kBottomShooterAmpSpeed));
+        this.runningAmp = true;
+        this.topShooterTarget = (SmartDashboard.getNumber("top shooter amp speed", kTopShooterAmpSpeed));
+        this.bottomShooterTarget = (SmartDashboard.getNumber("bottom shooter amp speed", kBottomShooterAmpSpeed));
     }
 
     public void runAmpAngle() {
@@ -478,6 +503,8 @@ public class Shooter extends SubsystemBase {
         if(Settings.SHOOTER_HOMING_ENABLED && this.seek && Localization.tagInVision())
             this.swerve.setTargetHeading(this.targetYaw);
 
+
+
             
         SmartDashboard.putNumber("encoder target", eTarget);
         SmartDashboard.putNumber("angle target", this.targetPitch);
@@ -583,15 +610,17 @@ public class Shooter extends SubsystemBase {
 
     public void setShooterSpeed(double speed)
     {
-        this.topShooter.set(speed);
-        this.bottomShooter.set(speed);
+        // this.topShooter.set(speed);
+        // this.bottomShooter.set(speed);
+        this.topShooterTarget = speed;
+        this.bottomShooterTarget = speed;
     }
 
-    public void setAmpSpeed(double speed)
-    {
-        this.topShooter.set(speed);
-        this.bottomShooter.set(speed);
-    }
+    // public void setAmpSpeed(double speed)
+    // {
+    //     this.topShooter.set(speed);
+    //     this.bottomShooter.set(speed);
+    // }
 
 
     private void updateLocation()
@@ -649,5 +678,44 @@ public class Shooter extends SubsystemBase {
             writer.write(""+this.table);
         } catch (IOException e) {}
 
+    }
+
+    public void updateTopPIDLoop(){
+        double measurement = this.topShooter.getEncoder().getVelocity() / kMaxRPM;
+
+        this.topController.setPID(
+            SmartDashboard.getNumber("shooter velo p", kShootP), 
+            SmartDashboard.getNumber("shooter velo i", kShootI), 
+            SmartDashboard.getNumber("shooter velo d", kShootD));
+
+        double calc = topController.calculate(measurement, topShooterTarget);
+
+
+        this.topShooter.set(calc + topShooterTarget);
+
+        SmartDashboard.putNumber("shooter velo measuerment top", measurement);
+
+        SmartDashboard.putNumber("top shooter calc", calc);
+
+        SmartDashboard.putNumber("top shooter target", topShooterTarget);
+
+
+    }
+
+    public void updateBottomPIDLoop(){
+        double measurement = this.bottomShooter.getEncoder().getVelocity() / kMaxRPM;
+
+        this.bottomController.setPID(
+            SmartDashboard.getNumber("shooter velo p", kShootP), 
+            SmartDashboard.getNumber("shooter velo i", kShootI), 
+            SmartDashboard.getNumber("shooter velo d", kShootD));
+
+        double calc = topController.calculate(measurement, bottomShooterTarget);
+        SmartDashboard.putNumber("shooter velo measuerment bottom", measurement);
+        SmartDashboard.putNumber("bottom shooter target", bottomShooterTarget);
+
+        SmartDashboard.putNumber("bottom shooter calc", calc);
+
+        this.bottomShooter.set(calc + bottomShooterTarget);
     }
 }

@@ -17,7 +17,7 @@ public class Index extends SubsystemBase{
     
     public static final double kReverseTime = 0.1;
 
-    public static final double kIndexSpeed = 0.4;
+    public static final double kIndexSpeed = 0.34;
     public static final double kRollerSpeed = 0.95;
 
     public static final double kIndexShootSpeed = 0.12;
