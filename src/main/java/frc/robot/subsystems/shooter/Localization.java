@@ -38,10 +38,10 @@ public class Localization extends SubsystemBase{
         this.setName("Localization");
         this.register();
         
-        front = new Limelight("front");
-        left = new Limelight("left");
-        right = new Limelight("right");
-        back = new Limelight("back");
+        front = new Limelight("front",8);
+        left = new Limelight("left",8);
+        right = new Limelight("right",8);
+        back = new Limelight("back",4);
 
         limelights = new Limelight[]{front, left, right, back};
     }
@@ -108,6 +108,22 @@ public class Localization extends SubsystemBase{
     {
         for(Limelight l : limelights)
             l.snapshot();
+    }
+
+    public static Pose2d[] getPose2ds()
+    {
+        Pose2d[] poses = new Pose2d[limelights.length];
+        for(int i = 0; i < poses.length; i++)
+            poses[i] = limelights[i].getPose2d();
+        return poses;
+    }
+
+    public static boolean[] getTags()
+    {
+        boolean[] tags = new boolean[limelights.length];
+        for(int i = 0; i < tags.length; i++)
+            tags[i] = limelights[i].tiv();
+        return tags;
     }
 
     private class Limelight extends SubsystemBase{

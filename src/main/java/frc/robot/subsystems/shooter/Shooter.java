@@ -102,7 +102,7 @@ public class Shooter extends SubsystemBase {
     private boolean hasNote; // If the robot has a note
     private double homingOffset;
     private double horizontalDistance;
-    private boolean isInRange;
+    private boolean isInRange = true;
 
     private boolean snapshot; // For toggling snapshots
 
@@ -440,7 +440,7 @@ public class Shooter extends SubsystemBase {
         if(Constants.Settings.SHOOTER_HOMING_ENABLED && this.seek)
         {
             // Only auto aim if the robot is in range
-            if(this.isInRange)
+            if(Localization.tagInVision())
             {
                 // Calculate robot angle
                 double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff )) - this.homingOffset) % 360; //  + (isOnBlue?0:180)
@@ -475,7 +475,7 @@ public class Shooter extends SubsystemBase {
         double speed = this.controller.calculate(ePos, eTarget) + feedForward;
         this.setAngleSpeed(speed);
 
-        if(Settings.SHOOTER_HOMING_ENABLED && this.seek && this.isInRange)
+        if(Settings.SHOOTER_HOMING_ENABLED && this.seek && Localization.tagInVision())
             this.swerve.setTargetHeading(this.targetYaw);
 
             
@@ -603,9 +603,9 @@ public class Shooter extends SubsystemBase {
         double h = Math.abs(this.robotX - this.target[0]);
         double y = Math.abs(this.robotY - this.target[1]);
         this.horizontalDistance = Math.sqrt(h*h + y*y);
-        this.isInRange = this.horizontalDistance < RANGE;
+        // this.isInRange = this.horizontalDistance < RANGE;
         SmartDashboard.putNumber("Horizontal Distance", this.horizontalDistance);
-        SmartDashboard.putBoolean("In Range", this.inRange());
+        // SmartDashboard.putBoolean("In Range", this.inRange());
     }
 
     public void newLoc()
