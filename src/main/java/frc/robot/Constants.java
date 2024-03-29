@@ -15,7 +15,7 @@ public final class Constants {
     public static final int ROLLER_CURRENT_LIMIT = 60;
   }
   public static class LED {
-    public static final int NUM_LEDS = 29;
+    public static final int NUM_LEDS = 49;
     public static final int LED_CHANNEL_ID = 9;
   }
   public static class Shooter {

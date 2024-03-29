@@ -27,6 +27,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -53,6 +54,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public static final double kPredictThreshold = 1;
 
     public static final double kHigherPredictCoeff = 0.2;
+
+    public static final double kRejectionDistance = 1.0;
 
     // private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
     //             .getStructTopic("pose", Pose2d.struct).publish();
@@ -213,6 +216,30 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         //     this.seedFieldRelative(pose);
         //     return pose;
         // }
+        boolean[] tagInvisions = Localization.getTags();
+        Pose2d[] poses = Localization.getPose2ds();
+
+        Pose2d currPose = this.getState().Pose;
+
+        if (tagInvisions[0]){
+            if (withinRejectionDistance(currPose, poses[0]))
+            this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
+        }
+        if (tagInvisions[1]){
+            if (withinRejectionDistance(currPose, poses[1]))
+
+            this.addVisionMeasurement(poses[1], Timer.getFPGATimestamp());
+        }
+        if (tagInvisions[2]){
+            if (withinRejectionDistance(currPose, poses[2]))
+
+            this.addVisionMeasurement(poses[2], Timer.getFPGATimestamp());
+        }
+        if (tagInvisions[3]){
+            if (withinRejectionDistance(currPose, poses[3]))
+
+            this.addVisionMeasurement(poses[3], Timer.getFPGATimestamp());
+        }
         
          return this.getState().Pose;
     }
@@ -325,6 +352,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return this.driveState;
     }
 
+    public boolean withinRejectionDistance(Pose2d p1, Pose2d p2){
+        return Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY())) < kRejectionDistance;
+    }
+
 
     
 
@@ -345,10 +376,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void periodic(){
-        this.field.setRobotPose(this.getState().Pose);
+        this.field.setRobotPose(this.getPose());
         SmartDashboard.putNumber("drivetrain rotation rate", this.getRotationRate());
         // posePublisher.set(this.getState().Pose);
         SmartDashboard.putNumber("field heading", this.getState().Pose.getRotation().getDegrees());
+
+        SmartDashboard.putNumber("fga timestamp", Timer.getFPGATimestamp());
     }
 
 

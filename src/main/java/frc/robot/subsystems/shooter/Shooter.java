@@ -6,7 +6,10 @@ package frc.robot.subsystems.shooter;
 
 import com.revrobotics.CANSparkMax;
 
-import java.sql.Driver;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.util.ArrayList;
 
 import com.revrobotics.CANSparkFlex;
 
@@ -31,6 +34,11 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 
 public class Shooter extends SubsystemBase {
+
+
+    private ArrayList<double[]> table;
+    private double[] pos;
+    private int n;
     
     private boolean pitchHoming = true;
 
@@ -94,7 +102,7 @@ public class Shooter extends SubsystemBase {
     private boolean hasNote; // If the robot has a note
     private double homingOffset;
     private double horizontalDistance;
-    private boolean isInRange;
+    private boolean isInRange = true;
 
     private boolean snapshot; // For toggling snapshots
 
@@ -432,7 +440,7 @@ public class Shooter extends SubsystemBase {
         if(Constants.Settings.SHOOTER_HOMING_ENABLED && this.seek)
         {
             // Only auto aim if the robot is in range
-            if(this.isInRange)
+            if(Localization.tagInVision())
             {
                 // Calculate robot angle
                 double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff )) - this.homingOffset) % 360; //  + (isOnBlue?0:180)
@@ -467,7 +475,7 @@ public class Shooter extends SubsystemBase {
         double speed = this.controller.calculate(ePos, eTarget) + feedForward;
         this.setAngleSpeed(speed);
 
-        if(Settings.SHOOTER_HOMING_ENABLED && this.seek && this.isInRange)
+        if(Settings.SHOOTER_HOMING_ENABLED && this.seek && Localization.tagInVision())
             this.swerve.setTargetHeading(this.targetYaw);
 
             
@@ -595,8 +603,51 @@ public class Shooter extends SubsystemBase {
         double h = Math.abs(this.robotX - this.target[0]);
         double y = Math.abs(this.robotY - this.target[1]);
         this.horizontalDistance = Math.sqrt(h*h + y*y);
-        this.isInRange = this.horizontalDistance < RANGE;
+        // this.isInRange = this.horizontalDistance < RANGE;
         SmartDashboard.putNumber("Horizontal Distance", this.horizontalDistance);
-        SmartDashboard.putBoolean("In Range", this.inRange());
+        // SmartDashboard.putBoolean("In Range", this.inRange());
+    }
+
+    public void newLoc()
+    {
+        this.pos = new double[]{this.horizontalDistance, this.targetPitch, SmartDashboard.getNumber("current angle", -1), 1}; // Add shooter speed later
+    }
+
+    public void accept()
+    {
+        this.table.add(this.pos);
+        this.pos = new double[0];
+    }
+
+    public void deny()
+    {
+        this.pos[3] = 0;
+        this.accept();
+    }
+
+    public void exportTable()
+    {
+        while(true)
+        {
+            File lookup = new File("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
+            try {
+                if(lookup.createNewFile())
+                {
+                    System.out.println("Success!");
+                    break;
+                }
+                else
+                {
+                    System.out.println("Something went wrong...");
+                    n++;
+                }
+            } catch (IOException e) {}
+        }
+
+        try {
+            FileWriter writer = new FileWriter("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
+            writer.write(""+this.table);
+        } catch (IOException e) {}
+
     }
 }

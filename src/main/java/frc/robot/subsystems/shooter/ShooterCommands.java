@@ -17,7 +17,7 @@ public class ShooterCommands {
 
     public static Command shoot() {
         return new FunctionalCommand(
-            () -> index.shootTransfer(), 
+            () -> {index.shootTransfer(); shooter.newLoc();}, 
             () -> {}, 
             (interrupted) -> {shooter.stow(); index.stopTransfer(); led.setState(State.RESTING); led.setIsAmping(false);},
             () -> !sensor.hasNote(), 
