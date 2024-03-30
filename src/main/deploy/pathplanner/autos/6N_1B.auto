@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.4,
-      "y": 3.0
+      "x": 1.34,
+      "y": 5.53
     },
-    "rotation": -33.89221164879534
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "3N_SA_4"
+            "pathName": "6N_1B"
           }
         }
       ]
     }
   },
-  "folder": "3 Note Source AA",
+  "folder": "6 Note Alt",
   "choreoAuto": false
 }
