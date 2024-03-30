@@ -463,6 +463,7 @@ public class RobotContainer {
 
     m_chooser.addOption("SIX NOTE", Autos.m_6note());
     m_chooser.addOption("SIX NOTE PATHS", Autos.m_6note_paths());
+    m_chooser.addOption("SIX NOTE ALT PATHS", Autos.m_6note_alt_paths());
     m_chooser.addOption("AUTOAIM 4 NOTE", Autos.m_autoaim_4note());
     // m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
 

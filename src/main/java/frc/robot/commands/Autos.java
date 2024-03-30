@@ -160,6 +160,18 @@ public class Autos {
         );
     }
 
+    public static Command m_6note_alt_paths() {
+        return new SequentialCommandGroup(
+            drivetrain.getAuto("6N_1B"),
+            drivetrain.getAuto("6N_2B"),
+            drivetrain.getAuto("6N_3B"),
+            drivetrain.getAuto("6N_4B"),
+            drivetrain.getAuto("6N_5B"),
+            drivetrain.getAuto("6N_6B"),
+            drivetrain.getAuto("6N_7B")
+        );
+    }
+
     public static Command m_autoaim_4note(){
         return new SequentialCommandGroup(
 
