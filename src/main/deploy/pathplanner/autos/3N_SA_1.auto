@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 0.5,
+      "y": 2.0980683635962896
+    },
+    "rotation": 0
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -8,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "6N_5"
+            "pathName": "3N_SA_1"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "3 Note AA Autos",
   "choreoAuto": false
 }

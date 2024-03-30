@@ -216,30 +216,30 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         //     this.seedFieldRelative(pose);
         //     return pose;
         // }
-        boolean[] tagInvisions = Localization.getTags();
-        Pose2d[] poses = Localization.getPose2ds();
+        // boolean[] tagInvisions = Localization.getTags();
+        // Pose2d[] poses = Localization.getPose2ds();
 
-        Pose2d currPose = this.getState().Pose;
+        // Pose2d currPose = this.getState().Pose;
 
-        if (tagInvisions[0]){
-            if (withinRejectionDistance(currPose, poses[0]))
-            this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
-        }
-        if (tagInvisions[1]){
-            if (withinRejectionDistance(currPose, poses[1]))
+        // if (tagInvisions[0]){
+        //     if (withinRejectionDistance(currPose, poses[0]))
+        //     this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
+        // }
+        // if (tagInvisions[1]){
+        //     if (withinRejectionDistance(currPose, poses[1]))
 
-            this.addVisionMeasurement(poses[1], Timer.getFPGATimestamp());
-        }
-        if (tagInvisions[2]){
-            if (withinRejectionDistance(currPose, poses[2]))
+        //     this.addVisionMeasurement(poses[1], Timer.getFPGATimestamp());
+        // }
+        // if (tagInvisions[2]){
+        //     if (withinRejectionDistance(currPose, poses[2]))
 
-            this.addVisionMeasurement(poses[2], Timer.getFPGATimestamp());
-        }
-        if (tagInvisions[3]){
-            if (withinRejectionDistance(currPose, poses[3]))
+        //     this.addVisionMeasurement(poses[2], Timer.getFPGATimestamp());
+        // }
+        // if (tagInvisions[3]){
+        //     if (withinRejectionDistance(currPose, poses[3]))
 
-            this.addVisionMeasurement(poses[3], Timer.getFPGATimestamp());
-        }
+        //     this.addVisionMeasurement(poses[3], Timer.getFPGATimestamp());
+        // }
         
          return this.getState().Pose;
     }

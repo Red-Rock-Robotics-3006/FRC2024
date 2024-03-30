@@ -462,25 +462,26 @@ public class RobotContainer {
     m_chooser.setDefaultOption("no auto", Commands.print("good luck drivers!"));
 
     m_chooser.addOption("SIX NOTE", Autos.m_6note());
+    m_chooser.addOption("SIX NOTE PATHS", Autos.m_6note_paths());
     m_chooser.addOption("AUTOAIM 4 NOTE", Autos.m_autoaim_4note());
-    m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
+    // m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
 
-    m_chooser.addOption("BLUE 3 NOTE", Autos.m_3note_blue());
-    m_chooser.addOption("RED 3 NOTE", Autos.m_3note_red());
+    // m_chooser.addOption("BLUE 3 NOTE", Autos.m_3note_blue());
+    // m_chooser.addOption("RED 3 NOTE", Autos.m_3note_red());
 
-    m_chooser.addOption("blue: troll auto", Autos.trollAuto_b());
-    m_chooser.addOption("blue: troll auto paths", Autos.trollAutoPath());
+    // m_chooser.addOption("blue: troll auto", Autos.trollAuto_b());
+    // m_chooser.addOption("blue: troll auto paths", Autos.trollAutoPath());
 
     m_chooser.addOption("FOUR NOTE", Autos.m_4note());
-    m_chooser.addOption("4note paths: dont run at comp", drivetrain.getAuto("4N_P"));
-    m_chooser.addOption("4note paths not pp", Autos.m_4_1p_3w());
-    m_chooser.addOption("blue: 3 note source side", Autos.m_3note_b());
-    m_chooser.addOption("blue: 2 note 1 grab source side", Autos.m_2note_1g_b());
-    m_chooser.addOption("blue: 3 note source side alt", drivetrain.getAuto("3NS_1B_Alt"));
-    m_chooser.addOption("three note paths", Autos.m_3note_paths());
-    m_chooser.addOption("red: 3 note source side", Autos.m_3note_r());
-    m_chooser.addOption("red: auto aim 3 note source side", Autos.m_autoaim_3note_r());
-                                                                                                                                                                                                                                                                                                                                                                                                       m_chooser.addOption("test", Autos.test());
+    // m_chooser.addOption("4note paths not pp", Autos.m_4_1p_3w());
+    // m_chooser.addOption("blue: 3 note source side", Autos.m_3note_b());
+    // m_chooser.addOption("blue: 2 note 1 grab source side", Autos.m_2note_1g_b());
+    // m_chooser.addOption("blue: 3 note source side alt", drivetrain.getAuto("3NS_1B_Alt"));
+    // m_chooser.addOption("three note paths", Autos.m_3note_paths());
+    // m_chooser.addOption("red: 3 note source side", Autos.m_3note_r());
+    // m_chooser.addOption("red: auto aim 3 note source side", Autos.m_autoaim_3note_r());
+                                                                                                                                                                                                                                                                                                                                                                                                       
+    // m_chooser.addOption("test", Autos.test());
     
     SmartDashboard.putData("auto chooser", m_chooser);
   }
