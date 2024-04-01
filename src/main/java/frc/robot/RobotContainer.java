@@ -176,6 +176,11 @@ public class RobotContainer {
         shooter
       )
     );
+    joystick.leftTrigger(0.25).whileTrue(
+      ShooterCommands.setAngle(Shooter.Positions.SUB_LEFT)//Shooter.encoderTarget = 0.7)
+    ).onFalse(
+      ShooterCommands.setAngle(Shooter.Positions.INTAKE)
+    );
 
     //INTAKE PROCESS BINDINGS
 
