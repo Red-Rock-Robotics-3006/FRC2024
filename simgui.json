@@ -8,7 +8,11 @@
       "/SmartDashboard/Module 2": "Mechanism2d",
       "/SmartDashboard/Module 3": "Mechanism2d",
       "/SmartDashboard/auto chooser": "String Chooser",
-      "/SmartDashboard/field": "Field2d"
+      "/SmartDashboard/field": "Field2d",
+      "/SmartDashboard/tag 0 field": "Field2d",
+      "/SmartDashboard/tag 1 field": "Field2d",
+      "/SmartDashboard/tag 2 field": "Field2d",
+      "/SmartDashboard/tag 3 field": "Field2d"
     },
     "windows": {
       "/SmartDashboard/field": {

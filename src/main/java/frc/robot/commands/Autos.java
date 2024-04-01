@@ -1,15 +1,10 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.index.Index;
-import frc.robot.subsystems.index.IndexCommands;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.led.LEDCommands;
@@ -29,75 +24,43 @@ public class Autos {
     public static double kSpinUpTime = 2;
     public static double kShootTime = 2;
 
-    // public static Command trollAuto_b() {
-    //     return new SequentialCommandGroup(
-    //         CommandFactory.shootSideCommand(),
-    //         ShooterCommands.setAngle(Positions.SUB_LEFT),
-    //         ShooterCommands.setShooterSpeed(0.15),
-    //         IndexCommands.start(),
-    //         IntakeCommands.start(),
-    //         TunerConstants.DriveTrain.getAuto("TrollAuto"),
-    //         new WaitCommand(1),
-    //         ShooterCommands.stop(),
-    //         IndexCommands.stop(),
-    //         IntakeCommands.stop()
-    //     );
-    // }
-
-    // public static Command trollAutoPath() {
-    //     return new SequentialCommandGroup(
-    //         TunerConstants.DriveTrain.getAuto("TrollAuto")
-    //     );
-    // }
-
-    // public static Command grandPrixAuto() {
-    //     return new SequentialCommandGroup(
-    //         new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
-    //         TunerConstants.DriveTrain.getAuto("CrescendoGrandPrixAuto")
-
-    //     );
-    // }
-
-    // public static Command tysensIdeaAuto() {
-    //     return new SequentialCommandGroup(
-    //         new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
-    //         TunerConstants.DriveTrain.getAuto("TysensIdeaAuto")
-
-    //     );
-    // }
-
-    // public static Command superMaxAuto() {
-    //     return new SequentialCommandGroup(
-    //         new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
-    //         TunerConstants.DriveTrain.getAuto("TUTUTUDUMAXVERSTAPPENAuto")
-
-    //     );
-    // }
-
-    // public static Command test(){
-    //     return new SequentialCommandGroup(
-    //         TunerConstants.DriveTrain.getAuto("MidNote"),
-    //         new InstantCommand(() -> SmartDashboard.putBoolean("i got pancreatic cancer", true)),
-    //         new WaitCommand(1),
-    //         TunerConstants.DriveTrain.getAuto("MidNoteBackAuto"),
-    //         new InstantCommand(() -> SmartDashboard.putBoolean("i got pancreatic cancer", false))
-    //     );
-    // }
-
-    // public static Command m_4_1p_3w(){
-    //     return new SequentialCommandGroup(
-    //         drivetrain.getAuto("4NFC_1"),
-    //         drivetrain.getAuto("4NFC_2"),
-    //         drivetrain.getAuto("4NFC_3"),
-    //         drivetrain.getAuto("4NFC_4"),
-    //         drivetrain.getAuto("4NFC_5"),
-    //         drivetrain.getAuto("4NFC_6")
-    //     );
-    // }
-
     public static final double kWaitTime = 0.5;
 
-    public static Command m_6note(){
+    public static Command m_6note_paths() { //paths for old six note
+        return new SequentialCommandGroup(
+            drivetrain.getAuto("6N_1"),
+            drivetrain.getAuto("6N_2"),
+            drivetrain.getAuto("6N_3"),
+            drivetrain.getAuto("6N_4"),
+            drivetrain.getAuto("6N_5"),
+            drivetrain.getAuto("6N_6"),
+            drivetrain.getAuto("6N_7")
+        );
+    }
+
+    public static Command m_6note_alt_paths() { //centerline rush 6 note paths
+        return new SequentialCommandGroup(
+            drivetrain.getAuto("6N_1B"),
+            drivetrain.getAuto("6N_2B"),
+            drivetrain.getAuto("6N_3B"),
+            drivetrain.getAuto("6N_4B"),
+            drivetrain.getAuto("6N_5B"),
+            drivetrain.getAuto("6N_6B"),
+            drivetrain.getAuto("6N_7B")
+        );
+    }
+
+    public static Command m_3note_paths() { //auto aim source side 3 note paths
+        return new SequentialCommandGroup(
+            drivetrain.getAuto("3N_SA_1"),
+            drivetrain.getAuto("3N_SA_2"),
+            drivetrain.getAuto("3N_SA_3"),
+            drivetrain.getAuto("3N_SA_4"),
+            drivetrain.getAuto("3N_SA_5")
+        );
+    }
+
+    public static Command m_6note() { //normie 6 note (lame) (shouldnt use) (prob wont work)
         return new SequentialCommandGroup(
 
             //FIRST NOTE
@@ -160,19 +123,111 @@ public class Autos {
         );
     }
 
-    public static Command m_6note_alt_paths() {
+    public static Command m_6note_alt() { //centerline rush 6 note
         return new SequentialCommandGroup(
-            drivetrain.getAuto("6N_1B"),
-            drivetrain.getAuto("6N_2B"),
-            drivetrain.getAuto("6N_3B"),
-            drivetrain.getAuto("6N_4B"),
-            drivetrain.getAuto("6N_5B"),
-            drivetrain.getAuto("6N_6B"),
-            drivetrain.getAuto("6N_7B")
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("6N_1B")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_2B"),
+                    drivetrain.getAuto("6N_3B")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_4B"),
+                    drivetrain.getAuto("6N_5B")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //FIFTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("6N_6B")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //SIXTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                drivetrain.getAuto("6N_7B")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop(),
+            LEDCommands.setAutoEnd(true)
         );
     }
 
-    public static Command m_autoaim_4note(){
+    public static Command m_3note() { //auto aim source side 3 note
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            ShooterCommands.spinUp(),
+            drivetrain.getAuto("3N_SA_1"),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_SA_2"),
+                    drivetrain.getAuto("3N_SA_3")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+            
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intake(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("3N_SA_4"),
+                    drivetrain.getAuto("3N_SA_5")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //END
+            LEDCommands.setAutoEnd(true),
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_autoaim_4note() { //auto aimed four note
         return new SequentialCommandGroup(
 
             //FIRST NOTE
@@ -212,53 +267,7 @@ public class Autos {
         );
     }
 
-    public static Command m_3note() {
-        return new SequentialCommandGroup(
-
-            //FIRST NOTE
-            ShooterCommands.spinUp(),
-            drivetrain.getAuto("3N_SA_1"),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-
-            //SECOND NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                drivetrain.getAuto("3N_SA_2")
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-            
-            //THIRD NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                drivetrain.getAuto("3N_SA_3")
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-
-            //END
-            LEDCommands.setAutoEnd(true),
-            ShooterCommands.stop()
-        );
-    }
-
-    public static Command m_6note_paths() {
-        return new SequentialCommandGroup(
-            drivetrain.getAuto("6N_1"),
-            drivetrain.getAuto("6N_2"),
-            drivetrain.getAuto("6N_3"),
-            drivetrain.getAuto("6N_4"),
-            drivetrain.getAuto("6N_5"),
-            drivetrain.getAuto("6N_6"),
-            drivetrain.getAuto("6N_7")
-        );
-    }
-
-    public static Command m_4note(){
+    public static Command m_4note() { //reliable four note from colorado
         return new SequentialCommandGroup(
 
             //FIRST NOTE
@@ -679,6 +688,74 @@ public class Autos {
     //         ShooterCommands.stop()
     //     );
     // }
+
+    
+    // public static Command trollAuto_b() {
+    //     return new SequentialCommandGroup(
+    //         CommandFactory.shootSideCommand(),
+    //         ShooterCommands.setAngle(Positions.SUB_LEFT),
+    //         ShooterCommands.setShooterSpeed(0.15),
+    //         IndexCommands.start(),
+    //         IntakeCommands.start(),
+    //         TunerConstants.DriveTrain.getAuto("TrollAuto"),
+    //         new WaitCommand(1),
+    //         ShooterCommands.stop(),
+    //         IndexCommands.stop(),
+    //         IntakeCommands.stop()
+    //     );
+    // }
+
+    // public static Command trollAutoPath() {
+    //     return new SequentialCommandGroup(
+    //         TunerConstants.DriveTrain.getAuto("TrollAuto")
+    //     );
+    // }
+
+    // public static Command grandPrixAuto() {
+    //     return new SequentialCommandGroup(
+    //         new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
+    //         TunerConstants.DriveTrain.getAuto("CrescendoGrandPrixAuto")
+
+    //     );
+    // }
+
+    // public static Command tysensIdeaAuto() {
+    //     return new SequentialCommandGroup(
+    //         new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
+    //         TunerConstants.DriveTrain.getAuto("TysensIdeaAuto")
+
+    //     );
+    // }
+
+    // public static Command superMaxAuto() {
+    //     return new SequentialCommandGroup(
+    //         new InstantCommand(() -> TunerConstants.DriveTrain.seedFieldRelative(new Pose2d(1.34, 5.53, new Rotation2d())), TunerConstants.DriveTrain),
+    //         TunerConstants.DriveTrain.getAuto("TUTUTUDUMAXVERSTAPPENAuto")
+
+    //     );
+    // }
+
+    // public static Command test(){
+    //     return new SequentialCommandGroup(
+    //         TunerConstants.DriveTrain.getAuto("MidNote"),
+    //         new InstantCommand(() -> SmartDashboard.putBoolean("i got pancreatic cancer", true)),
+    //         new WaitCommand(1),
+    //         TunerConstants.DriveTrain.getAuto("MidNoteBackAuto"),
+    //         new InstantCommand(() -> SmartDashboard.putBoolean("i got pancreatic cancer", false))
+    //     );
+    // }
+
+    // public static Command m_4_1p_3w(){
+    //     return new SequentialCommandGroup(
+    //         drivetrain.getAuto("4NFC_1"),
+    //         drivetrain.getAuto("4NFC_2"),
+    //         drivetrain.getAuto("4NFC_3"),
+    //         drivetrain.getAuto("4NFC_4"),
+    //         drivetrain.getAuto("4NFC_5"),
+    //         drivetrain.getAuto("4NFC_6")
+    //     );
+    // }
+
 
 }
 

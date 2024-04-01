@@ -472,8 +472,13 @@ public class RobotContainer {
 
     m_chooser.addOption("SIX NOTE", Autos.m_6note());
     m_chooser.addOption("SIX NOTE PATHS", Autos.m_6note_paths());
+    m_chooser.addOption("SIX NOTE ALT", Autos.m_6note_alt());
     m_chooser.addOption("SIX NOTE ALT PATHS", Autos.m_6note_alt_paths());
+    m_chooser.addOption("THREE NOTE SOURCE", Autos.m_3note());
+    m_chooser.addOption("THREE NOTE SOURCE PATHS", Autos.m_3note_paths());
     m_chooser.addOption("AUTOAIM 4 NOTE", Autos.m_autoaim_4note());
+    m_chooser.addOption("FOUR NOTE", Autos.m_4note());
+    
     // m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
 
     // m_chooser.addOption("BLUE 3 NOTE", Autos.m_3note_blue());
@@ -482,7 +487,6 @@ public class RobotContainer {
     // m_chooser.addOption("blue: troll auto", Autos.trollAuto_b());
     // m_chooser.addOption("blue: troll auto paths", Autos.trollAutoPath());
 
-    m_chooser.addOption("FOUR NOTE", Autos.m_4note());
     // m_chooser.addOption("4note paths not pp", Autos.m_4_1p_3w());
     // m_chooser.addOption("blue: 3 note source side", Autos.m_3note_b());
     // m_chooser.addOption("blue: 2 note 1 grab source side", Autos.m_2note_1g_b());
