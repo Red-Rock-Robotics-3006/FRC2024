@@ -34,6 +34,7 @@ import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.led.LEDCommands;
 import frc.robot.subsystems.led.State;
+import frc.robot.subsystems.pdh.PowerDistributionHub;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.swerve.*;
@@ -69,6 +70,9 @@ public class RobotContainer {
 
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
+  private PowerDistributionHub powerDistributionHub = PowerDistributionHub.getInstance();
+
+
   public Intake intake = Intake.getInstance();//TODO for now
   public Index index = Index.getInstance();
   public LED led = LED.getInstance();
