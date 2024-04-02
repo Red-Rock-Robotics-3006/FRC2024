@@ -30,7 +30,7 @@ public final class Constants {
     public static final boolean SHOOTER_HOMING_ENABLED = true;
     public static final boolean POLICE_MODE_ENABLED = true;
 
-    public static final boolean ABSOLUTE_LOCALIZATION = true;
+    public static final boolean ABSOLUTE_LOCALIZATION = false;
 
     
   }

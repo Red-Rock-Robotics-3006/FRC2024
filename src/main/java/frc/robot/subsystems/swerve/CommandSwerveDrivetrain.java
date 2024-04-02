@@ -249,43 +249,45 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
         if (tagInvisions[0]){
             tagPose0 = poses[0];
+            SmartDashboard.putBoolean("drivetrain-tag 0 found", true);
             if (withinRejectionDistance(currPose, poses[0])){
                 this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
                 SmartDashboard.putBoolean("drivetrain-tag 0 accepted", true);
             }
         } else {
             SmartDashboard.putBoolean("drivetrain-tag 0 accepted", false);
+            SmartDashboard.putBoolean("drivetrain-tag 0 found", false);
         }
 
-        if (tagInvisions[1]){
-            tagPose1 = poses[1];
-            if (withinRejectionDistance(currPose, poses[0])){
-                this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
-                SmartDashboard.putBoolean("drivetrain-tag 1 accepted", true);
-            }
-        } else {
-            SmartDashboard.putBoolean("drivetrain-tag 1 accepted", false);
-        }
+        // if (tagInvisions[1]){
+        //     tagPose1 = poses[1];
+        //     if (withinRejectionDistance(currPose, poses[1])){
+        //         this.addVisionMeasurement(poses[1], Timer.getFPGATimestamp());
+        //         SmartDashboard.putBoolean("drivetrain-tag 1 accepted", true);
+        //     }
+        // } else {
+        //     SmartDashboard.putBoolean("drivetrain-tag 1 accepted", false);
+        // }
 
-        if (tagInvisions[2]){
-            tagPose2 = poses[2];
-            if (withinRejectionDistance(currPose, poses[0])){
-                this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
-                SmartDashboard.putBoolean("drivetrain-tag 2 accepted", true);
-            }
-        } else {
-            SmartDashboard.putBoolean("drivetrain-tag 2 accepted", false);
-        }
+        // if (tagInvisions[2]){
+        //     tagPose2 = poses[2];
+        //     if (withinRejectionDistance(currPose, poses[0])){
+        //         this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
+        //         SmartDashboard.putBoolean("drivetrain-tag 2 accepted", true);
+        //     }
+        // } else {
+        //     SmartDashboard.putBoolean("drivetrain-tag 2 accepted", false);
+        // }
 
-        if (tagInvisions[3]){
-            tagPose3 = poses[3];
-            if (withinRejectionDistance(currPose, poses[0])){
-                this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
-                SmartDashboard.putBoolean("drivetrain-tag 3 accepted", true);
-            }
-        } else {
-            SmartDashboard.putBoolean("drivetrain-tag 3 accepted", false);
-        }
+        // if (tagInvisions[3]){
+        //     tagPose3 = poses[3];
+        //     if (withinRejectionDistance(currPose, poses[0])){
+        //         this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
+        //         SmartDashboard.putBoolean("drivetrain-tag 3 accepted", true);
+        //     }
+        // } else {
+        //     SmartDashboard.putBoolean("drivetrain-tag 3 accepted", false);
+        // }
         
          return this.getState().Pose;
     }
@@ -339,15 +341,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     if (Localization.getTags()[0]){
                         this.seedFieldRelative(Localization.getPose2ds()[0]);
                     }
-                    else if (Localization.getTags()[1]){
-                        this.seedFieldRelative(Localization.getPose2ds()[1]);
-                    }
-                    else if (Localization.getTags()[2]){
-                        this.seedFieldRelative(Localization.getPose2ds()[2]);
-                    }
-                    else if (Localization.getTags()[3]){
-                        this.seedFieldRelative(Localization.getPose2ds()[3]);
-                    }
+                    // else if (Localization.getTags()[1]){
+                    //     this.seedFieldRelative(Localization.getPose2ds()[1]);
+                    // }
+                    // else if (Localization.getTags()[2]){
+                    //     this.seedFieldRelative(Localization.getPose2ds()[2]);
+                    // }
+                    // else if (Localization.getTags()[3]){
+                    //     this.seedFieldRelative(Localization.getPose2ds()[3]);
+                    // }
                 },
                 () -> Localization.tagInVision());
         }

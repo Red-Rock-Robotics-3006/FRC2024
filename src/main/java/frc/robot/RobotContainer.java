@@ -34,7 +34,6 @@ import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.led.LEDCommands;
 import frc.robot.subsystems.led.State;
-import frc.robot.subsystems.pdh.PowerDistributionHub;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.swerve.*;
@@ -159,8 +158,15 @@ public class RobotContainer {
     );
     
     RobotModeTriggers.teleop().onTrue(
+      // new SequentialCommandGroup(
+      //   new InstantCommand(() -> Constants.Settings.ABSOLUTE_LOCALIZATION = false),
+      //   drivetrain.resetFieldHeading()
+      // )
         drivetrain.resetFieldHeading()
     );
+    // ).onFalse(
+    //   new InstantCommand(() -> Constants.Settings.ABSOLUTE_LOCALIZATION = true)
+    // );
 
     // RobotModeTriggers.autonomous().onTrue(
     //   drivetrain.resetFieldHeading()

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.pdh;
+package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -18,7 +18,7 @@ public class PowerDistributionHub extends SubsystemBase{
 
     private PowerDistributionHub(){
         super("pdh");
-        pdh.setSwitchableChannel(false);
+        pdh.setSwitchableChannel(true);
     }
 
     @Override

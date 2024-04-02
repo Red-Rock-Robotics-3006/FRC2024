@@ -43,7 +43,7 @@ public class Localization extends SubsystemBase{
         right = new Limelight("right",8);
         back = new Limelight("back",4);
 
-        limelights = new Limelight[]{front, left, right, back};
+        limelights = new Limelight[]{front};
     }
 
     public void periodic()

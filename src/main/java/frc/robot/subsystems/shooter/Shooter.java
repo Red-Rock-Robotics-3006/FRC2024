@@ -135,7 +135,7 @@ public class Shooter extends SubsystemBase {
     public static double kBottomShooterAmpSpeed = 0.2;
     public static double kAmpAngle = 51;
 
-    public static final double kShootP = 0.6;
+    public static final double kShootP = 0.65;
     public static final double kShootI = 0;
     public static final double kShootD = 0;
 
