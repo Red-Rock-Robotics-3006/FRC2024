@@ -121,9 +121,14 @@ public class Localization extends SubsystemBase{
     public static boolean[] getTags()
     {
         boolean[] tags = new boolean[limelights.length];
-        for(int i = 0; i < tags.length; i++)
+        for(int i = 0; i < tags.length; i++) {
             tags[i] = limelights[i].tiv();
+        }
         return tags;
+    }
+
+    public static Limelight[] getLimeLights(){
+        return limelights;
     }
 
     private class Limelight extends SubsystemBase{
@@ -135,6 +140,8 @@ public class Localization extends SubsystemBase{
         private boolean snapshot;
         private double horizontalDistance;
         private double validDistance = 4; // Meters
+
+        private final String name;
 
         public Limelight(String name)
         {
@@ -153,6 +160,7 @@ public class Localization extends SubsystemBase{
 
         public Limelight(String name, double distance, double x, double y)
         {
+            this.name = name;
             this.ll = NetworkTableInstance.getDefault().getTable("limelight-" + name);
             pose[0] = x;
             pose[1] = y;
@@ -163,6 +171,9 @@ public class Localization extends SubsystemBase{
         @Override
         public void periodic() {
             this.tagInVision = this.ll.getEntry("tv").getDouble(0) > 0;
+
+            SmartDashboard.putBoolean("limelight-" + this.name, this.tagInVision);
+            
             if(this.tagInVision)
                 this.updateLocation();
 

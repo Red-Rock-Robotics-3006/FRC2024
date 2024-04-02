@@ -165,7 +165,7 @@ public class LED extends SubsystemBase{
         }
         else if (Constants.Settings.POLICE_MODE_ENABLED && policeModeEnabled) {
             if (policeMode == 0) {//solid color
-                this.setLights(0, buffer.getLength() / 2, RED);
+                this.setLights(0, 7, RED);
                 this.setLights(buffer.getLength() / 2, buffer.getLength(), BLUE);
             }
             if (policeMode == 1) {//solid alternating color
@@ -177,7 +177,7 @@ public class LED extends SubsystemBase{
                 policeModeControl2++;
                 if (policeModeColorControl2 % 2 == 0) {
                     if (policeModeControl2 % 8 == 0) {
-                        this.setLights(0, 8, BLUE);
+                        this.setLights(0, 7, BLUE);
                         this.setLights(16, 24, BLUE);
                     }
                     else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
@@ -189,7 +189,7 @@ public class LED extends SubsystemBase{
                 else {
                     if (policeModeControl2 % 8 == 0) {
                         this.setLights(8, 16, RED);
-                        this.setLights(24, buffer.getLength(), RED);
+                        this.setLights(24, 29, RED);
                     }
                     else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
                     if (policeModeControl2 == 16) {
