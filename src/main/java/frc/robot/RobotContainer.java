@@ -69,7 +69,7 @@ public class RobotContainer {
 
 
   private final Telemetry logger = new Telemetry(MaxSpeed);
-  private PowerDistributionHub powerDistributionHub = PowerDistributionHub.getInstance();
+  // private PowerDistributionHub powerDistributionHub = PowerDistributionHub.getInstance();
 
 
   public Intake intake = Intake.getInstance();//TODO for now

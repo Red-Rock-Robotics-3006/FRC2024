@@ -164,40 +164,40 @@ public class LED extends SubsystemBase{
             }
         }
         else if (Constants.Settings.POLICE_MODE_ENABLED && policeModeEnabled) {
-            if (policeMode == 0) {//solid color
-                this.setLights(0, 7, RED);
-                this.setLights(buffer.getLength() / 2, buffer.getLength(), BLUE);
-            }
-            if (policeMode == 1) {//solid alternating color
-                policeModeControl1++;
-                if (policeModeControl1 % 50 == 0) this.setLights(RED);
-                else if (policeModeControl1 % 25 == 0) this.setLights(BLUE);
-            }
-            else if (policeMode == 2) {//three flashes each color on two halves
-                policeModeControl2++;
-                if (policeModeColorControl2 % 2 == 0) {
-                    if (policeModeControl2 % 8 == 0) {
-                        this.setLights(0, 7, BLUE);
-                        this.setLights(16, 24, BLUE);
-                    }
-                    else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
-                    if (policeModeControl2 == 16) {
-                        policeModeColorControl2++;
-                        policeModeControl2 = 0;
-                    }
-                }
-                else {
-                    if (policeModeControl2 % 8 == 0) {
-                        this.setLights(8, 16, RED);
-                        this.setLights(24, 29, RED);
-                    }
-                    else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
-                    if (policeModeControl2 == 16) {
-                        policeModeColorControl2++;
-                        policeModeControl2 = 0;
-                    }
-                }
-            }
+            // if (policeMode == 0) {//solid color
+            //     this.setLights(0, 7, RED);
+            //     this.setLights(buffer.getLength() / 2, buffer.getLength(), BLUE);
+            // }
+            // if (policeMode == 1) {//solid alternating color
+            //     policeModeControl1++;
+            //     if (policeModeControl1 % 50 == 0) this.setLights(RED);
+            //     else if (policeModeControl1 % 25 == 0) this.setLights(BLUE);
+            // }
+            // else if (policeMode == 2) {//three flashes each color on two halves
+            //     policeModeControl2++;
+            //     if (policeModeColorControl2 % 2 == 0) {
+            //         if (policeModeControl2 % 8 == 0) {
+            //             this.setLights(0, 7, BLUE);
+            //             this.setLights(16, 24, BLUE);
+            //         }
+            //         else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
+            //         if (policeModeControl2 == 16) {
+            //             policeModeColorControl2++;
+            //             policeModeControl2 = 0;
+            //         }
+            //     }
+            //     else {
+            //         if (policeModeControl2 % 8 == 0) {
+            //             this.setLights(8, 16, RED);
+            //             this.setLights(24, 29, RED);
+            //         }
+            //         else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
+            //         if (policeModeControl2 == 16) {
+            //             policeModeColorControl2++;
+            //             policeModeControl2 = 0;
+            //         }
+            //     }
+            // }
         }
          
         this.control.setData(this.buffer);

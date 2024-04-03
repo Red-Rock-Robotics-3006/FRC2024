@@ -207,8 +207,8 @@ public class Localization extends SubsystemBase{
             this.pose = this.ll.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
             this.pose2d = new Pose2d(this.pose[0], this.pose[1], new Rotation2d(this.pose[5]));
             this.pose3d = new Pose3d(this.pose[0], this.pose[1], this.pose[2], new Rotation3d(this.pose[3], this.pose[4], this.pose[5]));
-            double[] bot = this.ll.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
-            this.horizontalDistance = Math.sqrt(bot[0]*bot[0] + bot[1]*bot[1]);
+            // double[] bot = this.ll.getEntry("botpose_targetspace").getDoubleArray(new double[6]);
+            // this.horizontalDistance = Math.sqrt(bot[0]*bot[0] + bot[1]*bot[1]);
         }
 
         public double[] getPose()
