@@ -2,6 +2,8 @@ package frc.robot.subsystems.swerve;
 
 import java.util.function.Supplier;
 
+import org.ejml.simple.SimpleMatrix;
+
 import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -19,6 +21,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -58,7 +61,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public static final double kHigherPredictCoeff = 0.2;
 
-    public static final double kRejectionDistance = 1.0;
+    public static final double kRejectionDistance = 1;
+
+    private boolean useAbsolute = true;
 
     // private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
     //             .getStructTopic("pose", Pose2d.struct).publish();
@@ -155,6 +160,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);
         SmartDashboard.putNumber("predict heading pid threshold", kPredictThreshold);
         SmartDashboard.putNumber("predict heading pid higher", kHigherPredictCoeff);
+
+                this.setVisionMeasurementStdDevs(new Matrix<>(new SimpleMatrix(new double[]{3, 3, 3})));
+
     }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
@@ -190,6 +198,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);
         SmartDashboard.putNumber("predict heading pid threshold", kPredictThreshold);
         SmartDashboard.putNumber("predict heading pid higher", kHigherPredictCoeff);
+        this.setVisionMeasurementStdDevs(new Matrix<>(new SimpleMatrix(new double[]{3, 3, 3})));
 
     }
 
@@ -213,14 +222,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             TunerConstants.kSpeedAt12VoltsMps,
                                             driveBaseRadius,
                                             new ReplanningConfig()),
-            ()->false, // Change this if the path needs to be flipped on red vs blue
-            // () -> {//TODO this is is testing and we hope it works
-            //     var alliance = DriverStation.getAlliance();
-            //     if (alliance.isPresent()) {
-            //       return alliance.get() == DriverStation.Alliance.Red;
-            //     }
-            //     return false;
-            // },
+            // ()->false, // Change this if the path needs to be flipped on red vs blue
+            () -> {//TODO this is is testing and we hope it works
+                var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                  return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            },
             this); // Subsystem for requirements
     }
 
@@ -231,33 +240,33 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public Pose2d getPose(){
          
 
-        if (!Constants.Settings.ABSOLUTE_LOCALIZATION) return this.getState().Pose;
-        // if (Localization.tagInVision()){
-        //     Pose2d pose = new Pose2d(
-        //         Localization.getPose().getX(),
-        //         Localization.getPose().getY(),
-        //         this.getState().Pose.getRotation()
-        //     );
+        // if (!Constants.Settings.ABSOLUTE_LOCALIZATION) return this.getState().Pose;
+        // // if (Localization.tagInVision()){
+        // //     Pose2d pose = new Pose2d(
+        // //         Localization.getPose().getX(),
+        // //         Localization.getPose().getY(),
+        // //         this.getState().Pose.getRotation()
+        // //     );
 
-        //     this.seedFieldRelative(pose);
-        //     return pose;
+        // //     this.seedFieldRelative(pose);
+        // //     return pose;
+        // // }
+        // boolean[] tagInvisions = Localization.getTags();
+        // Pose2d[] poses = Localization.getPose2ds();
+
+        // Pose2d currPose = this.getState().Pose;
+
+        // if (tagInvisions[0]){
+        //     tagPose0 = poses[0];
+        //     SmartDashboard.putBoolean("drivetrain-tag 0 found", true);
+        //     if (withinRejectionDistance(currPose, poses[0])){
+        //         this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
+        //         SmartDashboard.putBoolean("drivetrain-tag 0 accepted", true);
+        //     }
+        // } else {
+        //     SmartDashboard.putBoolean("drivetrain-tag 0 accepted", false);
+        //     SmartDashboard.putBoolean("drivetrain-tag 0 found", false);
         // }
-        boolean[] tagInvisions = Localization.getTags();
-        Pose2d[] poses = Localization.getPose2ds();
-
-        Pose2d currPose = this.getState().Pose;
-
-        if (tagInvisions[0]){
-            tagPose0 = poses[0];
-            SmartDashboard.putBoolean("drivetrain-tag 0 found", true);
-            if (withinRejectionDistance(currPose, poses[0])){
-                this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
-                SmartDashboard.putBoolean("drivetrain-tag 0 accepted", true);
-            }
-        } else {
-            SmartDashboard.putBoolean("drivetrain-tag 0 accepted", false);
-            SmartDashboard.putBoolean("drivetrain-tag 0 found", false);
-        }
 
         // if (tagInvisions[1]){
         //     tagPose1 = poses[1];
@@ -311,13 +320,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         return new PathPlannerAuto(text);
     }
 
+    public void setAbsolute(boolean b){
+        this.useAbsolute = b;
+    }
+
     public Command resetHeading(){
-        if (Constants.Settings.ABSOLUTE_LOCALIZATION){
-            return new InstantCommand(
-                () -> this.seedFieldRelative(),
-                this
-            );
-        }
+        // if (Constants.Settings.ABSOLUTE_LOCALIZATION){
+            // return new InstantCommand(
+            //     () -> this.seedFieldRelative(),
+            //     this
+            // );
+        // }
         return new SequentialCommandGroup(
             new InstantCommand(() -> Shooter.getInstance().setOffset(this.getState().Pose.getRotation().getDegrees() + Shooter.getInstance().getOffset()), Shooter.getInstance()),
             new InstantCommand(() -> this.seedFieldRelative(
@@ -333,8 +346,42 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
     
     public Command resetFieldHeading(){
-        if (Constants.Settings.ABSOLUTE_LOCALIZATION){
-            return new FunctionalCommand(
+        // if (Constants.Settings.ABSOLUTE_LOCALIZATION){
+        //     return new FunctionalCommand(
+        //         () -> {}, 
+        //         () -> {}, 
+        //         (interrupted) -> {
+        //             if (Localization.getTags()[0]){
+        //                 this.seedFieldRelative(Localization.getPose2ds()[0]);
+        //             }
+        //             // else if (Localization.getTags()[1]){
+        //             //     this.seedFieldRelative(Localization.getPose2ds()[1]);
+        //             // }
+        //             // else if (Localization.getTags()[2]){
+        //             //     this.seedFieldRelative(Localization.getPose2ds()[2]);
+        //             // }
+        //             // else if (Localization.getTags()[3]){
+        //             //     this.seedFieldRelative(Localization.getPose2ds()[3]);
+        //             // }
+        //         },
+        //         () -> Localization.tagInVision());
+        // }
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> Shooter.getInstance().setOffset(0), Shooter.getInstance()),
+            new InstantCommand(() -> this.seedFieldRelative(
+              new Pose2d(
+                this.getState().Pose.getX(),
+                this.getState().Pose.getY(),
+                new Rotation2d()
+              )
+            ), this
+          ),
+          new InstantCommand(() -> this.setTargetHeading(0), this)
+        );
+    }
+
+    public Command resetOdo(){
+                    return new FunctionalCommand(
                 () -> {}, 
                 () -> {}, 
                 (interrupted) -> {
@@ -352,19 +399,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     // }
                 },
                 () -> Localization.tagInVision());
-        }
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> Shooter.getInstance().setOffset(0), Shooter.getInstance()),
-            new InstantCommand(() -> this.seedFieldRelative(
-              new Pose2d(
-                this.getState().Pose.getX(),
-                this.getState().Pose.getY(),
-                new Rotation2d()
-              )
-            ), this
-          ),
-          new InstantCommand(() -> this.setTargetHeading(0), this)
-        );
     }
 
     public Command goToPose(Pose2d pose){
@@ -450,6 +484,59 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void periodic(){
+        // if (useAbsolute){
+            // boolean[] tagInvisions = Localization.getTags();
+            // Pose2d[] poses = Localization.getPose2ds();
+
+            // Pose2d currPose = this.getState().Pose;
+
+            
+
+            // if (tagInvisions[0]){
+            //     tagPose0 = poses[0];
+            //         SmartDashboard.putBoolean("drivetrain-tag 0 found", true);
+            //     if (withinRejectionDistance(currPose, poses[0])){
+            //         if (this.useAbsolute) this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
+            //         SmartDashboard.putBoolean("drivetrain-tag 0 accepted", true);
+            //     }
+            // } else {
+            //     SmartDashboard.putBoolean("drivetrain-tag 0 accepted", false);
+            //     SmartDashboard.putBoolean("drivetrain-tag 0 found", false);
+            // }
+
+            // if (tagInvisions[1]){
+            //     tagPose1 = poses[1];
+            //     if (withinRejectionDistance(currPose, poses[1])){
+            //         this.addVisionMeasurement(poses[1], Timer.getFPGATimestamp());
+            //         SmartDashboard.putBoolean("drivetrain-tag 1 accepted", true);
+            //     }
+            // } else {
+            //     SmartDashboard.putBoolean("drivetrain-tag 1 accepted", false);
+            // }
+
+            // if (tagInvisions[2]){
+            //     tagPose2 = poses[2];
+            //     if (withinRejectionDistance(currPose, poses[0])){
+            //         this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
+            //         SmartDashboard.putBoolean("drivetrain-tag 2 accepted", true);
+            //     }
+            // } else {
+            //     SmartDashboard.putBoolean("drivetrain-tag 2 accepted", false);
+            // }
+
+            // if (tagInvisions[3]){
+            //     tagPose3 = poses[3];
+            //     if (withinRejectionDistance(currPose, poses[0])){
+            //         this.addVisionMeasurement(poses[0], Timer.getFPGATimestamp());
+            //         SmartDashboard.putBoolean("drivetrain-tag 3 accepted", true);
+            //     }
+            // } else {
+            //     SmartDashboard.putBoolean("drivetrain-tag 3 accepted", false);
+            // }
+        // }
+
+
+
         this.field.setRobotPose(this.getPose());
 
         this.tagField0.setRobotPose(this.tagPose0);
@@ -462,6 +549,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("drivetrain-field heading", this.getState().Pose.getRotation().getDegrees());
 
         SmartDashboard.putNumber("drivetrain-fga timestamp", Timer.getFPGATimestamp());
+
+        SmartDashboard.putBoolean("abs localization", this.useAbsolute);
     }
 
 

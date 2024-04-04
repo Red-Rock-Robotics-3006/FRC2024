@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.index.Index;
+import frc.robot.subsystems.index.IndexCommands;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.led.LEDCommands;
@@ -57,6 +58,22 @@ public class Autos {
             drivetrain.getAuto("3N_SA_3"),
             drivetrain.getAuto("3N_SA_4"),
             drivetrain.getAuto("3N_SA_5")
+        );
+    }
+
+    public static Command m_trollauto_paths() { //auto aim source side 3 note paths
+        return new SequentialCommandGroup(
+            drivetrain.getAuto("TrollAuto")
+        );
+    }
+
+    public static Command m_trollauto() {
+        return new SequentialCommandGroup(
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.trollSpinUp(),
+            IntakeCommands.start(),
+            IndexCommands.start(),
+            drivetrain.getAuto("TrollAuto")
         );
     }
 

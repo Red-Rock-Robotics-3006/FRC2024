@@ -40,6 +40,13 @@ public class ShooterCommands {
         );
     }
 
+    public static Command trollSpinUp() {
+        return new InstantCommand(
+            () -> shooter.setShooterSpeed(0.1),
+            shooter
+        );
+    }
+
     public static Command ampSpinUp() {
         return new SequentialCommandGroup(
             new InstantCommand(

@@ -158,15 +158,17 @@ public class RobotContainer {
     );
     
     RobotModeTriggers.teleop().onTrue(
-      // new SequentialCommandGroup(
-      //   new InstantCommand(() -> Constants.Settings.ABSOLUTE_LOCALIZATION = false),
-      //   drivetrain.resetFieldHeading()
-      // )
+      new SequentialCommandGroup(
+        new InstantCommand(() -> drivetrain.setAbsolute(false)),
         drivetrain.resetFieldHeading()
-    );
-    // ).onFalse(
-    //   new InstantCommand(() -> Constants.Settings.ABSOLUTE_LOCALIZATION = true)
+      )
+        // drivetrain.resetFieldHeading()
     // );
+    );
+
+    RobotModeTriggers.disabled().onTrue(
+      new InstantCommand(() -> drivetrain.setAbsolute(true))
+    );
 
     // RobotModeTriggers.autonomous().onTrue(
     //   drivetrain.resetFieldHeading()
@@ -175,10 +177,18 @@ public class RobotContainer {
     //SHOOTER ANGLE BINDINGS
 
     joystick.povDown().onTrue(
-      ShooterCommands.setAngle(Shooter.Positions.SUB_CENTER)//Shooter.encoderTarget = 0.8)
+      new InstantCommand(
+        () -> {shooter.deny(); System.out.println("povdown");},
+        shooter
+      )
+      // ShooterCommands.setAngle(Shooter.Positions.SUB_CENTER)//Shooter.encoderTarget = 0.8)
     );
     joystick.povUp().onTrue(
-      ShooterCommands.setAngle(Shooter.Positions.SUB_LEFT)//Shooter.encoderTarget = 0.7)
+      new InstantCommand(
+        () -> {shooter.accept(); System.out.println("povup");},
+        shooter
+      )
+      // ShooterCommands.setAngle(Shooter.Positions.SUB_LEFT)//Shooter.encoderTarget = 0.7)
     );
     joystick.povRight().onTrue(
       new InstantCommand(
@@ -265,6 +275,12 @@ public class RobotContainer {
     mechstick.povDown().onTrue(
       ShooterCommands.decreaseDistanceFeed()
     );
+    mechstick.povRight().onTrue(
+      new InstantCommand(
+        () -> {shooter.exportTable(); System.out.println("povRight export table pressed");},
+        shooter
+      )
+    );
 
     //CLIMB PROCESS BINDINGS
 
@@ -332,9 +348,9 @@ public class RobotContainer {
     ).onFalse(
       new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC), drivetrain)
     );
-    mechstick.start().onTrue(
-      drivetrain.resetFieldHeading()
-    );
+    // mechstick.start().onTrue(
+    //   drivetrain.resetOdo()
+    // );
     mechstick.b().whileTrue(
       drivetrain.applyRequest(() -> brake)
     );
@@ -484,6 +500,8 @@ public class RobotContainer {
     m_chooser.addOption("THREE NOTE SOURCE PATHS", Autos.m_3note_paths());
     m_chooser.addOption("AUTOAIM 4 NOTE", Autos.m_autoaim_4note());
     m_chooser.addOption("FOUR NOTE", Autos.m_4note());
+    m_chooser.addOption("troll auto", Autos.m_trollauto());
+    m_chooser.addOption("troll auto paths", Autos.m_trollauto_paths());
     
     // m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
 

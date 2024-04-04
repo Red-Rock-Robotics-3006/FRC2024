@@ -36,7 +36,7 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 public class Shooter extends SubsystemBase {
 
 
-    private ArrayList<double[]> table;
+    private ArrayList<double[]> table = new ArrayList<double[]>();
     private double[] pos;
     private int n;
     
@@ -639,44 +639,56 @@ public class Shooter extends SubsystemBase {
 
     public void newLoc()
     {
+        System.out.println("NEWLOC CALLED");
+        System.out.println("MMMMMMMMMMMMMMM horizontal distance- " + this.horizontalDistance + " target pitch- " + this.targetPitch + " current angle- " + SmartDashboard.getNumber("current angle", -1));
         this.pos = new double[]{this.horizontalDistance, this.targetPitch, SmartDashboard.getNumber("current angle", -1), 1}; // Add shooter speed later
     }
 
     public void accept()
     {
+        // System.out.println("ACCEPT CALLED");
         this.table.add(this.pos);
-        this.pos = new double[0];
+        this.pos = new double[4];
     }
 
     public void deny()
     {
         this.pos[3] = 0;
         this.accept();
+        // System.out.println("DENY CALLED");
     }
 
     public void exportTable()
     {
-        while(true)
-        {
-            File lookup = new File("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
-            try {
-                if(lookup.createNewFile())
-                {
-                    System.out.println("Success!");
-                    break;
-                }
-                else
-                {
-                    System.out.println("Something went wrong...");
-                    n++;
-                }
-            } catch (IOException e) {}
-        }
+        // while(true)
+        // {
+        //     File lookup = new File("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
+        //     try {
+        //         if(lookup.createNewFile())
+        //         {
+        //             System.out.println("Success!");
+        //             break;
+        //         }
+        //         else
+        //         {
+        //             System.out.println("Something went wrong...");
+        //             n++;
+        //         }
+        //     } catch (IOException e) {}
+        // }
 
-        try {
-            FileWriter writer = new FileWriter("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
-            writer.write(""+this.table);
-        } catch (IOException e) {}
+        // try {
+        //     System.out.println("MMMMMMMMMMMMMMM a file is being written");
+        //     FileWriter writer = new FileWriter("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
+        //     writer.write(""+this.table);
+        // } catch (IOException e) {}
+
+        for (int i = 0; i < this.table.size(); i++) {
+            for (int j = 0; j < 4; j++) {
+                System.out.print(this.table.get(i)[j] + " ");
+            }
+            System.out.println("");
+        }
 
     }
 
