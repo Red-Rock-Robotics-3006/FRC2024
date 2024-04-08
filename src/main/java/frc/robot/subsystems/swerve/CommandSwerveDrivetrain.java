@@ -557,7 +557,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             // }
         // }
 
-        this.addVisionMeasurements();
+        if (this.useAbsolute) this.addVisionMeasurements();
 
         this.field.setRobotPose(this.getPose());
 
