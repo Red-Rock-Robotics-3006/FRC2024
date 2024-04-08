@@ -22,6 +22,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -64,6 +65,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public static final double kRejectionDistance = 1;
 
     private boolean useAbsolute = true;
+
+    private AprilTagIO[] aprilTagLL = new AprilTagIO[3];
 
     // private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
     //             .getStructTopic("pose", Pose2d.struct).publish();
@@ -161,8 +164,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("predict heading pid threshold", kPredictThreshold);
         SmartDashboard.putNumber("predict heading pid higher", kHigherPredictCoeff);
 
-                this.setVisionMeasurementStdDevs(new Matrix<>(new SimpleMatrix(new double[]{3, 3, 3})));
-
+        configureAll();
     }
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
         super(driveTrainConstants, modules);
@@ -198,8 +200,15 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("predict heading pid coeff", kPredictAngleCoeff);
         SmartDashboard.putNumber("predict heading pid threshold", kPredictThreshold);
         SmartDashboard.putNumber("predict heading pid higher", kHigherPredictCoeff);
-        this.setVisionMeasurementStdDevs(new Matrix<>(new SimpleMatrix(new double[]{3, 3, 3})));
 
+        configureAll();
+
+    }
+
+    private void configureAll(){
+        for (AprilTagIO ap : aprilTagLL){
+            SmartDashboard.putData(ap.getName(), ap.getField2d());
+        }
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -326,23 +335,23 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command resetHeading(){
         // if (Constants.Settings.ABSOLUTE_LOCALIZATION){
-            // return new InstantCommand(
-            //     () -> this.seedFieldRelative(),
-            //     this
-            // );
+            return new InstantCommand(
+                () -> this.seedFieldRelative(),
+                this
+            );
         // }
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> Shooter.getInstance().setOffset(this.getState().Pose.getRotation().getDegrees() + Shooter.getInstance().getOffset()), Shooter.getInstance()),
-            new InstantCommand(() -> this.seedFieldRelative(
-              new Pose2d(
-                this.getState().Pose.getX(),
-                this.getState().Pose.getY(),
-                new Rotation2d()
-              )
-            ), this
-          ),
-          new InstantCommand(() -> this.setTargetHeading(0), this)
-        );
+        // return new SequentialCommandGroup(
+        //     new InstantCommand(() -> Shooter.getInstance().setOffset(this.getState().Pose.getRotation().getDegrees() + Shooter.getInstance().getOffset()), Shooter.getInstance()),
+        //     new InstantCommand(() -> this.seedFieldRelative(
+        //       new Pose2d(
+        //         this.getState().Pose.getX(),
+        //         this.getState().Pose.getY(),
+        //         new Rotation2d()
+        //       )
+        //     ), this
+        //   ),
+        //   new InstantCommand(() -> this.setTargetHeading(0), this)
+        // );
     }
     
     public Command resetFieldHeading(){
@@ -381,7 +390,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command resetOdo(){
-                    return new FunctionalCommand(
+        return new FunctionalCommand(
                 () -> {}, 
                 () -> {}, 
                 (interrupted) -> {
@@ -445,7 +454,22 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         }
         System.out.println("enable chrp?: " + TalonUtils.configureOrchestra("music/sirens.chrp"));
     }
+    
+    public boolean withinRejectionDistance(Pose2d p1, Pose2d p2){
+        // return Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY())) < kRejectionDistance;
+        return true;
+    }
 
+    public void addVisionMeasurements(){
+        
+        for (AprilTagIO aprilTagDetector : aprilTagLL){
+            aprilTagDetector.getField2d().setRobotPose(aprilTagDetector.getPoseEstimate());
+            if (aprilTagDetector.isValid()){
+                this.addVisionMeasurement(aprilTagDetector.getPoseEstimate(), aprilTagDetector.getTimeStamp(), aprilTagDetector.getStandardDeviations());
+            }
+            
+        }
+    }
     // public void toggleChrp(){
     //     if (orchestra.isPlaying()) orchestra.stop();
     //     else orchestra.play();
@@ -456,13 +480,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         this.driveState = state;
     }
 
+    @Override
     public DriveState getDriveState(){
         return this.driveState;
     }
 
-    public boolean withinRejectionDistance(Pose2d p1, Pose2d p2){
-        return Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY())) < kRejectionDistance;
-    }
 
 
     
@@ -535,7 +557,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             // }
         // }
 
-
+        this.addVisionMeasurements();
 
         this.field.setRobotPose(this.getPose());
 
@@ -551,6 +573,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("drivetrain-fga timestamp", Timer.getFPGATimestamp());
 
         SmartDashboard.putBoolean("abs localization", this.useAbsolute);
+
+        
+
+        
     }
 
 
