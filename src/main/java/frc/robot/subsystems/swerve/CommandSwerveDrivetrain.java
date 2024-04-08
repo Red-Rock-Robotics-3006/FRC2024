@@ -376,7 +376,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         //         () -> Localization.tagInVision());
         // }
         return new SequentialCommandGroup(
-            new InstantCommand(() -> Shooter.getInstance().setOffset(0), Shooter.getInstance()),
+            // new InstantCommand(() -> Shooter.getInstance().setOffset(0), Shooter.getInstance()),
             new InstantCommand(() -> this.seedFieldRelative(
               new Pose2d(
                 this.getState().Pose.getX(),

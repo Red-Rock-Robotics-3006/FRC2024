@@ -322,6 +322,23 @@ public class Shooter extends SubsystemBase {
         this.setTarget(SmartDashboard.getNumber("amp angle", kAmpAngle));
     }
 
+    public void runFullLobShot() {
+        this.topShooterTarget = (SmartDashboard.getNumber("shooter lob speed", kLobShooterSpeed));
+        this.bottomShooterTarget = (SmartDashboard.getNumber("shooter lob speed", kLobShooterSpeed));
+    }
+
+    public void runFullLobAngle() {
+        this.setTarget(SmartDashboard.getNumber("full lob angle", kLobAngle));
+    }
+
+    public void setRunningFullLob(boolean b) {
+        this.runningFullLob = b;
+    }
+
+    public boolean getRunningFullLob() {
+        return this.runningFullLob;
+    }
+
     // public double getOffset(){
     //     return this.homingOffset;
     // }
