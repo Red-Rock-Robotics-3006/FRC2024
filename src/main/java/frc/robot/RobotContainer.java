@@ -34,6 +34,7 @@ import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.led.LEDCommands;
 import frc.robot.subsystems.led.State;
+import frc.robot.subsystems.localization.Localization;
 import frc.robot.subsystems.shooter.*;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.swerve.*;

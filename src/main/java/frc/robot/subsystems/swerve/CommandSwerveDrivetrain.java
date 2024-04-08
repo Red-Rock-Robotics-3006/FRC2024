@@ -45,7 +45,7 @@ import frc.robot.subsystems.swerve.generated.*;
 import frc.robot.util.TalonUtils;
 import frc.robot.Constants;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.shooter.Localization;
+import frc.robot.subsystems.localization.Localization;
 import frc.robot.subsystems.shooter.Shooter;
 
 /**
