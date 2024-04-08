@@ -1,15 +1,22 @@
 package frc.robot.subsystems.localization;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.swerve.AprilTagIO;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
-public class Limelight extends SubsystemBase{
+public class Limelight extends SubsystemBase implements AprilTagIO{
     private NetworkTable limelightTable;
     private double[] pose = new double[6];
     private Pose2d pose2d;
@@ -24,6 +31,11 @@ public class Limelight extends SubsystemBase{
 
     private final String name;
 
+    private double stdvX, stdvY, stdvTheta;
+
+    private double[] visionStdvs = new double[3];
+
+    private Field2d field = new Field2d();
 
     /**
      * @param name the name of the limelight after "limelight-"
@@ -70,6 +82,10 @@ public class Limelight extends SubsystemBase{
 
         this.validDistance = distance;
         numOfLimelights++;
+
+        SmartDashboard.putNumber(name + "stdv x", AprilTagIO.kStdvX);
+        SmartDashboard.putNumber(name + "stdv y", AprilTagIO.kStdvY);
+        SmartDashboard.putNumber(name + "stdv theta", AprilTagIO.kStdvTheta);
     }
 
     @Override
@@ -87,6 +103,23 @@ public class Limelight extends SubsystemBase{
             activeLimelights |= (int)Math.pow(2, this.llNum);
         else
             activeLimelights &= (int)Math.pow(2, numOfLimelights) - (int)Math.pow(2, this.llNum) - 1;
+
+        //update stdv
+        this.stdvX = SmartDashboard.getNumber(name + "stdv x", AprilTagIO.kStdvX);
+        this.stdvY = SmartDashboard.getNumber(name + "stdv y", AprilTagIO.kStdvY);
+        this.stdvTheta = SmartDashboard.getNumber(name + "stdv theta", AprilTagIO.kStdvTheta);
+
+        updateDynamicStdv();
+    }
+
+    private void updateDynamicStdv(){
+        this.visionStdvs[0] = stdvX + stdvX * (this.distanceFromTag * this.distanceFromTag) / AprilTagIO.kStdvScaleDenominator;
+        this.visionStdvs[1] = stdvY + stdvY * (this.distanceFromTag * this.distanceFromTag) / AprilTagIO.kStdvScaleDenominator;
+        this.visionStdvs[2] = stdvTheta + stdvTheta * (this.distanceFromTag * this.distanceFromTag) / AprilTagIO.kStdvScaleDenominator;
+
+        SmartDashboard.putNumber(name + "vision stdvX", visionStdvs[0]);
+        SmartDashboard.putNumber(name + "vision stdvY", visionStdvs[1]);
+        SmartDashboard.putNumber(name + "vision stdvTheta", visionStdvs[2]);
     }
 
     /**
@@ -188,5 +221,33 @@ public class Limelight extends SubsystemBase{
     public boolean is3g()
     {
         return !this.name.contains("back");
+    }
+
+    @Override
+    public Matrix<N3, N1> getStandardDeviations() {
+        // throw new UnsupportedOperationException("Unimplemented method 'getStandardDeviations'");
+        return VecBuilder.fill(
+            visionStdvs[0], 
+            visionStdvs[1], 
+            visionStdvs[2]);
+    }
+
+    @Override
+    public Pose2d getPoseEstimate() {
+        // throw new UnsupportedOperationException("Unimplemented method 'getPoseEstimate'");
+        return this.getPose2d();
+    }
+
+    @Override
+    public double getTimeStamp() {
+        // throw new UnsupportedOperationException("Unimplemented method 'getTimeStamp'");
+        return Timer.getFPGATimestamp();
+    }
+
+    @Override
+    public Field2d getField2d() {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'getField2d'");
+        return this.field;
     }
 }
