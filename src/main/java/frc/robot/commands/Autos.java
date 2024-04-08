@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.index.IndexCommands;
+import frc.robot.subsystems.index.TOFSensor;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeCommands;
-import frc.robot.subsystems.led.LEDCommands;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.ShooterCommands;
 import frc.robot.subsystems.shooter.Shooter.Positions;
@@ -20,6 +20,7 @@ public class Autos {
     public static Intake intake = Intake.getInstance();
     public static Index index = Index.getInstance();
     public static Shooter shooter = Shooter.getInstance();
+    public static TOFSensor sensor = TOFSensor.getInstance();
     public static CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
     public static double kSpinUpTime = 2;
@@ -155,15 +156,16 @@ public class Autos {
             ShooterCommands.setHoming(true),
             new WaitCommand(0.5),
             ShooterCommands.shootAuto(),
-
             //THIRD NOTE
             new ParallelCommandGroup(
                 IntakeCommands.intake(),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("6N_2B"),
-                    drivetrain.getAuto("6N_3B")
+                    new WaitCommand(0.3),
+                    runThirdPath()
                 )
             ),
+            // runBackupThird(),
             ShooterCommands.setHoming(true),
             new WaitCommand(0.5),
             ShooterCommands.shootAuto(),
@@ -202,6 +204,22 @@ public class Autos {
             ShooterCommands.stop()
         );
     }
+
+    public static Command runThirdPath() {
+        if (sensor.hasNote()) {
+            return drivetrain.getAuto("6N_3B");
+        }
+        else {
+            return drivetrain.getAuto("6N_3B_Backup1");
+            // if (sensor.hasNote()) {
+            //     return drivetrain.getAuto("6N_3B_Backup1");
+            // }
+        }
+    }
+
+    // public static Command runBackupThird() {
+
+    // }
 
     public static Command m_3note() { //auto aim source side 3 note
         return new SequentialCommandGroup(
