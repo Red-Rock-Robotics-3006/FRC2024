@@ -135,6 +135,9 @@ public class Shooter extends SubsystemBase {
     public static double kBottomShooterAmpSpeed = 0.2;
     public static double kAmpAngle = 51;
 
+    public static double kLobAngle = 54;
+    public static double kLobShooterSpeed = 50;
+
     public static final double kShootP = 0.65;
     public static final double kShootI = 0;
     public static final double kShootD = 0;
@@ -145,6 +148,7 @@ public class Shooter extends SubsystemBase {
     public static final double kMaxRPM = 6700;
 
     private boolean runningAmp = false;
+    private boolean runningFullLob = false;
 
 
 
@@ -193,9 +197,14 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("top shooter amp speed", kTopShooterAmpSpeed);
         SmartDashboard.putNumber("bottom shooter amp speed", kBottomShooterAmpSpeed);
 
+        SmartDashboard.putNumber("shooter lob speed", kLobShooterSpeed);
+        SmartDashboard.getNumber("full lob angle", kLobAngle);
+
         SmartDashboard.putNumber("shooter velo p", kShootP);
         SmartDashboard.putNumber("shooter velo i", kShootI);
         SmartDashboard.putNumber("shooter velo d", kShootD);
+
+        SmartDashboard.putNumber("full court lob heading", 120);
 
         ShooterCommands.burnFlash();
 
@@ -213,6 +222,11 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         // Get robot pos from Localization
         this.updateLocation();
+
+        
+        if (runningFullLob) {
+            this.swerve.setTargetHeading(SmartDashboard.getNumber("full court lob heading", 120));
+        }
 
 
         this.EXIT_VELOCITY = SmartDashboard.getNumber("Exit Velocity", 8);
@@ -306,6 +320,23 @@ public class Shooter extends SubsystemBase {
 
     public void runAmpAngle() {
         this.setTarget(SmartDashboard.getNumber("amp angle", kAmpAngle));
+    }
+
+    public void runFullLobShot() {
+        this.topShooterTarget = (SmartDashboard.getNumber("shooter lob speed", kLobShooterSpeed));
+        this.bottomShooterTarget = (SmartDashboard.getNumber("shooter lob speed", kLobShooterSpeed));
+    }
+
+    public void runFullLobAngle() {
+        this.setTarget(SmartDashboard.getNumber("full lob angle", kLobAngle));
+    }
+
+    public void setRunningFullLob(boolean b) {
+        this.runningFullLob = b;
+    }
+    
+    public boolean getRunningFullLob() {
+        return this.runningFullLob;
     }
 
     public double getOffset(){
@@ -605,6 +636,9 @@ public class Shooter extends SubsystemBase {
         this.targetPitch = Math.max(min, Math.min(max, pitch));
     }
     
+    public double getTarget() {
+        return this.targetPitch;
+    }
 
     public void setAngleSpeed(double speed)
     {

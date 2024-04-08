@@ -22,7 +22,8 @@ public class ShooterCommands {
             () -> {}, 
             (interrupted) -> {shooter.stow(); index.stopTransfer(); led.setState(State.RESTING); led.setIsAmping(false);},
             () -> !sensor.hasNote(), 
-            index, shooter, sensor);
+            index, shooter, sensor
+        );
     }
 
     public static Command shootAuto() {
@@ -31,7 +32,18 @@ public class ShooterCommands {
             () -> {}, 
             (interrupted) -> {index.stopTransfer(); shooter.setHoming(false); led.setState(State.RESTING);},
             () -> !sensor.hasNote(), 
-            index, shooter, sensor);
+            index, shooter, sensor
+        );
+    }
+
+    public static Command fullCourtLob() {
+        return new FunctionalCommand(
+            () -> {shooter.runFullLobShot(); shooter.runFullLobAngle(); shooter.setRunningFullLob(true);}, 
+            () -> {}, 
+            (interrupted) -> {shooter.setRunningFullLob(false);},
+            () -> !sensor.hasNote(), 
+            shooter, sensor
+        );
     }
 
     public static Command spinUp() {
@@ -75,9 +87,23 @@ public class ShooterCommands {
         );
     }
 
+    public static Command stow() {
+        return new InstantCommand(
+            () -> shooter.stow(),
+            shooter
+        );
+    }
+
     public static Command setAngle(Shooter.Positions e) {
         return new InstantCommand(
             () -> shooter.presetShoot(e),
+            shooter
+        );
+    }
+
+    public static Command setTarget(double angle) {
+        return new InstantCommand(
+            () -> shooter.setTarget(angle),
             shooter
         );
     }

@@ -247,6 +247,7 @@ public class RobotContainer {
     );
     joystick.b().onTrue(
       new SequentialCommandGroup(
+        ShooterCommands.stow(),
         ShooterCommands.stop(),
         IndexCommands.stop(),
         IntakeCommands.stop(),
@@ -269,15 +270,22 @@ public class RobotContainer {
         )
       )
     );
+
+    mechstick.povRight().onTrue(
+      ShooterCommands.fullCourtLob()
+    );
+
     mechstick.povUp().onTrue(
-      ShooterCommands.increaseDistanceFeed()
+      // ShooterCommands.increaseDistanceFeed()
+      ShooterCommands.setTarget(shooter.getTarget() + 0.5)
     );
     mechstick.povDown().onTrue(
-      ShooterCommands.decreaseDistanceFeed()
+      // ShooterCommands.decreaseDistanceFeed()
+      ShooterCommands.setTarget(shooter.getTarget() - 0.5)
     );
-    mechstick.povRight().onTrue(
+    mechstick.rightStick().onTrue(
       new InstantCommand(
-        () -> {shooter.exportTable(); System.out.println("povRight export table pressed");},
+        () -> {shooter.exportTable(); System.out.println("mechstick rightStick export table pressed");},
         shooter
       )
     );
