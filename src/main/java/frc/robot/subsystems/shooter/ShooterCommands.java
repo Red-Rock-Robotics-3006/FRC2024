@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.index.TOFSensor;
 import frc.robot.subsystems.led.LED;
@@ -99,6 +100,16 @@ public class ShooterCommands {
         return new InstantCommand(
             () -> shooter.decreaseDistanceFeed(),
             shooter
+        );
+    }
+
+    public static Command burnFlash() {
+        return new SequentialCommandGroup(
+            new WaitCommand(0.15),
+            new InstantCommand(
+                () -> shooter.burnFlash(),
+                shooter
+            )
         );
     }
 }

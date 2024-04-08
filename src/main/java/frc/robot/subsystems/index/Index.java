@@ -35,11 +35,18 @@ public class Index extends SubsystemBase{
         this.m_rollerMotor.setInverted(true);
         this.m_rollerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
+        IndexCommands.burnFlash();
+
         SmartDashboard.putNumber("index reverse time", kReverseTime);
 
         SmartDashboard.putNumber("index speed", kIndexSpeed);
         SmartDashboard.putNumber("roller speed", kRollerSpeed);
         SmartDashboard.putNumber("index shoot speed", kIndexShootSpeed);
+    }
+
+    public void burnFlash() {
+        this.m_indexMotor.burnFlash();
+        this.m_rollerMotor.burnFlash();
     }
 
     public void setTransferring(boolean b) {

@@ -41,4 +41,14 @@ public class IndexCommands {
             index
         ).withTimeout(SmartDashboard.getNumber("index reverse time", Index.kReverseTime));
     }
+
+    public static Command burnFlash() {
+        return new SequentialCommandGroup(
+            new WaitCommand(0.15),
+            new InstantCommand(
+                () -> index.burnFlash(),
+                index
+            )
+        );
+    }
 }

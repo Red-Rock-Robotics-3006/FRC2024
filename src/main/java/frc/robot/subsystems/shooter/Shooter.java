@@ -160,13 +160,11 @@ public class Shooter extends SubsystemBase {
         this.topShooter.setInverted(false);
         this.topShooter.setIdleMode(CANSparkMax.IdleMode.kBrake);
         this.topShooter.setSmartCurrentLimit(Constants.Shooter.SHOOT_CURRENT_LIMIT);
-        this.topShooter.burnFlash();
 
         this.bottomShooter.restoreFactoryDefaults();
         this.bottomShooter.setInverted(false);
         this.bottomShooter.setIdleMode(CANSparkMax.IdleMode.kBrake);
         this.bottomShooter.setSmartCurrentLimit(Constants.Shooter.SHOOT_CURRENT_LIMIT);
-        this.bottomShooter.burnFlash();
 
         this.m_rightAngleMotor.restoreFactoryDefaults();
         this.m_rightAngleMotor.setInverted(false);
@@ -198,6 +196,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter velo p", kShootP);
         SmartDashboard.putNumber("shooter velo i", kShootI);
         SmartDashboard.putNumber("shooter velo d", kShootD);
+
+        ShooterCommands.burnFlash();
 
     } 
 
@@ -282,6 +282,13 @@ public class Shooter extends SubsystemBase {
 
         // SmartDashboard.putNumber("top shooter amp speed", kTopShooterAmpSpeed);
         // SmartDashboard.putNumber("bottom shooter amp speed", kBottomShooterAmpSpeed);
+    }
+
+    public void burnFlash() {
+        this.topShooter.burnFlash();
+        this.bottomShooter.burnFlash();
+        this.m_leftAngleMotor.burnFlash();
+        this.m_rightAngleMotor.burnFlash();
     }
 
 

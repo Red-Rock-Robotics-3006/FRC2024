@@ -50,4 +50,14 @@ public class IntakeCommands {
             intakeVision
         );
     }
+
+    public static Command burnFlash() {
+        return new SequentialCommandGroup(
+            new WaitCommand(0.15),
+            new InstantCommand(
+                () -> intake.burnFlash(),
+                intake
+            )
+        );
+    }
 }

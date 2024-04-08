@@ -199,8 +199,7 @@ public class Autos {
             ShooterCommands.shootAuto(),
 
             //END
-            ShooterCommands.stop(),
-            LEDCommands.setAutoEnd(true)
+            ShooterCommands.stop()
         );
     }
 
@@ -239,7 +238,6 @@ public class Autos {
             ShooterCommands.shootAuto(),
 
             //END
-            LEDCommands.setAutoEnd(true),
             ShooterCommands.stop()
         );
     }
@@ -279,7 +277,6 @@ public class Autos {
             ShooterCommands.shootAuto(),
 
             //END
-            LEDCommands.setAutoEnd(true),
             ShooterCommands.stop()
         );
     }

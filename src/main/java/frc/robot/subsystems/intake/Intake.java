@@ -21,6 +21,12 @@ public class Intake extends SubsystemBase{
         this.m_intakeMotor.restoreFactoryDefaults();
         this.m_intakeMotor.setInverted(false);
         this.m_intakeMotor.setIdleMode(CANSparkFlex.IdleMode.kBrake);
+
+        IntakeCommands.burnFlash();
+    }
+
+    public void burnFlash() {
+        this.m_intakeMotor.burnFlash();
     }
 
     public void setSpeed(double speed) {
