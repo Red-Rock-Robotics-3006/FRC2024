@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.334493677931899,
+        "x": 4.3344936779319,
         "y": 7.122555926686094
       },
       "isLocked": false,
@@ -38,8 +38,8 @@
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 7.0,
+    "maxAcceleration": 7.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -51,7 +51,7 @@
   "reversed": false,
   "folder": "6 Note Paths",
   "previewStartingState": {
-    "rotation": 26.658410695411295,
+    "rotation": 38.73974669228,
     "velocity": 0
   },
   "useDefaultConstraints": false

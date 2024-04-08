@@ -35,6 +35,7 @@ public class LED extends SubsystemBase{
     private final Color WHITE = new Color(255, 255, 255);
     private final Color BLUE = new Color(0, 0, 255);
     private final Color RED = new Color(255, 0, 0);
+    private final Color MAGENTA = new Color(255, 0, 255);
     private final Color OFF = new Color(0, 0, 0);
 
     /**
@@ -129,6 +130,7 @@ public class LED extends SubsystemBase{
     @SuppressWarnings("unused")
     public void periodic() {
         if (autoEnd) this.setState(State.AUTO_END);
+        else if (shooter.getRunningFullLob()) this.setState(State.FULL_LOB);
         else if (isAmping) this.setState(State.SCORING_AMP);
         else if (shooter.getHoming() && shooter.inRange()) this.setState(State.AUTO_AIM);
         else if (sensor.hasNote()) this.setState(State.HAS_NOTE);
@@ -152,6 +154,11 @@ public class LED extends SubsystemBase{
                 case SCORING_AMP:
                     blinkControl++;
                     if (blinkControl % 6 < 3) this.setLights(BLUE);
+                    else this.setLights(OFF); 
+                    break;
+                case FULL_LOB:
+                    blinkControl++;
+                    if (blinkControl % 6 < 3) this.setLights(MAGENTA);
                     else this.setLights(OFF); 
                     break;
                 case AUTO_END:
