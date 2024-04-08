@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.robot.subsystems.index.Index;
+import frc.robot.subsystems.localization.Localization;
 import frc.robot.subsystems.swerve.SwerveIO;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
@@ -100,7 +101,7 @@ public class Shooter extends SubsystemBase {
     private boolean tagInVision; // If a tag is in vision
     private boolean isOnBlue; // True if on blue alliance, false if on red alliance // TODO get value from smart dashboard or something else
     private boolean hasNote; // If the robot has a note
-    private double homingOffset;
+    // private double homingOffset;
     private double horizontalDistance;
     private boolean isInRange = true;
 
@@ -246,8 +247,7 @@ public class Shooter extends SubsystemBase {
             targetAngle = this.targetPitch;
         this.setTarget(targetAngle, yaw);
         */
-        // else
-            // this.setTarget(STOW_ANGLE);
+        
 
         this.aim();
         /* Replaced by this.aim()
@@ -308,14 +308,14 @@ public class Shooter extends SubsystemBase {
         this.setTarget(SmartDashboard.getNumber("amp angle", kAmpAngle));
     }
 
-    public double getOffset(){
-        return this.homingOffset;
-    }
+    // public double getOffset(){
+    //     return this.homingOffset;
+    // }
 
-    public void setOffset(double offset)
-    {
-        this.homingOffset = offset;
-    }
+    // public void setOffset(double offset)
+    // {
+    //     this.homingOffset = offset;
+    // }
 
 
     public boolean getHoming()
@@ -475,14 +475,14 @@ public class Shooter extends SubsystemBase {
             if(Localization.tagInVision())
             {
                 // Calculate robot angle
-                double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff )) - this.homingOffset) % 360; //  + (isOnBlue?0:180)
+                double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff ))) % 360;//  - this.homingOffset //  + (isOnBlue?0:180)
 
 
                 double targetAngle = this.calculateAngle(Math.abs(xDiff), Math.abs(yDiff), zDiff);
                 SmartDashboard.putNumber("Calculated Encoder", this.degreesToPos(targetAngle));
                 SmartDashboard.putNumber("Calculated Angle", targetAngle);
                 SmartDashboard.putNumber("Target Heading", yaw);
-                SmartDashboard.putNumber("Homing Offset", this.homingOffset);
+                // SmartDashboard.putNumber("Homing Offset", this.homingOffset);
                 this.setTarget(targetAngle, yaw);
             }
             else
