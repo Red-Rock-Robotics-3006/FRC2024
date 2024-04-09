@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.index.Index;
@@ -75,6 +76,14 @@ public class Autos {
             IntakeCommands.start(),
             IndexCommands.start(),
             drivetrain.getAuto("TrollAuto")
+        );
+    }
+
+    public static Command m_4note_autoaim_test_paths() {
+        return new SequentialCommandGroup(
+            drivetrain.getAuto("6N_1B"),
+            drivetrain.getAuto("6N_4notetest1"),
+            drivetrain.getAuto("6N_7B")
         );
     }
 
@@ -156,13 +165,15 @@ public class Autos {
             ShooterCommands.setHoming(true),
             new WaitCommand(0.5),
             ShooterCommands.shootAuto(),
+
             //THIRD NOTE
             new ParallelCommandGroup(
                 IntakeCommands.intake(),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("6N_2B"),
-                    new WaitCommand(0.3),
-                    runThirdPath()
+                    drivetrain.getAuto("6N_3B"),
+                    IntakeCommands.stop(),
+                    IndexCommands.stop()
                 )
             ),
             // runBackupThird(),
@@ -175,7 +186,9 @@ public class Autos {
                 IntakeCommands.intake(),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("6N_4B"),
-                    drivetrain.getAuto("6N_5B")
+                    drivetrain.getAuto("6N_5B"),
+                    IntakeCommands.stop(),
+                    IndexCommands.stop()
                 )
             ),
             ShooterCommands.setHoming(true),
@@ -205,17 +218,17 @@ public class Autos {
         );
     }
 
-    public static Command runThirdPath() {
-        if (sensor.hasNote()) {
-            return drivetrain.getAuto("6N_3B");
-        }
-        else {
-            return drivetrain.getAuto("6N_3B_Backup1");
-            // if (sensor.hasNote()) {
-            //     return drivetrain.getAuto("6N_3B_Backup1");
-            // }
-        }
-    }
+    // public static Command runThirdPath() {
+    //     if (sensor.hasNote()) {
+    //         return drivetrain.getAuto("6N_3B");
+    //     }
+    //     else {
+    //         return new SequentialCommandGroup(
+    //             new WaitCommand(0.3),
+    //             drivetrain.getAuto("6N_3B_Backup1")
+    //         );
+    //     }
+    // }
 
     // public static Command runBackupThird() {
 

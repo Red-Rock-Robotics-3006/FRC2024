@@ -511,6 +511,7 @@ public class RobotContainer {
     m_chooser.addOption("FOUR NOTE", Autos.m_4note());
     m_chooser.addOption("troll auto", Autos.m_trollauto());
     m_chooser.addOption("troll auto paths", Autos.m_trollauto_paths());
+    m_chooser.addOption("FOUR NOTE AUTO AIM TEST PATHS", Autos.m_4note_autoaim_test_paths());
     
     // m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
 
