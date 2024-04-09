@@ -196,6 +196,7 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
      * Checks if the limelight has a valid reading
      * @return a boolean indicating if the limelight currently has a valid reading or not
      */
+    @Override
     public boolean isValid()
     {
         return this.tagInVision && this.distanceFromTag < this.validDistance;
@@ -246,7 +247,6 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
 
     @Override
     public Field2d getField2d() {
-        // TODO Auto-generated method stub
         // throw new UnsupportedOperationException("Unimplemented method 'getField2d'");
         return this.field;
     }

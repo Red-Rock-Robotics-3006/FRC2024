@@ -464,7 +464,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         
         for (AprilTagIO aprilTagDetector : aprilTagLL){
             aprilTagDetector.getField2d().setRobotPose(aprilTagDetector.getPoseEstimate());
-            if (aprilTagDetector.isValid()){
+            if (useAbsolute && aprilTagDetector.isValid()){
                 this.addVisionMeasurement(aprilTagDetector.getPoseEstimate(), aprilTagDetector.getTimeStamp(), aprilTagDetector.getStandardDeviations());
             }
             
@@ -557,7 +557,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             // }
         // }
 
-        if (this.useAbsolute) this.addVisionMeasurements();
+        this.addVisionMeasurements();
 
         this.field.setRobotPose(this.getPose());
 
