@@ -16,8 +16,7 @@ public class TOFSensor extends SubsystemBase {
     private double hasNoteThresholdDeviation = 100;
 
     private TOFSensor() {
-        this.setName("TOFSensor");
-        this.register();
+        super("TOFSensor");
 
         this.indexTOFSensor.setRangeOfInterest(8, 8, 12, 12);
         this.indexTOFSensor.setRangingMode(TimeOfFlight.RangingMode.Short, 24);

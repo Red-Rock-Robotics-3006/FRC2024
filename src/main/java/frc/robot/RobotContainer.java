@@ -74,11 +74,11 @@ public class RobotContainer {
 
 
   public Intake intake = Intake.getInstance();//TODO for now
+  public Shooter shooter = Shooter.getInstance();
   public Index index = Index.getInstance();
   public LED led = LED.getInstance();
-  public Shooter shooter = Shooter.getInstance();
   public Climber climber = Climber.getInstance();
-  public Localization localization = new Localization();
+  // public Localization localization = new Localization();
 
   private double targetHeadingD = 0;
 

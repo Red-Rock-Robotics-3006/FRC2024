@@ -8,8 +8,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Localization extends SubsystemBase{
+    private static Localization instance = new Localization();
     private static double[] pose = new double[6];
-    private static Pose2d pose2d;
+    private static Pose2d pose2d = new Pose2d();
     private static boolean tagInVision;
 
     private static Limelight front;
@@ -23,8 +24,7 @@ public class Localization extends SubsystemBase{
 
     public Localization()
     {
-        this.setName("Localization");
-        this.register();
+        super("Localization");
         
         front = new Limelight("front",8);
         left = new Limelight("left",8);

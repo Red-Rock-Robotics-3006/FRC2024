@@ -24,8 +24,7 @@ public class Index extends SubsystemBase{
     private boolean isTransferring = false;
 
     private Index() {
-        this.setName("Index");
-        this.register();
+        super("Index");
 
         this.m_indexMotor.restoreFactoryDefaults();
         this.m_indexMotor.setInverted(true);
@@ -35,7 +34,7 @@ public class Index extends SubsystemBase{
         this.m_rollerMotor.setInverted(true);
         this.m_rollerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        IndexCommands.burnFlash();
+        // IndexCommands.burnFlash();
 
         SmartDashboard.putNumber("index reverse time", kReverseTime);
 

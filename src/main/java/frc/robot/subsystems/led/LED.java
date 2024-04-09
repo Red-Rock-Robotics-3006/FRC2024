@@ -42,8 +42,7 @@ public class LED extends SubsystemBase{
      * Constructor for LED which registers the subsystem and sets a specified portion of the LED lights to the alliance color
      */
     private LED() {
-        this.setName("LED");
-        this.register();
+        super("LED");
         this.control.setLength(this.buffer.getLength());
 
         this.setLights(INIT_YELLOW);
