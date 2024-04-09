@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -158,56 +159,51 @@ public class Autos {
             ShooterCommands.spinUp(),
 
             //SECOND NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                drivetrain.getAuto("6N_1B")
+            new ParallelDeadlineGroup(
+                drivetrain.getAuto("6N_1B"),
+                IntakeCommands.intake()
             ),
             ShooterCommands.setHoming(true),
             new WaitCommand(0.5),
             ShooterCommands.shootAuto(),
 
             //THIRD NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
+            new ParallelDeadlineGroup(
                 new SequentialCommandGroup(
                     drivetrain.getAuto("6N_2B"),
                     drivetrain.getAuto("6N_3B")
-                    // IntakeCommands.stop(),
-                    // IndexCommands.stop()
-                )
+                ), 
+                IntakeCommands.intake()
             ),
-            // runBackupThird(),
             ShooterCommands.setHoming(true),
             new WaitCommand(0.5),
             ShooterCommands.shootAuto(),
             
             //FOURTH NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
+            new ParallelDeadlineGroup(
                 new SequentialCommandGroup(
                     drivetrain.getAuto("6N_4B"),
                     drivetrain.getAuto("6N_5B")
-                    // IntakeCommands.stop(),
-                    // IndexCommands.stop()
-                )
+                ), 
+                IntakeCommands.intake()
             ),
             ShooterCommands.setHoming(true),
             new WaitCommand(0.5),
             ShooterCommands.shootAuto(),
 
             //FIFTH NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                drivetrain.getAuto("6N_6B")
+            new ParallelDeadlineGroup(
+                drivetrain.getAuto("6N_6B"),
+                IntakeCommands.intake()
             ),
             ShooterCommands.setHoming(true),
             new WaitCommand(0.5),
             ShooterCommands.shootAuto(),
 
             //SIXTH NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                drivetrain.getAuto("6N_7B")
+            new ParallelDeadlineGroup(
+                drivetrain.getAuto("6N_7B"),
+                IntakeCommands.intake()
             ),
             ShooterCommands.setHoming(true),
             new WaitCommand(0.5),
