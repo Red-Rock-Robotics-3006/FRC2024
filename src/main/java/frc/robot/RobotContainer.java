@@ -72,8 +72,7 @@ public class RobotContainer {
   private final Telemetry logger = new Telemetry(MaxSpeed);
   // private PowerDistributionHub powerDistributionHub = PowerDistributionHub.getInstance();
 
-
-  public Intake intake = Intake.getInstance();//TODO for now
+  public Intake intake = Intake.getInstance();
   public Shooter shooter = Shooter.getInstance();
   public Index index = Index.getInstance();
   public LED led = LED.getInstance();
@@ -443,15 +442,19 @@ public class RobotContainer {
     configureBindings();    
     configureSelector();
     configurePathPlanner();
+    drivetrain.configureCurrentLimits();
+    // drivetrain.configureChrp("music/sirens.chrp");
+
+
     SmartDashboard.putNumber("kF", Shooter.kFinalF);
     SmartDashboard.putNumber("kP", Shooter.kFinalP); // -1.1
     SmartDashboard.putNumber("encoder target", 0.7);
     SmartDashboard.putNumber("shooter target", 45);
 
-
-    drivetrain.configureCurrentLimits();
-
-    // drivetrain.configureChrp("music/sirens.chrp");
+    
+    IntakeCommands.burnFlash();
+    ShooterCommands.burnFlash();
+    IndexCommands.burnFlash();
   } 
 
   public void configurePathPlanner(){

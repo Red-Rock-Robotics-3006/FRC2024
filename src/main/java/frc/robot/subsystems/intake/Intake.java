@@ -9,21 +9,18 @@ public class Intake extends SubsystemBase{
 
     private static Intake instance = null;
 
-    private static int instanceCount = 0;
-
     private final CANSparkFlex m_intakeMotor = new CANSparkFlex(Constants.Intake.INTAKE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
 
     private double kIntakeSpeed = 0.75;
     public static final double kRollForwardTime = 0.1;
 
     private Intake() {
-        super("Intake");
+        this.setName("Intake");
+        this.register();
 
         this.m_intakeMotor.restoreFactoryDefaults();
         this.m_intakeMotor.setInverted(false);
         this.m_intakeMotor.setIdleMode(CANSparkFlex.IdleMode.kBrake);
-
-        // IntakeCommands.burnFlash();
     }
 
     public void burnFlash() {
@@ -47,11 +44,7 @@ public class Intake extends SubsystemBase{
     }
 
     public static Intake getInstance(){
-        if (instance == null) {
-            instanceCount++;
-            System.out.println("Intake count " + instanceCount);
-            instance = new Intake();
-        }
+        if (instance == null) instance = new Intake();
         return instance;
     }
 }

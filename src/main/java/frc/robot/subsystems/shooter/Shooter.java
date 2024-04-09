@@ -158,7 +158,8 @@ public class Shooter extends SubsystemBase {
     
 
     private Shooter() {
-        super("Shooter");
+        this.setName("Shooter");
+        this.register();
 
         this.topShooter.restoreFactoryDefaults();
         this.topShooter.setInverted(false);
@@ -205,9 +206,6 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter velo d", kShootD);
 
         SmartDashboard.putNumber("full court lob heading", 120);
-
-        // ShooterCommands.burnFlash();
-
     } 
 
 
@@ -435,8 +433,7 @@ public class Shooter extends SubsystemBase {
      */
     public static Shooter getInstance()
     {
-        if (instance == null) 
-            instance = new Shooter();
+        if (instance == null) instance = new Shooter();
         return instance;
     }
 

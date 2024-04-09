@@ -51,13 +51,13 @@ public class IntakeCommands {
         );
     }
 
-    // public static Command burnFlash() {
-    //     return new SequentialCommandGroup(
-    //         new WaitCommand(0.15),
-    //         new InstantCommand(
-    //             () -> intake.burnFlash(),
-    //             intake
-    //         )
-    //     );
-    // }
+    public static Command burnFlash() {
+        return new SequentialCommandGroup(
+            new WaitCommand(0.15),
+            new InstantCommand(
+                () -> intake.burnFlash(),
+                intake
+            )
+        );
+    }
 }

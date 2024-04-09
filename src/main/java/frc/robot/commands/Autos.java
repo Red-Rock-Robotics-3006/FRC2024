@@ -171,9 +171,9 @@ public class Autos {
                 IntakeCommands.intake(),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("6N_2B"),
-                    drivetrain.getAuto("6N_3B"),
-                    IntakeCommands.stop(),
-                    IndexCommands.stop()
+                    drivetrain.getAuto("6N_3B")
+                    // IntakeCommands.stop(),
+                    // IndexCommands.stop()
                 )
             ),
             // runBackupThird(),
@@ -186,9 +186,9 @@ public class Autos {
                 IntakeCommands.intake(),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("6N_4B"),
-                    drivetrain.getAuto("6N_5B"),
-                    IntakeCommands.stop(),
-                    IndexCommands.stop()
+                    drivetrain.getAuto("6N_5B")
+                    // IntakeCommands.stop(),
+                    // IndexCommands.stop()
                 )
             ),
             ShooterCommands.setHoming(true),
