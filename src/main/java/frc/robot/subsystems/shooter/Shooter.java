@@ -158,8 +158,7 @@ public class Shooter extends SubsystemBase {
     
 
     private Shooter() {
-        this.setName("Shooter");
-        this.register();
+        super("Shooter");
 
         this.topShooter.restoreFactoryDefaults();
         this.topShooter.setInverted(false);
@@ -207,7 +206,7 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("full court lob heading", 120);
 
-        ShooterCommands.burnFlash();
+        // ShooterCommands.burnFlash();
 
     } 
 

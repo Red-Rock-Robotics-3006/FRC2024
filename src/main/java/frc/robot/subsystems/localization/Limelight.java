@@ -72,6 +72,7 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
      */
     Limelight(String name, double distance, double x, double y)
     {
+        super("Limelight");
         this.name = "limelight-" + name;
         this.limelightTable = NetworkTableInstance.getDefault().getTable("limelight-" + name);
 

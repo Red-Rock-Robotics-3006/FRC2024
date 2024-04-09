@@ -66,7 +66,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     private boolean useAbsolute = true;
 
-    private AprilTagIO[] aprilTagLL = new AprilTagIO[3];
+    private AprilTagIO[] aprilTagLL;
 
     // private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
     //             .getStructTopic("pose", Pose2d.struct).publish();
@@ -206,6 +206,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     private void configureAll(){
+        // new Localization();
+        aprilTagLL = Localization.getLimeLights();
+        System.out.println(Localization.getLimeLights());
         for (AprilTagIO ap : aprilTagLL){
             SmartDashboard.putData(ap.getName(), ap.getField2d());
         }
@@ -463,11 +466,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     public void addVisionMeasurements(){
         
         for (AprilTagIO aprilTagDetector : aprilTagLL){
-            aprilTagDetector.getField2d().setRobotPose(aprilTagDetector.getPoseEstimate());
+            if (aprilTagDetector.getPoseEstimate() != null) aprilTagDetector.getField2d().setRobotPose(aprilTagDetector.getPoseEstimate());
             if (useAbsolute && aprilTagDetector.isValid()){
                 this.addVisionMeasurement(aprilTagDetector.getPoseEstimate(), aprilTagDetector.getTimeStamp(), aprilTagDetector.getStandardDeviations());
             }
-            
+
         }
     }
     // public void toggleChrp(){
