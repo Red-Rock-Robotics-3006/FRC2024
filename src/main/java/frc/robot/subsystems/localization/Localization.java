@@ -27,9 +27,9 @@ public class Localization extends SubsystemBase{
         super("Localization");
         
         front = new Limelight("front",8);
-        left = new Limelight("left",8);
-        right = new Limelight("right",8);
-        back = new Limelight("back",4);
+        // left = new Limelight("left",8);
+        // right = new Limelight("right",8);
+        // back = new Limelight("back",4);
 
         limelights = new Limelight[]{front}; //TODO Add back the other limelights?
 
@@ -71,12 +71,12 @@ public class Localization extends SubsystemBase{
         
         SmartDashboard.putBoolean("Tag in Vision", tagInVision);
         SmartDashboard.putNumber("Number of Active Limelights", Limelight.getActiveLimelights());
-        SmartDashboard.putNumber("Bot x", pose[0]);
-        SmartDashboard.putNumber("Bot y", pose[1]);
+        SmartDashboard.putNumber("Bot x", pose2d.getX());
+        SmartDashboard.putNumber("Bot y", pose2d.getY());
         SmartDashboard.putNumber("Bot z", pose[2]);
         SmartDashboard.putNumber("Bot roll", pose[3]);
         SmartDashboard.putNumber("Bot pitch", pose[4]);
-        SmartDashboard.putNumber("Bot yaw", pose[5]);
+        SmartDashboard.putNumber("Bot yaw", pose2d.getRotation().getDegrees());
     }
 
     /**
@@ -111,7 +111,7 @@ public class Localization extends SubsystemBase{
             sums[1] += p.getY();
             sums[2] += p.getRotation().getDegrees();
         }
-        pose2d = new Pose2d(sums[0], sums[1], new Rotation2d(sums[2]));
+        pose2d = new Pose2d(sums[0], sums[1], new Rotation2d(Math.toRadians(sums[2])));
 
         /* Old code
         int denom = 0;

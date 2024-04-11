@@ -206,7 +206,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter velo d", kShootD);
 
         SmartDashboard.putNumber("full court lob heading", 120);
-    } 
+
+        } 
 
 
 
@@ -631,6 +632,7 @@ public class Shooter extends SubsystemBase {
         double min = this.posToDegrees(LOW_ENCODER);
         this.targetPitch = Math.max(min, Math.min(max, pitch));
     }
+    
     
     public double getTarget() {
         return this.targetPitch;
