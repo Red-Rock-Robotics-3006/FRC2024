@@ -3,6 +3,7 @@ package frc.robot.subsystems.localization;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTable;
@@ -148,22 +149,30 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
 
         // Update LimelightHelpers with the robot's current absolute yaw
         LimelightHelpers.SetRobotOrientation(this.name, yaw, 0, 0, 0, 0, 0);
+        SmartDashboard.putNumber("yaw from pigeon", yaw);
 
         
         // MegaTag1 this.pose = this.ll.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
         this.pose = this.limelightTable.getEntry("botpose_orb_wpiblue").getDoubleArray(new double[6]);
-        this.pose2d = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose; //new Pose2d(this.pose[0], this.pose[1], new Rotation2d(Math.toRadians(this.pose[5])));
+        // Pose2d pos = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
+        // this.pose2d = new Pose2d(pos.getX(), pos.getY(), new Rotation2d(Math.toRadians(yaw))); //new Pose2d(this.pose[0], this.pose[1], new Rotation2d(Math.toRadians(this.pose[5])));
         
+        
+        this.pose2d = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
 
-        // Get the horizontal distance from the main tag in vision
-        // TODO Remove this if we can get the other system to work, cause this one is very not good
-        int tid = (int)this.limelightTable.getEntry("tid").getInteger(0);
-        if(tid == 0)
-            System.out.println("Something went horribly wrong...\nLimelight.updateLocation(), tag id is 0");
-        // TODO add the code to actually do this lmao
+        // // Get the horizontal distance from the main tag in vision
+        // // TODO Remove this if we can get the other system to work, cause this one is very not good
+        // int tid = (int)this.limelightTable.getEntry("tid").getInteger(0);
+        // if(tid == 0)
+        //     System.out.println("Something went horribly wrong...\nLimelight.updateLocation(), tag id is 0");
+        // // TODO add the code to actually do this lmao
 
         double[] cam = this.limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]);
-        this.distanceFromTag = Math.sqrt(cam[0]*cam[0] + cam[1]*cam[1]);
+        if(cam.length > 0)
+            this.distanceFromTag = Math.sqrt(cam[0]*cam[0] + cam[1]*cam[1]);
+        else
+            System.out.println(this.name);
+        SmartDashboard.putNumber("Distance From Tag", this.distanceFromTag);
     }
 
     /**
