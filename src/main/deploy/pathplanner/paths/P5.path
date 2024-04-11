@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 2.04,
+        "y": 3.31
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.04,
+        "y": 3.31
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.230628670212565,
+        "y": 1.6359149136208724
+      },
+      "prevControl": {
+        "x": 4.169207139309802,
+        "y": 1.853414913620874
+      },
+      "nextControl": {
+        "x": 6.292050201115328,
+        "y": 1.4184149136208721
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.285686123611054,
+        "y": 2.44
+      },
+      "prevControl": {
+        "x": 7.285686123611054,
+        "y": 2.44
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "vanessa ",
+  "previewStartingState": {
+    "rotation": 0,
+    "velocity": 0
+  },
+  "useDefaultConstraints": true
+}
