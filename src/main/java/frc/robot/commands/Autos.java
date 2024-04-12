@@ -88,6 +88,37 @@ public class Autos {
         );
     }
 
+    public static Command m_4note_autoaim_test() {
+        return new SequentialCommandGroup(
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_1B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_4notetest1"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_7B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto()
+        );
+    }
+
     public static Command m_6note() { //normie 6 note (lame) (shouldnt use) (prob wont work)
         return new SequentialCommandGroup(
 

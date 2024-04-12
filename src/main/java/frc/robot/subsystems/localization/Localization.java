@@ -27,11 +27,11 @@ public class Localization extends SubsystemBase{
         super("Localization");
         
         front = new Limelight("front",8);
-        // left = new Limelight("left",8);
-        // right = new Limelight("right",8);
+        left = new Limelight("left",8);
+        right = new Limelight("right",8);
         // back = new Limelight("back",4);
 
-        limelights = new Limelight[]{front}; //TODO Add back the other limelights?
+        limelights = new Limelight[]{front, left, right}; //TODO Add back the other limelights?
 
         /* Remove any unwanted tags from the array
          * Guide:

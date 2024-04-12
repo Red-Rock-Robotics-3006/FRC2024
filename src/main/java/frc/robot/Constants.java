@@ -29,6 +29,5 @@ public final class Constants {
     public static final boolean INTAKE_HOMING_ENABLED = false;
     public static final boolean SHOOTER_HOMING_ENABLED = true;
     public static final boolean POLICE_MODE_ENABLED = false;
-    public static boolean ABSOLUTE_LOCALIZATION = true;
   }
 }

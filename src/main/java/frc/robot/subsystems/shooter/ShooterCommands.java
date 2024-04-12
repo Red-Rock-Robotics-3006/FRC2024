@@ -18,7 +18,7 @@ public class ShooterCommands {
 
     public static Command shoot() {
         return new FunctionalCommand(
-            () -> {index.shootTransfer(); shooter.newLoc();}, 
+            () -> index.shootTransfer(), 
             () -> {}, 
             (interrupted) -> {shooter.stow(); index.stopTransfer(); led.setState(State.RESTING); led.setIsAmping(false);},
             () -> !sensor.hasNote(), 
@@ -104,6 +104,20 @@ public class ShooterCommands {
     public static Command setTarget(double angle) {
         return new InstantCommand(
             () -> shooter.setTarget(angle),
+            shooter
+        );
+    }
+
+    public static Command increaseTarget() {
+        return new InstantCommand(
+            () -> shooter.incrementTarget(),
+            shooter
+        );
+    }
+
+    public static Command decreaseTarget() {
+        return new InstantCommand(
+            () -> shooter.decrementTarget(),
             shooter
         );
     }

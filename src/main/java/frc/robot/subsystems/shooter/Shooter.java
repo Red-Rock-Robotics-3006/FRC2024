@@ -132,12 +132,12 @@ public class Shooter extends SubsystemBase {
     private final double HIGH_ENCODER = 0.72; // 54 degrees
 
 
-    public static double kTopShooterAmpSpeed = 0.06;
-    public static double kBottomShooterAmpSpeed = 0.2;
+    public static double kTopShooterAmpSpeed = 0.03;
+    public static double kBottomShooterAmpSpeed = 0.21;
     public static double kAmpAngle = 51;
 
-    public static double kLobAngle = 54;
-    public static double kLobShooterSpeed = 50;
+    public static double kLobAngle = 45;
+    public static double kLobShooterSpeed = 0.50;
 
     public static final double kShootP = 0.65;
     public static final double kShootI = 0;
@@ -205,7 +205,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter velo i", kShootI);
         SmartDashboard.putNumber("shooter velo d", kShootD);
 
-        SmartDashboard.putNumber("full court lob heading", 120);
+        SmartDashboard.putNumber("full court lob heading", -60);
 
         } 
 
@@ -224,7 +224,7 @@ public class Shooter extends SubsystemBase {
 
         
         if (runningFullLob) {
-            this.swerve.setTargetHeading(SmartDashboard.getNumber("full court lob heading", 120));
+            this.swerve.setTargetHeading(SmartDashboard.getNumber("full court lob heading", -60));
         }
 
 
@@ -535,7 +535,7 @@ public class Shooter extends SubsystemBase {
         double speed = this.controller.calculate(ePos, eTarget) + feedForward;
         this.setAngleSpeed(speed);
 
-        if(Settings.SHOOTER_HOMING_ENABLED && this.seek && Localization.tagInVision())
+        if(Settings.SHOOTER_HOMING_ENABLED && this.seek)
             this.swerve.setTargetHeading(this.targetYaw);
 
 
@@ -601,7 +601,13 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("ToF", tof);
         SmartDashboard.putNumber("Drop", drop);
         double theta = Math.toDegrees(Math.atan((vDist + drop) / hDist));*/
-        double theta = Math.toDegrees(Math.atan(vDist / hDist)) + hDist * DISTANCE_FEED;
+
+        // "Good enough" (For Colorado)
+        // double theta = Math.toDegrees(Math.atan(vDist / hDist)) + hDist * DISTANCE_FEED;
+
+        // Equation 
+        double theta = 3.0318*Math.pow(hDist, 2) - 26.967*hDist + 86.357;
+        SmartDashboard.putNumber("Equation", theta);
 
         // TODO Check math
         return theta;
@@ -631,6 +637,14 @@ public class Shooter extends SubsystemBase {
         double max = this.posToDegrees(HIGH_ENCODER);
         double min = this.posToDegrees(LOW_ENCODER);
         this.targetPitch = Math.max(min, Math.min(max, pitch));
+    }
+
+    public void incrementTarget() {
+        this.targetPitch += 0.5;
+    }
+
+    public void decrementTarget() {
+        this.targetPitch -= 0.5;
     }
     
     
@@ -674,61 +688,6 @@ public class Shooter extends SubsystemBase {
         // this.isInRange = this.horizontalDistance < RANGE;
         SmartDashboard.putNumber("Horizontal Distance", this.horizontalDistance);
         // SmartDashboard.putBoolean("In Range", this.inRange());
-    }
-
-    public void newLoc()
-    {
-        System.out.println("NEWLOC CALLED");
-        System.out.println("MMMMMMMMMMMMMMM horizontal distance- " + this.horizontalDistance + " target pitch- " + this.targetPitch + " current angle- " + SmartDashboard.getNumber("current angle", -1));
-        this.pos = new double[]{this.horizontalDistance, this.targetPitch, SmartDashboard.getNumber("current angle", -1), 1}; // Add shooter speed later
-    }
-
-    public void accept()
-    {
-        // System.out.println("ACCEPT CALLED");
-        this.table.add(this.pos);
-        this.pos = new double[4];
-    }
-
-    public void deny()
-    {
-        this.pos[3] = 0;
-        this.accept();
-        // System.out.println("DENY CALLED");
-    }
-
-    public void exportTable()
-    {
-        // while(true)
-        // {
-        //     File lookup = new File("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
-        //     try {
-        //         if(lookup.createNewFile())
-        //         {
-        //             System.out.println("Success!");
-        //             break;
-        //         }
-        //         else
-        //         {
-        //             System.out.println("Something went wrong...");
-        //             n++;
-        //         }
-        //     } catch (IOException e) {}
-        // }
-
-        // try {
-        //     System.out.println("MMMMMMMMMMMMMMM a file is being written");
-        //     FileWriter writer = new FileWriter("C:\\Users\\RedRock\\Documents\\lookupTable" + n + ".txt");
-        //     writer.write(""+this.table);
-        // } catch (IOException e) {}
-
-        for (int i = 0; i < this.table.size(); i++) {
-            for (int j = 0; j < 4; j++) {
-                System.out.print(this.table.get(i)[j] + " ");
-            }
-            System.out.println("");
-        }
-
     }
 
     public void updateTopPIDLoop(){

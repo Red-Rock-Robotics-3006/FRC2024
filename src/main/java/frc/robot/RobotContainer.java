@@ -176,20 +176,6 @@ public class RobotContainer {
 
     //SHOOTER ANGLE BINDINGS
 
-    joystick.povDown().onTrue(
-      new InstantCommand(
-        () -> {shooter.deny(); System.out.println("povdown");},
-        shooter
-      )
-      // ShooterCommands.setAngle(Shooter.Positions.SUB_CENTER)//Shooter.encoderTarget = 0.8)
-    );
-    joystick.povUp().onTrue(
-      new InstantCommand(
-        () -> {shooter.accept(); System.out.println("povup");},
-        shooter
-      )
-      // ShooterCommands.setAngle(Shooter.Positions.SUB_LEFT)//Shooter.encoderTarget = 0.7)
-    );
     joystick.povRight().onTrue(
       new InstantCommand(
         () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
@@ -277,17 +263,11 @@ public class RobotContainer {
 
     mechstick.povUp().onTrue(
       // ShooterCommands.increaseDistanceFeed()
-      ShooterCommands.setTarget(shooter.getTarget() + 0.5)
+      ShooterCommands.increaseTarget()
     );
     mechstick.povDown().onTrue(
       // ShooterCommands.decreaseDistanceFeed()
-      ShooterCommands.setTarget(shooter.getTarget() - 0.5)
-    );
-    mechstick.rightStick().onTrue(
-      new InstantCommand(
-        () -> {shooter.exportTable(); System.out.println("mechstick rightStick export table pressed");},
-        shooter
-      )
+      ShooterCommands.decreaseTarget()
     );
 
     //CLIMB PROCESS BINDINGS
@@ -451,7 +431,9 @@ public class RobotContainer {
     SmartDashboard.putNumber("encoder target", 0.7);
     SmartDashboard.putNumber("shooter target", 45);
 
-    
+    try {
+      Thread.sleep(150);
+    } catch (Exception e) {}
     IntakeCommands.burnFlash();
     ShooterCommands.burnFlash();
     IndexCommands.burnFlash();
@@ -485,8 +467,8 @@ public class RobotContainer {
    */
   public void updateDashboard(){
     if (Constants.Settings.SHOOTER_HOMING_ENABLED && shooter.getHoming()) {
-      angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 12));
-      angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 0.2));
+      angle.HeadingController.setP(SmartDashboard.getNumber("homing p", 8));
+      angle.HeadingController.setD(SmartDashboard.getNumber("homing d", 1));
     }
     else {
       angle.HeadingController.setP(SmartDashboard.getNumber("heading p", 4.25));
@@ -515,6 +497,7 @@ public class RobotContainer {
     m_chooser.addOption("troll auto", Autos.m_trollauto());
     m_chooser.addOption("troll auto paths", Autos.m_trollauto_paths());
     m_chooser.addOption("FOUR NOTE AUTO AIM TEST PATHS", Autos.m_4note_autoaim_test_paths());
+    m_chooser.addOption("FOUR NOTE AUTO AIM TEST", Autos.m_4note_autoaim_test());
     
     // m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
 
