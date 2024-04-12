@@ -3,11 +3,12 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
+    "3 Note Source AA Paths",
     "3Note Source Paths",
     "4 Note Paths",
     "6 Note Paths",
     "DONOTUSETHESEAUTOS",
-    "3 Note Source AA Paths"
+    "vanessa "
   ],
   "autoFolders": [
     "3 Note Source",
