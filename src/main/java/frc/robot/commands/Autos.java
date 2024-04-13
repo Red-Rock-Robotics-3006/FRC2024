@@ -189,16 +189,16 @@ public class Autos {
             ShooterCommands.spinUp(),
 
             //SECOND NOTE
-            new ParallelDeadlineGroup(
+            new ParallelCommandGroup(
                 drivetrain.getAuto("6N_1B"),
                 IntakeCommands.intake()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
+            new WaitCommand(1),
             ShooterCommands.shootAuto(),
 
             //THIRD NOTE
-            new ParallelDeadlineGroup(
+            new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     drivetrain.getAuto("6N_2B"),
                     drivetrain.getAuto("6N_3B")
@@ -206,11 +206,11 @@ public class Autos {
                 IntakeCommands.intake()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
+            new WaitCommand(1),
             ShooterCommands.shootAuto(),
             
             //FOURTH NOTE
-            new ParallelDeadlineGroup(
+            new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     drivetrain.getAuto("6N_4B"),
                     drivetrain.getAuto("6N_5B")
@@ -218,25 +218,25 @@ public class Autos {
                 IntakeCommands.intake()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
+            new WaitCommand(1),
             ShooterCommands.shootAuto(),
 
             //FIFTH NOTE
-            new ParallelDeadlineGroup(
+            new ParallelCommandGroup(
                 drivetrain.getAuto("6N_6B"),
                 IntakeCommands.intake()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
+            new WaitCommand(1),
             ShooterCommands.shootAuto(),
 
             //SIXTH NOTE
-            new ParallelDeadlineGroup(
+            new ParallelCommandGroup(
                 drivetrain.getAuto("6N_7B"),
                 IntakeCommands.intake()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
+            new WaitCommand(1),
             ShooterCommands.shootAuto(),
 
             //END

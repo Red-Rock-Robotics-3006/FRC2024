@@ -35,12 +35,6 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 
 public class Shooter extends SubsystemBase {
-
-
-    private ArrayList<double[]> table = new ArrayList<double[]>();
-    private double[] pos;
-    private int n;
-    
     private boolean pitchHoming = true;
 
 
@@ -137,7 +131,7 @@ public class Shooter extends SubsystemBase {
     public static double kAmpAngle = 51;
 
     public static double kLobAngle = 45;
-    public static double kLobShooterSpeed = 0.50;
+    public static double kLobShooterSpeed = 0.35;
 
     public static final double kShootP = 0.65;
     public static final double kShootI = 0;
@@ -205,7 +199,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("shooter velo i", kShootI);
         SmartDashboard.putNumber("shooter velo d", kShootD);
 
-        SmartDashboard.putNumber("full court lob heading", -60);
+        SmartDashboard.putNumber("full court lob heading", -40);
 
         } 
 
@@ -224,7 +218,7 @@ public class Shooter extends SubsystemBase {
 
         
         if (runningFullLob) {
-            this.swerve.setTargetHeading(SmartDashboard.getNumber("full court lob heading", -60));
+            this.swerve.setTargetHeading(SmartDashboard.getNumber("full court lob heading", -40));
         }
 
 
@@ -323,6 +317,9 @@ public class Shooter extends SubsystemBase {
     public void runFullLobShot() {
         this.topShooterTarget = (SmartDashboard.getNumber("shooter lob speed", kLobShooterSpeed));
         this.bottomShooterTarget = (SmartDashboard.getNumber("shooter lob speed", kLobShooterSpeed));
+
+        SmartDashboard.putNumber("topshooter target", this.topShooterTarget);
+        SmartDashboard.putNumber("bottomshooter target", this.bottomShooterTarget);
     }
 
     public void runFullLobAngle() {

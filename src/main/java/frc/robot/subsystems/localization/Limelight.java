@@ -20,7 +20,7 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 public class Limelight extends SubsystemBase implements AprilTagIO{
     private NetworkTable limelightTable;
     private double[] pose = new double[6];
-    private Pose2d pose2d;
+    private Pose2d pose2d = new Pose2d();
     private boolean tagInVision;
     private boolean snapshot;
     private double distanceFromTag;
@@ -37,6 +37,8 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
     private double[] visionStdvs = new double[3];
 
     private Field2d field = new Field2d();
+
+    private double timestamp;
 
     /**
      * @param name the name of the limelight after "limelight-"
@@ -88,6 +90,9 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
         SmartDashboard.putNumber(name + "stdv x", AprilTagIO.kStdvX);
         SmartDashboard.putNumber(name + "stdv y", AprilTagIO.kStdvY);
         SmartDashboard.putNumber(name + "stdv theta", AprilTagIO.kStdvTheta);
+
+        SmartDashboard.putData(name + "-field2d", this.field);
+
     }
 
     @Override
@@ -110,6 +115,20 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
         this.stdvX = SmartDashboard.getNumber(name + "stdv x", AprilTagIO.kStdvX);
         this.stdvY = SmartDashboard.getNumber(name + "stdv y", AprilTagIO.kStdvY);
         this.stdvTheta = SmartDashboard.getNumber(name + "stdv theta", AprilTagIO.kStdvTheta);
+
+        double tl = LimelightHelpers.getLatency_Capture(name);
+        double cl = LimelightHelpers.getLatency_Pipeline(name);
+        double fga = Timer.getFPGATimestamp();
+        this.timestamp = fga - tl/1000d - cl/1000d;
+
+        // SmartDashboard.putNumber(name + "-timestamp", this.timestamp);
+        // SmartDashboard.putNumber(name + "-fga", fga);
+
+        // SmartDashboard.putNumber(name + "timestamp difference", tl + cl);
+
+        this.field.setRobotPose(this.pose2d);
+
+        
 
         updateDynamicStdv();
     }
@@ -153,12 +172,20 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
 
         
         // MegaTag1 this.pose = this.ll.getEntry("botpose_wpiblue").getDoubleArray(new double[6]);
-        this.pose = this.limelightTable.getEntry("botpose_orb_wpiblue").getDoubleArray(new double[6]);
-        // Pose2d pos = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
-        // this.pose2d = new Pose2d(pos.getX(), pos.getY(), new Rotation2d(Math.toRadians(yaw))); //new Pose2d(this.pose[0], this.pose[1], new Rotation2d(Math.toRadians(this.pose[5])));
-        
-        
-        this.pose2d = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
+        // this.pose = this.limelightTable.getEntry("botpose_orb").getDoubleArray(new double[6]);
+        Pose2d pos = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(this.name).pose;
+        // this.pose2d = new Pose2d(pose[0], pose[1], new Rotation2d(Math.toRadians(yaw))); //new Pose2d(this.pose[0], this.pose[1], new Rotation2d(Math.toRadians(this.pose[5])));
+        this.pose2d = pos;
+        // Pose2d tempPose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name).pose;
+
+        SmartDashboard.putNumberArray(this.name + " pose", new double[]{pos.getX(), pos.getY(), pos.getRotation().getDegrees()});
+
+        // if (tempPose != null){ 
+        //     this.pose2d = this.pose2d;
+        //     SmartDashboard.putBoolean(this.name + "-null", false);
+        // } else {
+        //     SmartDashboard.putBoolean(this.name + "-null", true);
+        // }
 
         // // Get the horizontal distance from the main tag in vision
         // // TODO Remove this if we can get the other system to work, cause this one is very not good
@@ -167,11 +194,13 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
         //     System.out.println("Something went horribly wrong...\nLimelight.updateLocation(), tag id is 0");
         // // TODO add the code to actually do this lmao
 
-        double[] cam = this.limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]);
+        double[] cam = this.limelightTable.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
         if(cam.length > 0)
             this.distanceFromTag = Math.sqrt(cam[0]*cam[0] + cam[1]*cam[1]);
-        else
+        else{
             System.out.println(this.name);
+            this.distanceFromTag = 900000;
+        }
         SmartDashboard.putNumber("Distance From Tag", this.distanceFromTag);
     }
 
@@ -252,7 +281,8 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
     @Override
     public double getTimeStamp() {
         // throw new UnsupportedOperationException("Unimplemented method 'getTimeStamp'");
-        return Timer.getFPGATimestamp();
+        // return Timer.getFPGATimestamp();
+        return this.timestamp;
     }
 
     @Override

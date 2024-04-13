@@ -62,7 +62,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public static final double kHigherPredictCoeff = 0.2;
 
-    public static final double kRejectionDistance = 1;
+    public static final double kRejectionDistance = 3;
 
     private boolean useAbsolute = true;
 
@@ -209,9 +209,9 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // new Localization();
         aprilTagLL = Localization.getLimeLights();
         System.out.println(Localization.getLimeLights());
-        for (AprilTagIO ap : aprilTagLL){
-            SmartDashboard.putData(ap.getName(), ap.getField2d());
-        }
+        // for (AprilTagIO ap : aprilTagLL){
+        //     SmartDashboard.putData(ap.getName() + "-field", ap.getField2d());
+        // }
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -234,14 +234,14 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                                             TunerConstants.kSpeedAt12VoltsMps,
                                             driveBaseRadius,
                                             new ReplanningConfig()),
-            // ()->false, // Change this if the path needs to be flipped on red vs blue
-            () -> {//TODO this is is testing and we hope it works
-                var alliance = DriverStation.getAlliance();
-                if (alliance.isPresent()) {
-                  return alliance.get() == DriverStation.Alliance.Red;
-                }
-                return false;
-            },
+            ()->false, // Change this if the path needs to be flipped on red vs blue
+            // () -> {//TODO this is is testing and we hope it works
+            //     var alliance = DriverStation.getAlliance();
+            //     if (alliance.isPresent()) {
+            //       return alliance.get() == DriverStation.Alliance.Red;
+            //     }
+            //     return false;
+            // },
             this); // Subsystem for requirements
     }
 
@@ -310,7 +310,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         //     SmartDashboard.putBoolean("drivetrain-tag 3 accepted", false);
         // }
         
-         return this.getState().Pose;
+        // if (Localization.tagInVision()) return Localization.getPose();
+        return this.getState().Pose;
     }
 
     private void startSimThread() {
@@ -460,15 +461,21 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     
     public boolean withinRejectionDistance(Pose2d p1, Pose2d p2){
         // return Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY())) < kRejectionDistance;
-        return true;
+        double diffX = p1.getX() - p2.getX();
+        double diffY = p1.getY() - p2.getY();
+        return Math.hypot(diffX, diffY) < kRejectionDistance;
+        // return true;
     }
 
     public void addVisionMeasurements(){
         
         for (AprilTagIO aprilTagDetector : aprilTagLL){
-            if (aprilTagDetector.getPoseEstimate() != null) aprilTagDetector.getField2d().setRobotPose(aprilTagDetector.getPoseEstimate());
-            if (useAbsolute && aprilTagDetector.isValid()){
+            // if (aprilTagDetector.getPoseEstimate() != null) aprilTagDetector.getField2d().setRobotPose(aprilTagDetector.getPoseEstimate());
+            if (useAbsolute && aprilTagDetector.isValid() && withinRejectionDistance(this.getState().Pose, aprilTagDetector.getPoseEstimate())){
+                SmartDashboard.putBoolean("drivetrain-tag-accepts", true);
                 this.addVisionMeasurement(aprilTagDetector.getPoseEstimate(), aprilTagDetector.getTimeStamp(), aprilTagDetector.getStandardDeviations());
+            } else {
+                SmartDashboard.putBoolean("drivetrain-tag-accepts", false);
             }
 
         }
@@ -564,10 +571,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
         this.field.setRobotPose(this.getPose());
 
-        this.tagField0.setRobotPose(this.tagPose0);
-        this.tagField1.setRobotPose(this.tagPose1);
-        this.tagField2.setRobotPose(this.tagPose2);
-        this.tagField3.setRobotPose(this.tagPose3);
+        // this.tagField0.setRobotPose(this.tagPose0);
+        // this.tagField1.setRobotPose(this.tagPose1);
+        // this.tagField2.setRobotPose(this.tagPose2);
+        // this.tagField3.setRobotPose(this.tagPose3);
         
         SmartDashboard.putNumber("drivetrain-rotation rate", this.getRotationRate());
         // posePublisher.set(this.getState().Pose);
@@ -578,7 +585,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putBoolean("abs localization", this.useAbsolute);
 
         
-
+        // SmartDashboard.putNumber("drivetrain-encoder val", this.Modules[2].getDriveMotor().getRotorPosition().getValueAsDouble());
         
     }
 

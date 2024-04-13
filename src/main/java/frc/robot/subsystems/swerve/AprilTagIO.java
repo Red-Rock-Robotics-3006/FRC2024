@@ -8,9 +8,9 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 public interface AprilTagIO {
-    public static final double kStdvX = 0.8;
-    public static final double kStdvY = 0.8;
-    public static final double kStdvTheta = 9000;
+    public static final double kStdvX = 12;
+    public static final double kStdvY = 12;
+    public static final double kStdvTheta = 15000;
 
     public static final double kStdvScaleDenominator = 30d;
 

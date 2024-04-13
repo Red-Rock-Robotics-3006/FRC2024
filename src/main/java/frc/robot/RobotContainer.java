@@ -49,6 +49,8 @@ public class RobotContainer {
   public static double kAngle = 60;
   public static final double kShooterSpeed = 0.5;
 
+  public static final double kHeadingTolerance = 1.5;
+
   private final CommandXboxController joystick = new CommandXboxController(0);
   private final CommandXboxController mechstick = new CommandXboxController(1);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
@@ -143,13 +145,14 @@ public class RobotContainer {
 
     angle.HeadingController.setPID(CommandSwerveDrivetrain.kHeadingP, CommandSwerveDrivetrain.kHeadingI, CommandSwerveDrivetrain.kHeadingD);
     angle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+    angle.HeadingController.setTolerance(Math.toRadians(kHeadingTolerance));
 
     // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     // joystick.b().whileTrue(drivetrain
     //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
         
     joystick.start().onTrue(
-      drivetrain.resetHeading()
+      drivetrain.resetFieldHeading()
     );
 
     joystick.back().onTrue(
@@ -158,7 +161,7 @@ public class RobotContainer {
     
     RobotModeTriggers.teleop().onTrue(
       new SequentialCommandGroup(
-        new InstantCommand(() -> drivetrain.setAbsolute(false)),
+        new InstantCommand(() -> drivetrain.setAbsolute(false), drivetrain),
         drivetrain.resetFieldHeading()
       )
         // drivetrain.resetFieldHeading()
@@ -301,7 +304,8 @@ public class RobotContainer {
 
     climber.setDefaultCommand(
       new RunCommand(
-        () -> {climber.moveLeft((mechstick.leftBumper().getAsBoolean()) ? SmartDashboard.getNumber("reset speed", Climber.kResetSpeed) : 0); climber.moveRight((mechstick.rightBumper().getAsBoolean()) ? SmartDashboard.getNumber("reset speed", Climber.kResetSpeed) : 0);}, 
+        () -> {climber.moveLeft((mechstick.getHID().getLeftBumper()) ? SmartDashboard.getNumber("reset speed", Climber.kResetSpeed) : 0); climber.moveRight((mechstick.getHID().getRightBumper()) ? SmartDashboard.getNumber("reset speed", Climber.kResetSpeed) : 0);}, 
+        // () -> {climber.moveLeft((mechstick.leftBumper().getAsBoolean()) ? SmartDashboard.getNumber("reset speed", Climber.kResetSpeed) : 0); climber.moveRight((mechstick.rightBumper().getAsBoolean()) ? SmartDashboard.getNumber("reset speed", Climber.kResetSpeed) : 0);}, 
         climber)
     );
     new Trigger(
@@ -335,14 +339,15 @@ public class RobotContainer {
     ).onFalse(
       new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC), drivetrain)
     );
-    // mechstick.start().onTrue(
-    //   drivetrain.resetOdo()
-    // );
+    mechstick.start().onTrue(
+      drivetrain.resetOdo()
+    );
     mechstick.b().whileTrue(
       drivetrain.applyRequest(() -> brake)
     );
 
     //LED BINDINGS
+
 
     // mechstick.povLeft().onTrue(
     //   LEDCommands.setPoliceMode(0)
@@ -403,7 +408,7 @@ public class RobotContainer {
     SmartDashboard.putNumber("heading d", 0.2);
 
     SmartDashboard.putNumber("homing p", 12);
-    SmartDashboard.putNumber("homing d", 0.2);
+    SmartDashboard.putNumber("homing d", 1.2);
 
     SmartDashboard.putNumber("amp speed", 0.12);
 
@@ -414,6 +419,8 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("lob shot speed", .33);
     SmartDashboard.getNumber("lob shot angle", 20);
+
+    SmartDashboard.putNumber("drivetrain-pid tolerance", kHeadingTolerance);
   }
 
   public RobotContainer() {
@@ -476,6 +483,8 @@ public class RobotContainer {
   
     SmartDashboard.putNumber("current p", angle.HeadingController.getP());
     SmartDashboard.putNumber("current d", angle.HeadingController.getD());
+
+    angle.HeadingController.setTolerance(SmartDashboard.getNumber("drivetrain-pid tolerance", kHeadingTolerance));
 
     this.MaxAngularRate = SmartDashboard.getNumber("max turn", CommandSwerveDrivetrain.kTurnSpeed) * Math.PI;
     this.MaxSpeed = SmartDashboard.getNumber("max speed", CommandSwerveDrivetrain.kDriveSpeed);
