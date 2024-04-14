@@ -425,7 +425,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     private Command holdAngleCommand(){
-        if (angleSwerveRequest == null) return new InstantCommand(() -> System.out.println("angle is null"));
+        if (angleSwerveRequest == null) return new InstantCommand(() -> System.out.println("drivetrain angle object is null"));
         return this.applyRequest(
             () -> angleSwerveRequest.withTargetDirection(new Rotation2d(Math.toRadians(this.getTargetHeading())))
         );
@@ -500,10 +500,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         for (AprilTagIO aprilTagDetector : aprilTagLL){
             // if (aprilTagDetector.getPoseEstimate() != null) aprilTagDetector.getField2d().setRobotPose(aprilTagDetector.getPoseEstimate());
             if (useAbsolute && aprilTagDetector.isValid() && withinRejectionDistance(this.getState().Pose, aprilTagDetector.getPoseEstimate())){
-                SmartDashboard.putBoolean("drivetrain-tag-accepts", true);
+                SmartDashboard.putBoolean(aprilTagDetector.getName() + "-drivetrain-tag-accepts", true);
                 this.addVisionMeasurement(aprilTagDetector.getPoseEstimate(), aprilTagDetector.getTimeStamp(), aprilTagDetector.getStandardDeviations());
             } else {
-                SmartDashboard.putBoolean("drivetrain-tag-accepts", false);
+                SmartDashboard.putBoolean(aprilTagDetector.getName() + "-drivetrain-tag-accepts", false);
             }
 
         }
