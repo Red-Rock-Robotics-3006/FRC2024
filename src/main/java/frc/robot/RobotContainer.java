@@ -179,10 +179,6 @@ public class RobotContainer {
 
     //SHOOTER ANGLE BINDINGS
 
-    joystick.povLeft().onTrue(
-      new InstantCommand(() -> drivetrain.setTargetHeading(-90), drivetrain)
-    );
-
     joystick.povRight().onTrue(
       new InstantCommand(
         () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
