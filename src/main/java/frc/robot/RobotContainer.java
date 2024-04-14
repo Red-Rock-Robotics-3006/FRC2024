@@ -107,6 +107,7 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(
           () -> {
+                  System.out.println("balls");
                   if (drivetrain.getDriveState() == DriveState.ROBOT_CENTRIC){
                     SmartDashboard.putBoolean("facing angle", false);
                     SmartDashboard.putBoolean("robot centric", true);
@@ -177,6 +178,10 @@ public class RobotContainer {
     // );
 
     //SHOOTER ANGLE BINDINGS
+
+    joystick.povLeft().onTrue(
+      new InstantCommand(() -> drivetrain.setTargetHeading(-90), drivetrain)
+    );
 
     joystick.povRight().onTrue(
       new InstantCommand(
@@ -426,9 +431,11 @@ public class RobotContainer {
   public RobotContainer() {
     configureDashboard();
     configureBindings();    
-    configureSelector();
     configurePathPlanner();
     drivetrain.configureCurrentLimits();
+    drivetrain.setAngleSwerveRequest(this.angle);
+    
+    configureSelector();
     // drivetrain.configureChrp("music/sirens.chrp");
 
 
@@ -506,6 +513,8 @@ public class RobotContainer {
     m_chooser.addOption("troll auto paths", Autos.m_trollauto_paths());
     m_chooser.addOption("FOUR NOTE AUTO AIM TEST PATHS", Autos.m_4note_autoaim_test_paths());
     m_chooser.addOption("FOUR NOTE AUTO AIM TEST", Autos.m_4note_autoaim_test());
+
+    m_chooser.addOption("THIS IS A TEST!: DEFAULT COMMANDS HEADING PID AUTO TEST", Autos.m_6note_paths_with_heading());
     
     // m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
 

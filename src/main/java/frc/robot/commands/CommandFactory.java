@@ -24,4 +24,6 @@ public class CommandFactory {
             ShooterCommands.shootAuto()
         );
     }
+
+    
 }

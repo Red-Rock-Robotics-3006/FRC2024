@@ -13,6 +13,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest.FieldCentricFacingAngle;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -36,10 +37,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.swerve.generated.*;
 import frc.robot.util.TalonUtils;
@@ -67,6 +71,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private boolean useAbsolute = true;
 
     private AprilTagIO[] aprilTagLL;
+
+    private FieldCentricFacingAngle angleSwerveRequest;
 
     // private StructPublisher<Pose2d> posePublisher = NetworkTableInstance.getDefault()
     //             .getStructTopic("pose", Pose2d.struct).publish();
@@ -216,6 +222,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
         return run(() -> this.setControl(requestSupplier.get()));
+    }
+
+    public void setAngleSwerveRequest(FieldCentricFacingAngle request){
+        this.angleSwerveRequest = request;
     }
 
     private void configurePathPlanner() {
@@ -412,6 +422,24 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     // }
                 },
                 () -> Localization.tagInVision());
+    }
+
+    private Command holdAngleCommand(){
+        if (angleSwerveRequest == null) return new InstantCommand(() -> System.out.println("angle is null"));
+        return this.applyRequest(
+            () -> angleSwerveRequest.withTargetDirection(new Rotation2d(Math.toRadians(this.getTargetHeading())))
+        );
+    }
+
+    public Command holdAngleCommand(double seconds){
+        return new ParallelRaceGroup(
+            new WaitCommand(seconds),
+            holdAngleCommand()
+        );
+    }
+
+    public Command setTargetHeadingDegreesCommand(double degrees){
+        return new InstantCommand(() -> this.setTargetHeading(degrees), this);
     }
 
     public Command goToPose(Pose2d pose){

@@ -1,6 +1,9 @@
 package frc.robot.commands;
 
+import java.time.Instant;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -37,6 +40,31 @@ public class Autos {
             drivetrain.getAuto("6N_4"),
             drivetrain.getAuto("6N_5"),
             drivetrain.getAuto("6N_6"),
+            drivetrain.getAuto("6N_7")
+        );
+    }
+    
+    @Deprecated
+    public static Command m_6note_paths_with_heading() { //paths for old six note
+        return new SequentialCommandGroup(
+            drivetrain.getAuto("6N_1"),
+            drivetrain.setTargetHeadingDegreesCommand(45d),
+            drivetrain.holdAngleCommand(1d),
+            drivetrain.getAuto("6N_2"),
+            drivetrain.setTargetHeadingDegreesCommand(90d),
+            drivetrain.holdAngleCommand(1d),
+            drivetrain.getAuto("6N_3"),
+            drivetrain.setTargetHeadingDegreesCommand(135d),
+            drivetrain.holdAngleCommand(1d),
+            drivetrain.getAuto("6N_4"),
+            drivetrain.setTargetHeadingDegreesCommand(180d),
+            drivetrain.holdAngleCommand(1d),
+            drivetrain.getAuto("6N_5"),
+            drivetrain.setTargetHeadingDegreesCommand(-45d),
+            drivetrain.holdAngleCommand(1d),
+            drivetrain.getAuto("6N_6"),
+            drivetrain.setTargetHeadingDegreesCommand(-90d),
+            drivetrain.holdAngleCommand(1d),
             drivetrain.getAuto("6N_7")
         );
     }
