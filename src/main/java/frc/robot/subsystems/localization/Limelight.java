@@ -87,11 +87,11 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
         this.validDistance = distance;
         numOfLimelights++;
 
-        SmartDashboard.putNumber(name + "stdv x", AprilTagIO.kStdvX);
-        SmartDashboard.putNumber(name + "stdv y", AprilTagIO.kStdvY);
-        SmartDashboard.putNumber(name + "stdv theta", AprilTagIO.kStdvTheta);
+        SmartDashboard.putNumber(this.name + "stdv x", AprilTagIO.kStdvX);
+        SmartDashboard.putNumber(this.name + "stdv y", AprilTagIO.kStdvY);
+        SmartDashboard.putNumber(this.name + "stdv theta", AprilTagIO.kStdvTheta);
 
-        SmartDashboard.putData(name + "-field2d", this.field);
+        SmartDashboard.putData(this.name + "-field2d", this.field);
 
     }
 

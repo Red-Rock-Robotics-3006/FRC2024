@@ -131,6 +131,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         kHeadingI = 0,
         kHeadingD = 0.2;
 
+    private double rejectionDistance;
+
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
         super(driveTrainConstants, OdometryUpdateFrequency, modules);
@@ -218,6 +220,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // for (AprilTagIO ap : aprilTagLL){
         //     SmartDashboard.putData(ap.getName() + "-field", ap.getField2d());
         // }
+
+        SmartDashboard.putNumber("drivetrain-rejection distance", kRejectionDistance);
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -347,6 +351,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         this.useAbsolute = b;
     }
 
+    @Deprecated
     public Command resetHeading(){
         // if (Constants.Settings.ABSOLUTE_LOCALIZATION){
             return new InstantCommand(
@@ -411,6 +416,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                     if (Localization.getTags()[0]){
                         this.seedFieldRelative(Localization.getPose2ds()[0]);
                     }
+                    this.setTargetHeading(this.getCurrentHeadingDegrees());
                     // else if (Localization.getTags()[1]){
                     //     this.seedFieldRelative(Localization.getPose2ds()[1]);
                     // }
@@ -476,10 +482,12 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
         return this.getCurrentHeadingDegrees();
     }
+
     public double getRotationRate(){
         return this.getPigeon2().getRate();
     }
 
+    @Deprecated
     public void configureChrp(String filename){
         for (SwerveModule module : this.Modules){
             TalonUtils.addMotor(module.getDriveMotor());
@@ -491,7 +499,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         // return Math.sqrt((p1.getX() - p2.getX()) * (p1.getX() - p2.getX()) + (p1.getY() - p2.getY()) * (p1.getY() - p2.getY())) < kRejectionDistance;
         double diffX = p1.getX() - p2.getX();
         double diffY = p1.getY() - p2.getY();
-        return Math.hypot(diffX, diffY) < kRejectionDistance;
+        return Math.hypot(diffX, diffY) < this.rejectionDistance;
         // return true;
     }
 
@@ -611,6 +619,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         SmartDashboard.putNumber("drivetrain-fga timestamp", Timer.getFPGATimestamp());
 
         SmartDashboard.putBoolean("abs localization", this.useAbsolute);
+
+        this.rejectionDistance = SmartDashboard.getNumber("drivetrain-rejection distance", kRejectionDistance);
 
         
         // SmartDashboard.putNumber("drivetrain-encoder val", this.Modules[2].getDriveMotor().getRotorPosition().getValueAsDouble());

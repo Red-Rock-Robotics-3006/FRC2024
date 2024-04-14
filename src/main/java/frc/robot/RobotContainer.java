@@ -440,12 +440,12 @@ public class RobotContainer {
     SmartDashboard.putNumber("encoder target", 0.7);
     SmartDashboard.putNumber("shooter target", 45);
 
-    try {
-      Thread.sleep(150);
-    } catch (Exception e) {}
-    IntakeCommands.burnFlash();
-    ShooterCommands.burnFlash();
-    IndexCommands.burnFlash();
+    // try {
+    //   Thread.sleep(150);
+    // } catch (Exception e) {}
+    // IntakeCommands.burnFlash();
+    // ShooterCommands.burnFlash();
+    // IndexCommands.burnFlash();
   } 
 
   public void configurePathPlanner(){
