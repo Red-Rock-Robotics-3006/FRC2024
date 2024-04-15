@@ -209,6 +209,55 @@ public class Autos {
         );
     }
 
+    public static Command m_4note_amp() { //amp side 4 note
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
+
+            //FIRST NOTE
+            ShooterCommands.spinUp(),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_1B"),
+                IntakeCommands.intakeAuto()
+            ),
+            ShooterCommands.setHoming(true),
+            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelDeadlineGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_2B"),
+                    drivetrain.getAuto("6N_3B")
+                ), 
+                IntakeCommands.intakeAuto()
+            ),
+            ShooterCommands.setHoming(true),
+            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelDeadlineGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_4B"),
+                    drivetrain.getAuto("6N_5B")
+                ), 
+                IntakeCommands.intakeAuto()
+            ),
+            ShooterCommands.setHoming(true),
+            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop(),
+            drivetrain.getAuto("4N_Amp_Leave")
+        );
+    }
+
     public static Command m_6note_alt_offset_starting() { //centerline rush 6 note
         return new SequentialCommandGroup(
             new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
@@ -217,6 +266,7 @@ public class Autos {
             ShooterCommands.spinUp(),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
 
             //SECOND NOTE
             new ParallelCommandGroup(
@@ -282,6 +332,7 @@ public class Autos {
             ShooterCommands.spinUp(),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
 
             //SECOND NOTE
             new ParallelCommandGroup(

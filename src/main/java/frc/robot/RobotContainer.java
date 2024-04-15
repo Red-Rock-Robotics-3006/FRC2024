@@ -51,8 +51,8 @@ public class RobotContainer {
 
   public static final double kHeadingTolerance = 1.5;
 
-  private static final CommandXboxController drivestick = new CommandXboxController(0);
-  private static final CommandXboxController mechstick = new CommandXboxController(1);
+  private static final CommandXboxController drivestick = new CommandXboxController(Constants.Controller.DRIVESTICK_PORT);
+  private static final CommandXboxController mechstick = new CommandXboxController(Constants.Controller.MECHSTICK_PORT);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()

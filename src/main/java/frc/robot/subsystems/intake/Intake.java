@@ -15,8 +15,7 @@ public class Intake extends SubsystemBase{
     public static final double kRollForwardTime = 0.1;
 
     private Intake() {
-        this.setName("Intake");
-        this.register();
+        super("Intake");
 
         this.m_intakeMotor.restoreFactoryDefaults();
         this.m_intakeMotor.setInverted(false);

@@ -24,8 +24,7 @@ public class Index extends SubsystemBase{
     private boolean isTransferring = false;
 
     private Index() {
-        this.setName("Index");
-        this.register();
+        super("Index");
 
         this.m_indexMotor.restoreFactoryDefaults();
         this.m_indexMotor.setInverted(true);
