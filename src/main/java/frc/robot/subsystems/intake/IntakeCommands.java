@@ -1,6 +1,8 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.index.TOFSensor;
 import frc.robot.subsystems.shooter.Shooter;
@@ -35,12 +37,30 @@ public class IntakeCommands {
     }
 
     public static Command intake() {
-        return new FunctionalCommand(
-            () -> {intake.startIntake(); index.startTransfer(); shooter.presetShoot(Shooter.Positions.INTAKE);}, 
-            () -> {},
-            (interrupted) -> {intake.stopIntake(); index.stopTransfer();}, 
-            () -> sensor.hasNote(),
-            intake, index, sensor, shooter
+        return new SequentialCommandGroup(
+            new FunctionalCommand(
+                () -> {intake.startIntake(); index.startTransfer(); shooter.presetShoot(Shooter.Positions.INTAKE);}, 
+                () -> {},
+                (interrupted) -> {intake.stopIntake(); index.stopTransfer();}, 
+                () -> sensor.hasNote(),
+                intake, index, sensor, shooter
+            ),
+            new StartEndCommand(
+                () -> {RobotContainer.getDriveStick().getHID().setRumble(RumbleType.kBothRumble, 1); RobotContainer.getMechStick().getHID().setRumble(RumbleType.kBothRumble, 1);},
+                () -> {RobotContainer.getDriveStick().getHID().setRumble(RumbleType.kBothRumble, 0); RobotContainer.getMechStick().getHID().setRumble(RumbleType.kBothRumble, 0);}
+            ).withTimeout(0.15)
+        );
+    }
+
+    public static Command intakeAuto() {
+        return new SequentialCommandGroup(
+            new FunctionalCommand(
+                () -> {intake.startIntake(); index.startTransfer(); shooter.presetShoot(Shooter.Positions.INTAKE);}, 
+                () -> {},
+                (interrupted) -> {intake.stopIntake(); index.stopTransfer();}, 
+                () -> sensor.hasNote(),
+                intake, index, sensor, shooter
+            )
         );
     }
 

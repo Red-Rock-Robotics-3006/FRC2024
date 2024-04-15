@@ -51,8 +51,8 @@ public class RobotContainer {
 
   public static final double kHeadingTolerance = 1.5;
 
-  private final CommandXboxController joystick = new CommandXboxController(0);
-  private final CommandXboxController mechstick = new CommandXboxController(1);
+  private static final CommandXboxController drivestick = new CommandXboxController(0);
+  private static final CommandXboxController mechstick = new CommandXboxController(1);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -83,21 +83,32 @@ public class RobotContainer {
   private double targetHeadingD = 0;
 
   private SendableChooser<Command> m_chooser = new SendableChooser<>();
+
+
+  public static CommandXboxController getDriveStick() {
+    return drivestick;
+  }
+
+  public static CommandXboxController getMechStick() {
+    return mechstick;
+  }
+
+
   private void configureBindings() {
 
     // drivetrain.setDefaultCommand(
     //     drivetrain.applyRequest(
     //       () -> {
-    //               if (Math.abs(joystick.getRightX()) > kRotationDeadband) {
+    //               if (Math.abs(drivestick.getRightX()) > kRotationDeadband) {
     //                 SmartDashboard.putBoolean("facing angle", false);
-    //                 return drive.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY() - 0.2)[1] * MaxSpeed)
-    //                             .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
-    //                             .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+    //                 return drive.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY() - 0.2)[1] * MaxSpeed)
+    //                             .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
+    //                             .withRotationalRate(-drivestick.getRightX() * MaxAngularRate);
     //               }
     //               else {
     //                 SmartDashboard.putBoolean("facing angle", true);
-    //                 return angle.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
-    //                             .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
+    //                 return angle.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
+    //                             .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
     //                             .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
     //               }    
     //       }
@@ -110,36 +121,36 @@ public class RobotContainer {
                   if (drivetrain.getDriveState() == DriveState.ROBOT_CENTRIC){
                     SmartDashboard.putBoolean("facing angle", false);
                     SmartDashboard.putBoolean("robot centric", true);
-                    return driveRobotCentric.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
-                                            .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
-                                            .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+                    return driveRobotCentric.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
+                                            .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
+                                            .withRotationalRate(-drivestick.getRightX() * MaxAngularRate);
                   }
-                  else if (drivetrain.getDriveState() == DriveState.FIELD_CENTRIC_NO_LOCK || Math.abs(joystick.getRightX()) > kRotationDeadband) {
+                  else if (drivetrain.getDriveState() == DriveState.FIELD_CENTRIC_NO_LOCK || Math.abs(drivestick.getRightX()) > kRotationDeadband) {
                     SmartDashboard.putBoolean("facing angle", false);
                     SmartDashboard.putBoolean("robot centric", false);
 
-                    return drive.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
-                                .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
-                                .withRotationalRate(-joystick.getRightX() * MaxAngularRate);
+                    return drive.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
+                                .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
+                                .withRotationalRate(-drivestick.getRightX() * MaxAngularRate);
                   }
                   else {
                     SmartDashboard.putBoolean("facing angle", true);
                     SmartDashboard.putBoolean("robot centric", false);
 
 
-                    return angle.withVelocityX(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[1] * MaxSpeed)
-                                .withVelocityY(mapJoystick(-joystick.getLeftX(), -joystick.getLeftY())[0] * MaxSpeed)
+                    return angle.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
+                                .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
                                 .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
                   }    
           }
         ) 
     );
     new Trigger(
-      () -> Math.abs(joystick.getRightX()) > kRotationDeadband
+      () -> Math.abs(drivestick.getRightX()) > kRotationDeadband
     ).onTrue(
             new FunctionalCommand(
         () -> {}, () -> {drivetrain.setTargetHeading(drivetrain.getCurrentHeadingDegrees());}, (interrupted) -> {drivetrain.setTargetHeading(drivetrain.getCurrentHeadingDegrees());}, 
-        () -> {return Math.abs(joystick.getRightX()) < kRotationDeadband && Math.abs(drivetrain.getRotationRate()) < SmartDashboard.getNumber("predict heading pid threshold", CommandSwerveDrivetrain.kPredictThreshold);})
+        () -> {return Math.abs(drivestick.getRightX()) < kRotationDeadband && Math.abs(drivetrain.getRotationRate()) < SmartDashboard.getNumber("predict heading pid threshold", CommandSwerveDrivetrain.kPredictThreshold);})
     );  
 
 
@@ -147,15 +158,15 @@ public class RobotContainer {
     angle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
     angle.HeadingController.setTolerance(Math.toRadians(kHeadingTolerance));
 
-    // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-    // joystick.b().whileTrue(drivetrain
-    //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+    // drivestick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    // drivestick.b().whileTrue(drivetrain
+    //     .applyRequest(() -> point.withModuleDirection(new Rotation2d(-drivestick.getLeftY(), -drivestick.getLeftX()))));
         
-    joystick.start().onTrue(
+    drivestick.start().onTrue(
       drivetrain.resetFieldHeading()
     );
 
-    joystick.back().onTrue(
+    drivestick.back().onTrue(
       drivetrain.resetFieldHeading()
     );
     
@@ -178,13 +189,13 @@ public class RobotContainer {
 
     //SHOOTER ANGLE BINDINGS
 
-    joystick.povRight().onTrue(
-      new InstantCommand(
-        () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
-        shooter
-      )
-    );
-    joystick.leftTrigger(0.25).whileTrue(
+    // drivestick.povRight().onTrue(
+    //   new InstantCommand(
+    //     () -> shooter.setTarget(SmartDashboard.getNumber("amp angle", Shooter.kAmpAngle)),
+    //     shooter
+    //   )
+    // );
+    drivestick.leftTrigger(0.25).whileTrue(
       ShooterCommands.setAngle(Shooter.Positions.SUB_LEFT)//Shooter.encoderTarget = 0.7)
     ).onFalse(
       ShooterCommands.setAngle(Shooter.Positions.INTAKE)
@@ -192,18 +203,18 @@ public class RobotContainer {
 
     //INTAKE PROCESS BINDINGS
 
-    joystick.leftBumper().onTrue(
+    drivestick.leftBumper().onTrue(
       new SequentialCommandGroup(
         IntakeCommands.intake()
       )
     );
-    joystick.rightBumper().onTrue(
+    drivestick.rightBumper().onTrue(
       new SequentialCommandGroup(
         IntakeCommands.stop(),
         IndexCommands.retract()
       )
     );
-    joystick.a().onTrue(
+    drivestick.a().onTrue(
       new SequentialCommandGroup(
         IntakeCommands.reverse(),
         IndexCommands.reverse()
@@ -227,13 +238,13 @@ public class RobotContainer {
         LEDCommands.setState(State.SCORING_AMP)
       )
     );
-    joystick.x().onTrue(
+    drivestick.x().onTrue(
       ShooterCommands.shoot()
     );
-    joystick.y().onTrue(
+    drivestick.y().onTrue(
       new InstantCommand(() -> shooter.setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), shooter)
     );
-    joystick.b().onTrue(
+    drivestick.b().onTrue(
       new SequentialCommandGroup(
         ShooterCommands.stow(),
         ShooterCommands.stop(),
@@ -244,7 +255,7 @@ public class RobotContainer {
         LEDCommands.setIsAmping(false)
       )
     );
-    joystick.rightTrigger(0.25).whileTrue(
+    drivestick.rightTrigger(0.25).whileTrue(
         ShooterCommands.setHoming(true)
     ).whileFalse(
         ShooterCommands.setHoming(false)
@@ -262,16 +273,7 @@ public class RobotContainer {
     mechstick.povRight().onTrue(
       ShooterCommands.fullCourtLob()
     );
-
-    mechstick.povUp().onTrue(
-      // ShooterCommands.increaseDistanceFeed()
-      ShooterCommands.increaseTarget()
-    );
-    mechstick.povDown().onTrue(
-      // ShooterCommands.decreaseDistanceFeed()
-      ShooterCommands.decreaseTarget()
-    );
-
+    
     //CLIMB PROCESS BINDINGS
 
     // climber.setDefaultCommand(
@@ -380,7 +382,7 @@ public class RobotContainer {
 
     // shooter.setDefaultCommand(
     //   new RunCommand(
-    //     () -> shooter.setAngleSpeed((joystick.getRightTriggerAxis() - joystick.getLeftTriggerAxis()) / 10), 
+    //     () -> shooter.setAngleSpeed((drivestick.getRightTriggerAxis() - drivestick.getLeftTriggerAxis()) / 10), 
     //     shooter)
     // );
 
@@ -496,26 +498,13 @@ public class RobotContainer {
   public void configureSelector(){
     m_chooser.setDefaultOption("no auto", Commands.print("good luck drivers!"));
 
-    m_chooser.addOption("SIX NOTE", Autos.m_6note());
-    m_chooser.addOption("SIX NOTE PATHS", Autos.m_6note_paths());
     m_chooser.addOption("SIX NOTE ALT", Autos.m_6note_alt());
     m_chooser.addOption("SIX NOTE ALT PATHS", Autos.m_6note_alt_paths());
-    m_chooser.addOption("SIX NOTE ALT WITH DEADLINE", Autos.m_6note_alt_with_deadline());
-    m_chooser.addOption("SIX NOTE OFFSET PATHS", Autos.m_6note_alt_offset_paths());
     m_chooser.addOption("THREE NOTE SOURCE", Autos.m_3note());
     m_chooser.addOption("THREE NOTE SOURCE PATHS", Autos.m_3note_paths());
-    m_chooser.addOption("AUTOAIM 4 NOTE", Autos.m_autoaim_4note());
     m_chooser.addOption("FOUR NOTE", Autos.m_4note());
-    m_chooser.addOption("troll auto", Autos.m_trollauto());
-    m_chooser.addOption("troll auto paths", Autos.m_trollauto_paths());
-    m_chooser.addOption("FOUR NOTE AUTO AIM TEST PATHS", Autos.m_4note_autoaim_test_paths());
-    m_chooser.addOption("FOUR NOTE AUTO AIM TEST", Autos.m_4note_autoaim_test());
-
-    m_chooser.addOption("SIMULATION ONLY: DEFAULT COMMANDS HEADING PID AUTO TEST", Autos.m_6note_paths_with_heading());
-    m_chooser.addOption("SIMULATION ONLY: SIX NOTE OFFSET HEADING PID PATHS", Autos.m_6note_alt_offset_paths_with_heading());
-
-    m_chooser.addOption("EXPERIMENTAL: HEADING PID SIX NOTE ALT", Autos.m_6note_alt_swerve_autoaim());
-    m_chooser.addOption("EXPERIMENTAL: HEADING PID SIX NOTE ALT WITH DEADLINE", Autos.m_6note_alt_swerve_autoaim_with_deadline());
+    m_chooser.addOption("TROLL AUTO", Autos.m_trollauto());
+    m_chooser.addOption("TROLL AUTO PATHS", Autos.m_trollauto_paths());
 
     m_chooser.addOption("EXPERIMENTAL: OFFSET STARTING POSITION SIX NOTE ALT", Autos.m_6note_alt_offset_starting());
     m_chooser.addOption("EXPERIMENTAL: OFFSET STARTING POSITION SIX NOTE ALT WITH DEADLINE", Autos.m_6note_alt_offset_starting_with_deadline());
@@ -542,13 +531,13 @@ public class RobotContainer {
   }
 
   /**
-   * Re-maps a standard controller joystick input to be more circular and rotationally uniform
+   * Re-maps a standard controller drivestick input to be more circular and rotationally uniform
    * 
    * @param x
    * @param y
    * @return array of new x and y values
    */
-  public static double[] mapJoystick(double x, double y){
+  public static double[] mapdrivestick(double x, double y){
     // double m_x = x * Math.sqrt(1 - y * y / 2);
     // double m_y = y * Math.sqrt(1 - x * x / 2);
     // double[] converted = {m_x, m_y};

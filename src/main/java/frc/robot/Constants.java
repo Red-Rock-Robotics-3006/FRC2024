@@ -25,6 +25,10 @@ public final class Constants {
     public static final int RIGHT_ANGLE_MOTOR_ID = 13;
     public static final int SHOOT_CURRENT_LIMIT = 80;
   }
+  public static class Controller {
+    public static final int DRIVESTICK_PORT = 0;
+    public static final int MECHSTICK_PORT = 1;
+  }
   public static class Settings {
     public static final boolean INTAKE_HOMING_ENABLED = false;
     public static final boolean SHOOTER_HOMING_ENABLED = true;

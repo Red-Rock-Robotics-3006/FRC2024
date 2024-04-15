@@ -1,7 +1,5 @@
 package frc.robot.commands;
 
-import java.time.Instant;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -148,100 +146,6 @@ public class Autos {
         );
     }
 
-    public static Command m_4note_autoaim_test() {
-        return new SequentialCommandGroup(
-            CommandFactory.shootCenterCommand(),
-            ShooterCommands.spinUp(),
-
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_1B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_4notetest1"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_7B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto()
-        );
-    }
-
-    public static Command m_6note() { //normie 6 note (lame) (shouldnt use) (prob wont work)
-        return new SequentialCommandGroup(
-
-            //FIRST NOTE
-            CommandFactory.shootCenterCommand(),
-            ShooterCommands.spinUp(),
-
-            //SECOND NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                drivetrain.getAuto("6N_1")
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-
-            //THIRD NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                drivetrain.getAuto("6N_2")
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-            
-            //FOURTH NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                drivetrain.getAuto("6N_3")
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-
-            //FIFTH NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_4"),
-                    drivetrain.getAuto("6N_5")
-                )
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-
-            //SIXTH NOTE
-            new ParallelCommandGroup(
-                IntakeCommands.intake(),
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_6"),
-                    drivetrain.getAuto("6N_7")
-                )
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(0.5),
-            ShooterCommands.shootAuto(),
-
-            //END
-            ShooterCommands.stop()
-        );
-    }
-
     public static Command m_6note_alt() { //centerline rush 6 note
         return new SequentialCommandGroup(
 
@@ -252,73 +156,10 @@ public class Autos {
             //SECOND NOTE
             new ParallelCommandGroup(
                 drivetrain.getAuto("6N_1B"),
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(1),
-            ShooterCommands.shootAuto(),
-
-            //THIRD NOTE
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_2B"),
-                    drivetrain.getAuto("6N_3B")
-                ), 
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(1),
-            ShooterCommands.shootAuto(),
-            
-            //FOURTH NOTE
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_4B"),
-                    drivetrain.getAuto("6N_5B")
-                ), 
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(1),
-            ShooterCommands.shootAuto(),
-
-            //FIFTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_6B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(1),
-            ShooterCommands.shootAuto(),
-
-            //SIXTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_7B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(1),
-            ShooterCommands.shootAuto(),
-
-            //END
-            ShooterCommands.stop()
-        );
-    }
-    
-    public static Command m_6note_alt_with_deadline() { //centerline rush 6 note
-        return new SequentialCommandGroup(
-
-            //FIRST NOTE
-            CommandFactory.shootCenterCommand(),
-            ShooterCommands.spinUp(),
-
-            //SECOND NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_1B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            new WaitCommand(1),
+            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //THIRD NOTE
@@ -327,10 +168,10 @@ public class Autos {
                     drivetrain.getAuto("6N_2B"),
                     drivetrain.getAuto("6N_3B")
                 ), 
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(1),
+            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
             
             //FOURTH NOTE
@@ -339,28 +180,28 @@ public class Autos {
                     drivetrain.getAuto("6N_4B"),
                     drivetrain.getAuto("6N_5B")
                 ), 
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(1),
+            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //FIFTH NOTE
             new ParallelCommandGroup(
                 drivetrain.getAuto("6N_6B"),
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(1),
+            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //SIXTH NOTE
             new ParallelCommandGroup(
                 drivetrain.getAuto("6N_7B"),
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            new WaitCommand(1),
+            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //END
@@ -380,7 +221,7 @@ public class Autos {
             //SECOND NOTE
             new ParallelCommandGroup(
                 drivetrain.getAuto("6N_1B_Offset"),
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -392,7 +233,7 @@ public class Autos {
                     drivetrain.getAuto("6N_2B"),
                     drivetrain.getAuto("6N_3B")
                 ), 
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -404,7 +245,7 @@ public class Autos {
                     drivetrain.getAuto("6N_4B"),
                     drivetrain.getAuto("6N_5B")
                 ), 
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -413,7 +254,7 @@ public class Autos {
             //FIFTH NOTE
             new ParallelCommandGroup(
                 drivetrain.getAuto("6N_6B"),
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -422,7 +263,7 @@ public class Autos {
             //SIXTH NOTE
             new ParallelCommandGroup(
                 drivetrain.getAuto("6N_7B"),
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -445,7 +286,7 @@ public class Autos {
             //SECOND NOTE
             new ParallelCommandGroup(
                 drivetrain.getAuto("6N_1B_Offset"),
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -457,7 +298,7 @@ public class Autos {
                     drivetrain.getAuto("6N_2B"),
                     drivetrain.getAuto("6N_3B")
                 ), 
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -469,7 +310,7 @@ public class Autos {
                     drivetrain.getAuto("6N_4B"),
                     drivetrain.getAuto("6N_5B")
                 ), 
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -478,7 +319,7 @@ public class Autos {
             //FIFTH NOTE
             new ParallelCommandGroup(
                 drivetrain.getAuto("6N_6B"),
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -487,7 +328,7 @@ public class Autos {
             //SIXTH NOTE
             new ParallelCommandGroup(
                 drivetrain.getAuto("6N_7B"),
-                IntakeCommands.intake()
+                IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
@@ -498,131 +339,6 @@ public class Autos {
         );
     }
 
-    public static Command m_6note_alt_swerve_autoaim() { //centerline rush 6 note
-        return new SequentialCommandGroup(
-
-            //FIRST NOTE
-            CommandFactory.shootCenterCommand(),
-            ShooterCommands.spinUp(),
-
-            //SECOND NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_1B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //THIRD NOTE
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_2B"),
-                    drivetrain.getAuto("6N_3B")
-                ), 
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-            
-            //FOURTH NOTE
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_4B"),
-                    drivetrain.getAuto("6N_5B")
-                ), 
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //FIFTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_6B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //SIXTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_7B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //END
-            ShooterCommands.stop()
-        );
-    }
-
-    public static Command m_6note_alt_swerve_autoaim_with_deadline() { //centerline rush 6 note
-        return new SequentialCommandGroup(
-
-            //FIRST NOTE
-            CommandFactory.shootCenterCommand(),
-            ShooterCommands.spinUp(),
-
-            //SECOND NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_1B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //THIRD NOTE
-            new ParallelDeadlineGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_2B"),
-                    drivetrain.getAuto("6N_3B")
-                ), 
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-            
-            //FOURTH NOTE
-            new ParallelDeadlineGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_4B"),
-                    drivetrain.getAuto("6N_5B")
-                ), 
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //FIFTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_6B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //SIXTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_7B"),
-                IntakeCommands.intake()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //END
-            ShooterCommands.stop()
-        );
-    }
     // public static Command runThirdPath() {
     //     if (sensor.hasNote()) {
     //         return drivetrain.getAuto("6N_3B");
@@ -651,7 +367,7 @@ public class Autos {
 
             //SECOND NOTE
             new ParallelCommandGroup(
-                IntakeCommands.intake(),
+                IntakeCommands.intakeAuto(),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("3N_SA_2"),
                     drivetrain.getAuto("3N_SA_3")
@@ -663,7 +379,7 @@ public class Autos {
             
             //THIRD NOTE
             new ParallelCommandGroup(
-                IntakeCommands.intake(),
+                IntakeCommands.intakeAuto(),
                 new SequentialCommandGroup(
                     drivetrain.getAuto("3N_SA_4"),
                     drivetrain.getAuto("3N_SA_5")
@@ -687,7 +403,7 @@ public class Autos {
 
             //SECOND NOTE
             new ParallelCommandGroup(
-                IntakeCommands.intake(),
+                IntakeCommands.intakeAuto(),
                 drivetrain.getAuto("6N_1")
             ),
             ShooterCommands.setHoming(true),
@@ -696,7 +412,7 @@ public class Autos {
 
             //THIRD NOTE
             new ParallelCommandGroup(
-                IntakeCommands.intake(),
+                IntakeCommands.intakeAuto(),
                 drivetrain.getAuto("6N_2")
             ),
             ShooterCommands.setHoming(true),
@@ -705,7 +421,7 @@ public class Autos {
             
             //FOURTH NOTE
             new ParallelCommandGroup(
-                IntakeCommands.intake(),
+                IntakeCommands.intakeAuto(),
                 drivetrain.getAuto("6N_3")
             ),
             ShooterCommands.setHoming(true),
@@ -727,7 +443,7 @@ public class Autos {
             //SECOND NOTE
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
-                    IntakeCommands.intake(),
+                    IntakeCommands.intakeAuto(),
                     ShooterCommands.setAngle(Positions.SUB_LEFT)
                 ),
                 new SequentialCommandGroup(
@@ -740,7 +456,7 @@ public class Autos {
             //THIRD NOTE
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
-                    IntakeCommands.intake(),
+                    IntakeCommands.intakeAuto(),
                     ShooterCommands.setAngle(Positions.SUB_LEFT)
                 ),
                 new SequentialCommandGroup(
@@ -753,7 +469,7 @@ public class Autos {
             //FOURTH NOTE
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
-                    IntakeCommands.intake(),
+                    IntakeCommands.intakeAuto(),
                     ShooterCommands.setAngle(Positions.SUB_LEFT)
                 ),
                 new SequentialCommandGroup(
@@ -768,6 +484,106 @@ public class Autos {
         );
     }
 
+
+
+    
+
+    public static Command m_4note_autoaim_test() {
+        return new SequentialCommandGroup(
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_1B"),
+                IntakeCommands.intakeAuto()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_4notetest1"),
+                IntakeCommands.intakeAuto()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_7B"),
+                IntakeCommands.intakeAuto()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto()
+        );
+    }
+
+    public static Command m_6note() { //normie 6 note (lame) (shouldnt use) (prob wont work)
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intakeAuto(),
+                drivetrain.getAuto("6N_1")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intakeAuto(),
+                drivetrain.getAuto("6N_2")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intakeAuto(),
+                drivetrain.getAuto("6N_3")
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //FIFTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intakeAuto(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_4"),
+                    drivetrain.getAuto("6N_5")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //SIXTH NOTE
+            new ParallelCommandGroup(
+                IntakeCommands.intakeAuto(),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_6"),
+                    drivetrain.getAuto("6N_7")
+                )
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(0.5),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+
+
     // public static Command m_3note_blue() {
     //     return new SequentialCommandGroup(
 
@@ -778,7 +594,7 @@ public class Autos {
     //         //SECOND NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -791,7 +607,7 @@ public class Autos {
     //         //THIRD NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -816,7 +632,7 @@ public class Autos {
     //         //SECOND NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -829,7 +645,7 @@ public class Autos {
     //         //THIRD NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -863,7 +679,7 @@ public class Autos {
     //         //SECOND NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -876,7 +692,7 @@ public class Autos {
     //         //THIRD NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -901,7 +717,7 @@ public class Autos {
     //         //SECOND NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -914,7 +730,7 @@ public class Autos {
     //         //THIRD NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake()
+    //                 IntakeCommands.intakeAuto()
     //             ),
     //             new SequentialCommandGroup(
     //                 drivetrain.getAuto("3N_CB_3")
@@ -936,7 +752,7 @@ public class Autos {
     //         //SECOND NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -949,7 +765,7 @@ public class Autos {
     //         //THIRD NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -978,7 +794,7 @@ public class Autos {
     //         //SECOND NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     //             ),
     //             new SequentialCommandGroup(
@@ -990,7 +806,7 @@ public class Autos {
 
     //         //THIRD NOTE
     //         new ParallelCommandGroup(
-    //             IntakeCommands.intake(),
+    //             IntakeCommands.intakeAuto(),
     //             new SequentialCommandGroup(
     //                 drivetrain.getAuto("3N_CR_3"), 
     //                 drivetrain.getAuto("3N_CRA_4")
@@ -1015,7 +831,7 @@ public class Autos {
     //         ShooterCommands.shootAuto(),
 
     //         new ParallelCommandGroup(
-    //             IntakeCommands.intake(),
+    //             IntakeCommands.intakeAuto(),
     //             new SequentialCommandGroup(
     //                 drivetrain.getAuto("3N_CRA_2"), 
     //                 drivetrain.getAuto("3N_CRA_3")
@@ -1026,7 +842,7 @@ public class Autos {
     //         ShooterCommands.shootAuto(),
 
     //         new ParallelCommandGroup(
-    //             IntakeCommands.intake(),
+    //             IntakeCommands.intakeAuto(),
     //             new SequentialCommandGroup(
     //                 drivetrain.getAuto("3N_CRA_4"), 
     //                 drivetrain.getAuto("3N_CRA_5")
@@ -1050,7 +866,7 @@ public class Autos {
     // //         //SECOND NOTE
     // //         new ParallelCommandGroup(
     // //             new SequentialCommandGroup(
-    // //                 IntakeCommands.intake(),
+    // //                 IntakeCommands.intakeAuto(),
     // //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
     // //             ),
     // //             new SequentialCommandGroup(
@@ -1063,7 +879,7 @@ public class Autos {
 
     // //         //THIRD NOTE
     // //         new ParallelCommandGroup(
-    // //             IntakeCommands.intake(),
+    // //             IntakeCommands.intakeAuto(),
     // //             drivetrain.getAuto("3N_CR_3")
     // //         )
     // //         //END
@@ -1080,7 +896,7 @@ public class Autos {
     //         //SECOND NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.AUTO_SIDES)
     //             ),
     //             new SequentialCommandGroup(
@@ -1093,7 +909,7 @@ public class Autos {
     //         //THIRD NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.AUTO_SIDES)
     //             ),
     //             new SequentialCommandGroup(
@@ -1118,7 +934,7 @@ public class Autos {
     //         //SECOND NOTE
     //         new ParallelCommandGroup(
     //             new SequentialCommandGroup(
-    //                 IntakeCommands.intake(),
+    //                 IntakeCommands.intakeAuto(),
     //                 ShooterCommands.setAngle(Positions.AUTO_SIDES)
     //             ),
     //             new SequentialCommandGroup(
@@ -1130,7 +946,7 @@ public class Autos {
 
     //         //THIRD NOTE (grab)
     //         new ParallelCommandGroup(
-    //             IntakeCommands.intake(),
+    //             IntakeCommands.intakeAuto(),
     //             drivetrain.getAuto("3N_CB_3")
     //         ),
 
