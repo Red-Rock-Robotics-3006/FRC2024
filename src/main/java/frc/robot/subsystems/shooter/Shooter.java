@@ -283,6 +283,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("top v", topShooter.getEncoder().getVelocity());
         SmartDashboard.putNumber("bottom v", bottomShooter.getEncoder().getVelocity());
 
+        SmartDashboard.putBoolean("shooter-is active", Double.compare(this.topShooterTarget + this.bottomShooterTarget, 0) != 0);
+
         this.updateTopPIDLoop();
         this.updateBottomPIDLoop();
 
