@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import java.time.Instant;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -30,7 +32,9 @@ public class Autos {
     public static double kSpinUpTime = 2;
     public static double kShootTime = 2;
 
-    public static final double kWaitTime = 0.5;
+    public static final double kAutoAimWaitTime = 1;
+
+    public static final Pose2d kOffsetStartingPose = new Pose2d(1.15, 6.84, new Rotation2d());
 
     public static Command m_6note_paths() { //paths for old six note
         return new SequentialCommandGroup(
@@ -80,7 +84,36 @@ public class Autos {
             drivetrain.getAuto("6N_7B")
         );
     }
-
+    
+    @Deprecated
+    public static Command m_6note_alt_offset_paths() { //centerline rush 6 note paths with offset starting position
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
+            drivetrain.getAuto("6N_1B_Offset"),
+            drivetrain.getAuto("6N_2B"),
+            drivetrain.getAuto("6N_3B"),
+            drivetrain.getAuto("6N_4B"),
+            drivetrain.getAuto("6N_5B"),
+            drivetrain.getAuto("6N_6B"),
+            drivetrain.getAuto("6N_7B")
+        );
+    }
+    
+    @Deprecated
+    public static Command m_6note_alt_offset_paths_with_heading() { //centerline rush 6 note paths with offset starting position
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
+            drivetrain.setTargetHeadingDegreesCommand(30),
+            drivetrain.holdAngleCommand(1),
+            drivetrain.getAuto("6N_1B_Offset"),
+            drivetrain.getAuto("6N_2B"),
+            drivetrain.getAuto("6N_3B"),
+            drivetrain.getAuto("6N_4B"),
+            drivetrain.getAuto("6N_5B"),
+            drivetrain.getAuto("6N_6B"),
+            drivetrain.getAuto("6N_7B")
+        );
+    }
     public static Command m_3note_paths() { //auto aim source side 3 note paths
         return new SequentialCommandGroup(
             drivetrain.getAuto("3N_SA_1"),
@@ -271,7 +304,325 @@ public class Autos {
             ShooterCommands.stop()
         );
     }
+    
+    public static Command m_6note_alt_with_deadline() { //centerline rush 6 note
+        return new SequentialCommandGroup(
 
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_1B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(1),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelDeadlineGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_2B"),
+                    drivetrain.getAuto("6N_3B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(1),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelDeadlineGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_4B"),
+                    drivetrain.getAuto("6N_5B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(1),
+            ShooterCommands.shootAuto(),
+
+            //FIFTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_6B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(1),
+            ShooterCommands.shootAuto(),
+
+            //SIXTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_7B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            new WaitCommand(1),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_6note_alt_offset_starting() { //centerline rush 6 note
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
+
+            //FIRST NOTE
+            ShooterCommands.spinUp(),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_1B_Offset"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_2B"),
+                    drivetrain.getAuto("6N_3B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_4B"),
+                    drivetrain.getAuto("6N_5B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //FIFTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_6B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //SIXTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_7B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+    
+    public static Command m_6note_alt_offset_starting_with_deadline() { //centerline rush 6 note
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
+
+            //FIRST NOTE
+            ShooterCommands.spinUp(),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_1B_Offset"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelDeadlineGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_2B"),
+                    drivetrain.getAuto("6N_3B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelDeadlineGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_4B"),
+                    drivetrain.getAuto("6N_5B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //FIFTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_6B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //SIXTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_7B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_6note_alt_swerve_autoaim() { //centerline rush 6 note
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_1B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_2B"),
+                    drivetrain.getAuto("6N_3B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_4B"),
+                    drivetrain.getAuto("6N_5B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //FIFTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_6B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //SIXTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_7B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_6note_alt_swerve_autoaim_with_deadline() { //centerline rush 6 note
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_1B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelDeadlineGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_2B"),
+                    drivetrain.getAuto("6N_3B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelDeadlineGroup(
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("6N_4B"),
+                    drivetrain.getAuto("6N_5B")
+                ), 
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //FIFTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_6B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //SIXTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("6N_7B"),
+                IntakeCommands.intake()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
     // public static Command runThirdPath() {
     //     if (sensor.hasNote()) {
     //         return drivetrain.getAuto("6N_3B");

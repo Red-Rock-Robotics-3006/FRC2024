@@ -107,7 +107,6 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(
           () -> {
-                  System.out.println("balls");
                   if (drivetrain.getDriveState() == DriveState.ROBOT_CENTRIC){
                     SmartDashboard.putBoolean("facing angle", false);
                     SmartDashboard.putBoolean("robot centric", true);
@@ -501,6 +500,8 @@ public class RobotContainer {
     m_chooser.addOption("SIX NOTE PATHS", Autos.m_6note_paths());
     m_chooser.addOption("SIX NOTE ALT", Autos.m_6note_alt());
     m_chooser.addOption("SIX NOTE ALT PATHS", Autos.m_6note_alt_paths());
+    m_chooser.addOption("SIX NOTE ALT WITH DEADLINE", Autos.m_6note_alt_with_deadline());
+    m_chooser.addOption("SIX NOTE OFFSET PATHS", Autos.m_6note_alt_offset_paths());
     m_chooser.addOption("THREE NOTE SOURCE", Autos.m_3note());
     m_chooser.addOption("THREE NOTE SOURCE PATHS", Autos.m_3note_paths());
     m_chooser.addOption("AUTOAIM 4 NOTE", Autos.m_autoaim_4note());
@@ -510,7 +511,14 @@ public class RobotContainer {
     m_chooser.addOption("FOUR NOTE AUTO AIM TEST PATHS", Autos.m_4note_autoaim_test_paths());
     m_chooser.addOption("FOUR NOTE AUTO AIM TEST", Autos.m_4note_autoaim_test());
 
-    m_chooser.addOption("THIS IS A TEST!: DEFAULT COMMANDS HEADING PID AUTO TEST", Autos.m_6note_paths_with_heading());
+    m_chooser.addOption("SIMULATION ONLY: DEFAULT COMMANDS HEADING PID AUTO TEST", Autos.m_6note_paths_with_heading());
+    m_chooser.addOption("SIMULATION ONLY: SIX NOTE OFFSET HEADING PID PATHS", Autos.m_6note_alt_offset_paths_with_heading());
+
+    m_chooser.addOption("EXPERIMENTAL: HEADING PID SIX NOTE ALT", Autos.m_6note_alt_swerve_autoaim());
+    m_chooser.addOption("EXPERIMENTAL: HEADING PID SIX NOTE ALT WITH DEADLINE", Autos.m_6note_alt_swerve_autoaim_with_deadline());
+
+    m_chooser.addOption("EXPERIMENTAL: OFFSET STARTING POSITION SIX NOTE ALT", Autos.m_6note_alt_offset_starting());
+    m_chooser.addOption("EXPERIMENTAL: OFFSET STARTING POSITION SIX NOTE ALT WITH DEADLINE", Autos.m_6note_alt_offset_starting_with_deadline());
     
     // m_chooser.addOption("AUTOAIM 3 NOTE", Autos.m_3note());
 

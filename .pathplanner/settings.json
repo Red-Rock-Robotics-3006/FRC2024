@@ -8,6 +8,7 @@
     "4 Note Paths",
     "6 Note Paths",
     "DONOTUSETHESEAUTOS",
+    "Alternate Pathing",
     "vanessa "
   ],
   "autoFolders": [
@@ -16,8 +17,9 @@
     "4 Note",
     "4 Note Choreo",
     "6 Note",
+    "6 Note Alt",
     "DONOTRUNTHESEAUTOS",
-    "6 Note Alt"
+    "Alternate Pathing Autos"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
