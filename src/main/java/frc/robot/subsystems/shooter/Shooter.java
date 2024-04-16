@@ -218,7 +218,7 @@ public class Shooter extends SubsystemBase {
 
         
         if (runningFullLob) {
-            this.swerve.setTargetHeading(SmartDashboard.getNumber("full court lob heading", -40));
+            this.swerve.setTargetHeading(this.isOnBlue ? -40 : 220);
         }
 
 
