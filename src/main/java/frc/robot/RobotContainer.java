@@ -101,14 +101,14 @@ public class RobotContainer {
     //       () -> {
     //               if (Math.abs(drivestick.getRightX()) > kRotationDeadband) {
     //                 SmartDashboard.putBoolean("facing angle", false);
-    //                 return drive.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY() - 0.2)[1] * MaxSpeed)
-    //                             .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
+    //                 return drive.withVelocityX(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY() - 0.2)[1] * MaxSpeed)
+    //                             .withVelocityY(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
     //                             .withRotationalRate(-drivestick.getRightX() * MaxAngularRate);
     //               }
     //               else {
     //                 SmartDashboard.putBoolean("facing angle", true);
-    //                 return angle.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
-    //                             .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
+    //                 return angle.withVelocityX(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
+    //                             .withVelocityY(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
     //                             .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
     //               }    
     //       }
@@ -121,16 +121,16 @@ public class RobotContainer {
                   if (drivetrain.getDriveState() == DriveState.ROBOT_CENTRIC){
                     SmartDashboard.putBoolean("facing angle", false);
                     SmartDashboard.putBoolean("robot centric", true);
-                    return driveRobotCentric.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
-                                            .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
+                    return driveRobotCentric.withVelocityX(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
+                                            .withVelocityY(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
                                             .withRotationalRate(-drivestick.getRightX() * MaxAngularRate);
                   }
                   else if (drivetrain.getDriveState() == DriveState.FIELD_CENTRIC_NO_LOCK || Math.abs(drivestick.getRightX()) > kRotationDeadband) {
                     SmartDashboard.putBoolean("facing angle", false);
                     SmartDashboard.putBoolean("robot centric", false);
 
-                    return drive.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
-                                .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
+                    return drive.withVelocityX(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
+                                .withVelocityY(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
                                 .withRotationalRate(-drivestick.getRightX() * MaxAngularRate);
                   }
                   else {
@@ -138,8 +138,8 @@ public class RobotContainer {
                     SmartDashboard.putBoolean("robot centric", false);
 
 
-                    return angle.withVelocityX(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
-                                .withVelocityY(mapdrivestick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
+                    return angle.withVelocityX(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY())[1] * MaxSpeed)
+                                .withVelocityY(mapJoystick(-drivestick.getLeftX(), -drivestick.getLeftY())[0] * MaxSpeed)
                                 .withTargetDirection(new Rotation2d(Math.toRadians(drivetrain.getTargetHeading())));   
                   }    
           }
@@ -537,7 +537,7 @@ public class RobotContainer {
    * @param y
    * @return array of new x and y values
    */
-  public static double[] mapdrivestick(double x, double y){
+  public static double[] mapJoystick(double x, double y){
     // double m_x = x * Math.sqrt(1 - y * y / 2);
     // double m_y = y * Math.sqrt(1 - x * x / 2);
     // double[] converted = {m_x, m_y};
