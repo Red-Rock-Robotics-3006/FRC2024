@@ -16,6 +16,7 @@ import com.revrobotics.CANSparkFlex;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants;
 import frc.robot.Constants.Settings;
 import edu.wpi.first.math.controller.PIDController;
@@ -98,6 +99,7 @@ public class Shooter extends SubsystemBase {
     // private double homingOffset;
     private double horizontalDistance;
     private boolean isInRange = true;
+    private boolean isInAuto;
 
     private boolean snapshot; // For toggling snapshots
 
@@ -201,7 +203,7 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("full court lob heading", -40);
 
-        } 
+    } 
 
 
 
@@ -215,6 +217,8 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         // Get robot pos from Localization
         this.updateLocation();
+
+        this.isInAuto = RobotModeTriggers.autonomous().getAsBoolean();
 
         
         if (runningFullLob) {
@@ -334,6 +338,10 @@ public class Shooter extends SubsystemBase {
 
     public boolean getRunningFullLob() {
         return this.runningFullLob;
+    }
+
+    public boolean getInAuto() {
+        return this.isInAuto;
     }
 
     // public double getOffset(){
@@ -502,7 +510,7 @@ public class Shooter extends SubsystemBase {
             if(Localization.tagInVision())
             {
                 // Calculate robot angle
-                double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff ))) % 360;//  - this.homingOffset //  + (isOnBlue?0:180)
+                double yaw = (Math.toDegrees(Math.atan( yDiff / xDiff )) + (isInAuto && !this.isOnBlue?180:0)) % 360;//  - this.homingOffset //  + (isOnBlue?0:180)
 
 
                 double targetAngle = this.calculateAngle(Math.abs(xDiff), Math.abs(yDiff), zDiff);

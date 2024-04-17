@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.swerve.AprilTagIO;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
@@ -26,6 +27,7 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
     private double distanceFromTag;
     private final double validDistance; // Meters
     private int llNum; // Which number limelight this is
+    private boolean isInAuto;
 
     private static int numOfLimelights;
     private static int activeLimelights;
@@ -97,6 +99,7 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
 
     @Override
     public void periodic() {
+        this.isInAuto = RobotModeTriggers.autonomous().getAsBoolean();
         this.tagInVision = this.limelightTable.getEntry("tv").getDouble(0) > 0;
 
         SmartDashboard.putBoolean(this.name, this.tagInVision);
@@ -164,8 +167,7 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
     private void updateLocation()
     {
         // Find the robot's current absolute yaw
-        double yaw = TunerConstants.DriveTrain.getCurrentHeadingDegrees() + (!DriverStation.getAlliance().isPresent() || DriverStation.getAlliance().get() == Alliance.Blue?0:180);
-
+        double yaw = TunerConstants.DriveTrain.getCurrentHeadingDegrees() + (isInAuto || (!DriverStation.getAlliance().isPresent() || DriverStation.getAlliance().get() == Alliance.Blue)?0:180);
         // Update LimelightHelpers with the robot's current absolute yaw
         LimelightHelpers.SetRobotOrientation(this.name, yaw, 0, 0, 0, 0, 0);
         SmartDashboard.putNumber("yaw from pigeon", yaw);
