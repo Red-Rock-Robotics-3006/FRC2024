@@ -82,6 +82,18 @@ public class Autos {
             drivetrain.getAuto("6N_7B")
         );
     }
+
+    public static Command m_4note_amp_paths() { //centerline rush 6 note paths
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
+            drivetrain.getAuto("6N_1B_Offset"),
+            drivetrain.getAuto("6N_2B"),
+            drivetrain.getAuto("6N_3B"),
+            drivetrain.getAuto("6N_4B"),
+            drivetrain.getAuto("6N_5B"),
+            drivetrain.getAuto("4N_Amp_Leave")
+        );
+    }
     
     @Deprecated
     public static Command m_6note_alt_offset_paths() { //centerline rush 6 note paths with offset starting position
@@ -221,7 +233,7 @@ public class Autos {
 
             //SECOND NOTE
             new ParallelCommandGroup(
-                drivetrain.getAuto("6N_1B"),
+                drivetrain.getAuto("6N_1B_Offset"),
                 IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
