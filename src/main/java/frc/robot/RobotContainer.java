@@ -178,6 +178,10 @@ public class RobotContainer {
     // );
     );
 
+    RobotModeTriggers.autonomous().onTrue(
+      new InstantCommand(() -> shooter.setIsAuto(true), shooter)
+    );
+
     RobotModeTriggers.disabled().onTrue(
       new SequentialCommandGroup(
         ShooterCommands.stow(),

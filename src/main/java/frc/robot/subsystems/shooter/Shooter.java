@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.Settings;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -218,8 +219,9 @@ public class Shooter extends SubsystemBase {
         // Get robot pos from Localization
         this.updateLocation();
 
-        this.isInAuto = RobotModeTriggers.autonomous().getAsBoolean();
-
+        // this.isInAuto = RobotModeTriggers.autonomous().getAsBoolean();
+        
+        SmartDashboard.putBoolean("in auto", this.isInAuto);
         
         if (runningFullLob) {
             this.swerve.setTargetHeading(this.isOnBlue ? -40 : 220);
@@ -305,7 +307,9 @@ public class Shooter extends SubsystemBase {
 
 
 
-
+    public void setIsAuto(boolean b){
+        this.isInAuto = b;
+    }
 
 
     // Public Interface Methods : Methods that allow outside classes to interface with Shooter

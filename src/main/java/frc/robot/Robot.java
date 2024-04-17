@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public class Robot extends TimedRobot {
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
       TunerConstants.DriveTrain.setAbsolute(true);
+      Shooter.getInstance().setIsAuto(false);
   }
 
   @Override
