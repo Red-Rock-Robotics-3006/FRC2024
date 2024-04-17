@@ -172,15 +172,22 @@ public class RobotContainer {
     
     RobotModeTriggers.teleop().onTrue(
       new SequentialCommandGroup(
-        new InstantCommand(() -> drivetrain.setAbsolute(false), drivetrain)
+        new InstantCommand(() -> drivetrain.setAbsolute(false), drivetrain),
+        new InstantCommand(() -> {if (!shooter.isOnBlue()) drivetrain.seedFieldRelative(
+          new Pose2d(
+            drivetrain.getPose().getX(),
+            drivetrain.getPose().getY(),
+            new Rotation2d(drivetrain.getPose().getRotation().getRadians() + Math.PI)
+          )
+        );}, drivetrain, shooter)
       )
         // drivetrain.resetFieldHeading()
     // );
     );
 
-    RobotModeTriggers.autonomous().onTrue(
-      new InstantCommand(() -> shooter.setIsAuto(true), shooter)
-    );
+    // RobotModeTriggers.autonomous().onTrue(
+    //   new InstantCommand(() -> shooter.setIsAuto(true), shooter)
+    // );
 
     RobotModeTriggers.disabled().onTrue(
       new SequentialCommandGroup(
@@ -423,8 +430,8 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("heading p", 4.25);
     SmartDashboard.putNumber("heading d", 0.2);
-
-    SmartDashboard.putNumber("homing p", 12);
+ 
+    SmartDashboard.putNumber("homing p", 8);
     SmartDashboard.putNumber("homing d", 1.2);
 
     SmartDashboard.putNumber("amp speed", 0.12);

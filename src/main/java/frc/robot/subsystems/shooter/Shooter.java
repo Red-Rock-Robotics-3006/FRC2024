@@ -224,7 +224,7 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putBoolean("in auto", this.isInAuto);
         
         if (runningFullLob) {
-            this.swerve.setTargetHeading(this.isOnBlue ? -40 : 220);
+            this.swerve.setTargetHeading(this.isOnBlue ? -40 : 40);
         }
 
 

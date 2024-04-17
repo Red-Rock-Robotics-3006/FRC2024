@@ -100,7 +100,8 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
     @Override
     public void periodic() {
         this.isInAuto = RobotModeTriggers.autonomous().getAsBoolean();
-        this.tagInVision = this.limelightTable.getEntry("tv").getDouble(0) > 0;
+        // this.tagInVision = this.limelightTable.getEntry("tv").getDouble(0) > 0;
+        this.tagInVision = LimelightHelpers.getTV(name);
 
         SmartDashboard.putBoolean(this.name, this.tagInVision);
         
@@ -196,7 +197,8 @@ public class Limelight extends SubsystemBase implements AprilTagIO{
         //     System.out.println("Something went horribly wrong...\nLimelight.updateLocation(), tag id is 0");
         // // TODO add the code to actually do this lmao
 
-        double[] cam = this.limelightTable.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+        // double[] cam = this.limelightTable.getEntry("camerapose_targetspace").getDoubleArray(new double[6]);
+        double[] cam = LimelightHelpers.getCameraPose_TargetSpace(name);
         if(cam.length > 0)
             this.distanceFromTag = Math.sqrt(cam[0]*cam[0] + cam[1]*cam[1]);
         else{

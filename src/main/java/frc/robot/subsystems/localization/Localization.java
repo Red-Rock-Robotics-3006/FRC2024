@@ -27,11 +27,11 @@ public class Localization extends SubsystemBase{
         super("Localization");
         
         front = new Limelight("front",8);
-        left = new Limelight("left",8);
-        right = new Limelight("right",8);
+        // left = new Limelight("left",8);
+        // right = new Limelight("right",8);
         // back = new Limelight("back",4);
 
-        limelights = new Limelight[]{front, left, right}; //TODO Add back the other limelights?
+        limelights = new Limelight[]{front}; //TODO Add back the other limelights?
 
         /* Remove any unwanted tags from the array
          * Guide:
@@ -52,7 +52,7 @@ public class Localization extends SubsystemBase{
          * 15: Blue Stage Amp
          * 16: Blue Stage Source
          */
-        int[] validIDs = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+        int[] validIDs = {3,4,7,8};
         LimelightHelpers.SetFiducialIDFiltersOverride("limelight-front", validIDs);
         LimelightHelpers.SetFiducialIDFiltersOverride("limelight-left", validIDs);
         LimelightHelpers.SetFiducialIDFiltersOverride("limelight-right", validIDs);

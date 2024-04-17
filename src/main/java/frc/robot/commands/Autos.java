@@ -30,7 +30,7 @@ public class Autos {
     public static double kSpinUpTime = 2;
     public static double kShootTime = 2;
 
-    public static final double kAutoAimWaitTime = 1;
+    public static final double kAutoAimWaitTime = 0.4;
 
     public static final Pose2d kOffsetStartingPose = new Pose2d(1.15, 6.84, new Rotation2d());
     public static final Pose2d kOffsetStartingPoseRed = new Pose2d(15.39, 6.84, Rotation2d.fromDegrees(180));
@@ -176,7 +176,12 @@ public class Autos {
         return new SequentialCommandGroup(
 
             //FIRST NOTE
-            CommandFactory.shootCenterCommand(),
+            new SequentialCommandGroup(
+                ShooterCommands.setAngle(Positions.SUB_LEFT),
+                ShooterCommands.spinUp(),
+                new WaitCommand(0.4),
+                ShooterCommands.shootAuto()
+            ),
             ShooterCommands.spinUp(),
 
             //SECOND NOTE
@@ -185,7 +190,7 @@ public class Autos {
                 IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //THIRD NOTE
@@ -197,7 +202,7 @@ public class Autos {
                 IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
             
             //FOURTH NOTE
@@ -209,7 +214,7 @@ public class Autos {
                 IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //FIFTH NOTE
@@ -218,7 +223,7 @@ public class Autos {
                 IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //SIXTH NOTE
@@ -227,7 +232,7 @@ public class Autos {
                 IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //END
