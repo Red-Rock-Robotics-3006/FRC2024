@@ -348,6 +348,10 @@ public class Shooter extends SubsystemBase {
         return this.isInAuto;
     }
 
+    public boolean isOnBlue() {
+        return this.isOnBlue;
+    }
+
     // public double getOffset(){
     //     return this.homingOffset;
     // }

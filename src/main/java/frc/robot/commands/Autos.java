@@ -33,6 +33,7 @@ public class Autos {
     public static final double kAutoAimWaitTime = 1;
 
     public static final Pose2d kOffsetStartingPose = new Pose2d(1.15, 6.84, new Rotation2d());
+    public static final Pose2d kOffsetStartingPoseRed = new Pose2d(15.39, 6.84, Rotation2d.fromDegrees(180));
 
     public static Command m_6note_paths() { //paths for old six note
         return new SequentialCommandGroup(
@@ -85,7 +86,12 @@ public class Autos {
 
     public static Command m_4note_amp_paths() { //centerline rush 6 note paths
         return new SequentialCommandGroup(
-            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
+            new InstantCommand(() -> {
+                if (shooter.isOnBlue())
+                    drivetrain.seedFieldRelative(kOffsetStartingPose);
+                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+            }, drivetrain),
             drivetrain.getAuto("6N_1B_Offset"),
             drivetrain.getAuto("6N_2B"),
             drivetrain.getAuto("6N_3B"),
@@ -98,8 +104,12 @@ public class Autos {
     @Deprecated
     public static Command m_6note_alt_offset_paths() { //centerline rush 6 note paths with offset starting position
         return new SequentialCommandGroup(
-            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
-            drivetrain.getAuto("6N_1B_Offset"),
+            new InstantCommand(() -> {
+                if (shooter.isOnBlue())
+                    drivetrain.seedFieldRelative(kOffsetStartingPose);
+                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+            }, drivetrain),            drivetrain.getAuto("6N_1B_Offset"),
             drivetrain.getAuto("6N_2B"),
             drivetrain.getAuto("6N_3B"),
             drivetrain.getAuto("6N_4B"),
@@ -112,8 +122,12 @@ public class Autos {
     @Deprecated
     public static Command m_6note_alt_offset_paths_with_heading() { //centerline rush 6 note paths with offset starting position
         return new SequentialCommandGroup(
-            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
-            drivetrain.setTargetHeadingDegreesCommand(30),
+            new InstantCommand(() -> {
+                if (shooter.isOnBlue())
+                    drivetrain.seedFieldRelative(kOffsetStartingPose);
+                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+            }, drivetrain),            drivetrain.setTargetHeadingDegreesCommand(30),
             drivetrain.holdAngleCommand(1),
             drivetrain.getAuto("6N_1B_Offset"),
             drivetrain.getAuto("6N_2B"),
@@ -223,8 +237,12 @@ public class Autos {
 
     public static Command m_4note_amp() { //amp side 4 note
         return new SequentialCommandGroup(
-            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
-
+            new InstantCommand(() -> {
+                if (shooter.isOnBlue())
+                    drivetrain.seedFieldRelative(kOffsetStartingPose);
+                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+            }, drivetrain),
             //FIRST NOTE
             ShooterCommands.spinUp(),
             ShooterCommands.setHoming(true),
@@ -272,8 +290,12 @@ public class Autos {
 
     public static Command m_6note_alt_offset_starting() { //centerline rush 6 note
         return new SequentialCommandGroup(
-            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
-
+            new InstantCommand(() -> {
+                if (shooter.isOnBlue())
+                    drivetrain.seedFieldRelative(kOffsetStartingPose);
+                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+            }, drivetrain),
             //FIRST NOTE
             ShooterCommands.spinUp(),
             ShooterCommands.setHoming(true),
@@ -338,8 +360,12 @@ public class Autos {
     
     public static Command m_6note_alt_offset_starting_with_deadline() { //centerline rush 6 note
         return new SequentialCommandGroup(
-            new InstantCommand(() -> drivetrain.seedFieldRelative(kOffsetStartingPose), drivetrain),
-
+            new InstantCommand(() -> {
+                if (shooter.isOnBlue())
+                    drivetrain.seedFieldRelative(kOffsetStartingPose);
+                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
+            }, drivetrain),
             //FIRST NOTE
             ShooterCommands.spinUp(),
             ShooterCommands.setHoming(true),
@@ -642,6 +668,14 @@ public class Autos {
 
             //END
             ShooterCommands.stop()
+        );
+    }
+
+    public static Command m_auto_aim_test(){
+        return new SequentialCommandGroup(
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(5),
+            ShooterCommands.setHoming(false)
         );
     }
 
