@@ -46,9 +46,19 @@ public class ShooterCommands {
         );
     }
 
+    public static Command alternateLob() {
+        return new FunctionalCommand(
+            () -> {shooter.runAltLobShot(); shooter.runFullLobAngle(); shooter.setRunningAltLob(true);}, 
+            () -> {}, 
+            (interrupted) -> {shooter.setRunningAltLob(false);},
+            () -> !sensor.hasNote(), 
+            shooter, sensor
+        );
+    }
+
     public static Command spinUp() {
         return new InstantCommand(
-            () -> shooter.setShooterSpeed(0.5),
+            () -> shooter.setShooterSpeed(0.55),
             shooter
         );
     }
@@ -150,6 +160,13 @@ public class ShooterCommands {
                 () -> shooter.burnFlash(),
                 shooter
             )
+        );
+    }
+
+    public static Command useNewEquation(boolean useNew) {
+        return new InstantCommand(
+            () -> shooter.setNewEquation(useNew),
+            shooter
         );
     }
 }

@@ -114,7 +114,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             tagPose3 = new Pose2d(1, 1, new Rotation2d());
 
     
-    public static final double kDriveSpeed = 5.0;
+    public static final double kDriveSpeed = 6.0;
     public static final double kTurnSpeed = 2;
 
     public enum DriveState{

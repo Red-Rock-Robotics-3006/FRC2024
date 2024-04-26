@@ -43,7 +43,7 @@ public class RobotContainer {
   public static final double kDeadBand = 0.02;
   public static final double kRotationDeadband = 0.02;
   
-  private double MaxSpeed = 4.5; 
+  private double MaxSpeed = 6; 
   private double MaxAngularRate = 0.5 * Math.PI; 
 
   public static double kAngle = 60;
@@ -295,6 +295,19 @@ public class RobotContainer {
     mechstick.povRight().onTrue(
       ShooterCommands.fullCourtLob()
     );
+
+    //SHOOT SETTINGS BINDINGS
+
+    
+    drivestick.povUp().onTrue(
+      ShooterCommands.useNewEquation(true)
+    );
+
+    drivestick.povDown().onTrue(
+      ShooterCommands.useNewEquation(false)
+    );
+
+
     
     //CLIMB PROCESS BINDINGS
 
@@ -369,6 +382,12 @@ public class RobotContainer {
     mechstick.b().whileTrue(
       drivetrain.applyRequest(() -> brake)
     );
+    mechstick.povUp().onTrue(
+      ShooterCommands.alternateLob()
+    );
+    // mechstick.povDown().onTrue(
+    //   ShooterCommands.decreaseTarget()
+    // );
 
     //LED BINDINGS
 
@@ -529,7 +548,9 @@ public class RobotContainer {
     m_chooser.addOption("THREE NOTE SOURCE", Autos.m_3note());
     m_chooser.addOption("THREE NOTE SOURCE PATHS", Autos.m_3note_paths());
 
-    m_chooser.addOption("FOUR NOTE", Autos.m_4note());
+    m_chooser.addOption("FOUR NOTE AMP SPIKE", Autos.m_4note());
+    m_chooser.addOption("FOUR NOTE SOURCE SPIKE", Autos.m_4note_alt());
+    m_chooser.addOption("three note source QUAL 19", Autos.m_3note_blue());
 
     m_chooser.addOption("TROLL AUTO", Autos.m_trollauto());
     m_chooser.addOption("TROLL AUTO PATHS", Autos.m_trollauto_paths());

@@ -99,7 +99,7 @@ public class Shooter extends SubsystemBase {
     private boolean hasNote; // If the robot has a note
     // private double homingOffset;
     private double horizontalDistance;
-    private boolean isInRange = true;
+    private boolean isInRange;
     private boolean isInAuto;
 
     private boolean snapshot; // For toggling snapshots
@@ -114,7 +114,7 @@ public class Shooter extends SubsystemBase {
     private double EXIT_VELOCITY = 7.0; // m/s // TODO FILLER
     private final double SHOOTER_HEIGHT = 0.13; // Meters // 20 Inches // TODO FILLER
     private double DISTANCE_FEED = 0.1;
-    private final double RANGE = 4;
+    private double RANGE = 3.8; // Meters 3.8
 
     private final double CENTER_ANGLE = 0.0; // TODO FILLER
     private final double LEFT_ANGLE = 0.0; // TODO FILLER
@@ -147,7 +147,8 @@ public class Shooter extends SubsystemBase {
 
     private boolean runningAmp = false;
     private boolean runningFullLob = false;
-
+    private boolean runningAltLob = false;
+    private boolean useNewEquation = false;
 
 
     private PIDController topController = new PIDController(kShootP, kShootI, kShootD);
@@ -226,6 +227,9 @@ public class Shooter extends SubsystemBase {
         if (runningFullLob) {
             this.swerve.setTargetHeading(this.isOnBlue ? -40 : 40);
         }
+        if (runningAltLob) {
+            this.swerve.setTargetHeading(this.isOnBlue ? -15 : 15);            
+        }
 
 
         this.EXIT_VELOCITY = SmartDashboard.getNumber("Exit Velocity", 8);
@@ -285,6 +289,8 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("TargetX", this.target[0]);
         SmartDashboard.putNumber("TargetY", this.target[1]);
+        SmartDashboard.putBoolean("Using New Auto Aim", this.useNewEquation);
+
 
         SmartDashboard.putNumber("top v", topShooter.getEncoder().getVelocity());
         SmartDashboard.putNumber("bottom v", bottomShooter.getEncoder().getVelocity());
@@ -332,12 +338,21 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("bottomshooter target", this.bottomShooterTarget);
     }
 
+    public void runAltLobShot() {
+        this.topShooterTarget = (0.30);
+        this.bottomShooterTarget = (0.3);
+    }
+
     public void runFullLobAngle() {
         this.setTarget(SmartDashboard.getNumber("full lob angle", kLobAngle));
     }
 
     public void setRunningFullLob(boolean b) {
         this.runningFullLob = b;
+    }
+
+    public void setRunningAltLob(boolean b) {
+        this.runningAltLob = b;
     }
 
     public boolean getRunningFullLob() {
@@ -350,6 +365,21 @@ public class Shooter extends SubsystemBase {
 
     public boolean isOnBlue() {
         return this.isOnBlue;
+    }
+
+    public boolean usingNewEquation()
+    {
+        return this.useNewEquation;
+
+    }
+
+    public void setNewEquation(boolean on)
+    {
+        this.useNewEquation = on;
+        if(on)
+            RANGE = 4.75;
+        else
+            RANGE = 3.8;
     }
 
     // public double getOffset(){
@@ -522,11 +552,16 @@ public class Shooter extends SubsystemBase {
 
 
                 double targetAngle = this.calculateAngle(Math.abs(xDiff), Math.abs(yDiff), zDiff);
-                SmartDashboard.putNumber("Calculated Encoder", this.degreesToPos(targetAngle));
-                SmartDashboard.putNumber("Calculated Angle", targetAngle);
-                SmartDashboard.putNumber("Target Heading", yaw);
-                // SmartDashboard.putNumber("Homing Offset", this.homingOffset);
-                this.setTarget(targetAngle, yaw);
+
+                // Only update targets if we are in range
+                if(this.isInRange)
+                {
+                    SmartDashboard.putNumber("Calculated Encoder", this.degreesToPos(targetAngle));
+                    SmartDashboard.putNumber("Calculated Angle", targetAngle);
+                    SmartDashboard.putNumber("Target Heading", yaw);
+                    // SmartDashboard.putNumber("Homing Offset", this.homingOffset);
+                    this.setTarget(targetAngle, yaw);
+                }
             }
             else
                 this.setTarget(STOW_ANGLE); // TODO Change to this.targetPitch
@@ -550,7 +585,7 @@ public class Shooter extends SubsystemBase {
         double speed = this.controller.calculate(ePos, eTarget) + feedForward;
         this.setAngleSpeed(speed);
 
-        if(Settings.SHOOTER_HOMING_ENABLED && this.seek)
+        if(Settings.SHOOTER_HOMING_ENABLED && this.seek && this.isInRange)
             this.swerve.setTargetHeading(this.targetYaw);
 
 
@@ -610,6 +645,10 @@ public class Shooter extends SubsystemBase {
         // Equation to estimate the angle that the shooter needs to be at.
         SmartDashboard.putNumber("Vertical Distance", vDist);
 
+        // Figure out if we are in range of the speaker
+        this.isInRange = this.isInAuto || hDist < RANGE;
+        SmartDashboard.putBoolean("In Range", this.isInRange);
+
         /* Too fancy
         double tof = Math.sqrt(hDist * hDist + vDist * vDist)/EXIT_VELOCITY;
         double drop = (1.49352) * tof * tof;
@@ -620,8 +659,10 @@ public class Shooter extends SubsystemBase {
         // "Good enough" (For Colorado)
         // double theta = Math.toDegrees(Math.atan(vDist / hDist)) + hDist * DISTANCE_FEED;
 
-        // Equation 
-        double theta = 3.0318*Math.pow(hDist, 2) - 26.967*hDist + 86.357;
+        // Equation 1
+        double theta = 3.0318*Math.pow(hDist, 2) - 26.967*hDist + 86.357; // Old const=86.357
+        if(this.useNewEquation)
+            theta = -0.154*Math.pow(hDist, 4) + 1.4555*Math.pow(hDist, 3) -1.2539*Math.pow(hDist, 2) -23.858*hDist + 89.497;
         SmartDashboard.putNumber("Equation", theta);
 
         // TODO Check math

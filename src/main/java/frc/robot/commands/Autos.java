@@ -30,7 +30,7 @@ public class Autos {
     public static double kSpinUpTime = 2;
     public static double kShootTime = 2;
 
-    public static final double kAutoAimWaitTime = 0.4;
+    public static final double kAutoAimWaitTime = 1;
 
     public static final Pose2d kOffsetStartingPose = new Pose2d(1.15, 6.84, new Rotation2d());
     public static final Pose2d kOffsetStartingPoseRed = new Pose2d(15.39, 6.84, Rotation2d.fromDegrees(180));
@@ -242,25 +242,21 @@ public class Autos {
 
     public static Command m_4note_amp() { //amp side 4 note
         return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                if (shooter.isOnBlue())
-                    drivetrain.seedFieldRelative(kOffsetStartingPose);
-                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-            }, drivetrain),
+
             //FIRST NOTE
             ShooterCommands.spinUp(),
+            drivetrain.getAuto("6N_1B_Offset"),
             ShooterCommands.setHoming(true),
             drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //SECOND NOTE
             new ParallelCommandGroup(
-                drivetrain.getAuto("6N_1B_Offset"),
+                drivetrain.getAuto("6N_2B_Offset"),
                 IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //THIRD NOTE
@@ -272,7 +268,7 @@ public class Autos {
                 IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
             
             //FOURTH NOTE
@@ -284,12 +280,14 @@ public class Autos {
                 IntakeCommands.intakeAuto()
             ),
             ShooterCommands.setHoming(true),
-            // drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
             ShooterCommands.shootAuto(),
 
             //END
-            ShooterCommands.stop(),
-            drivetrain.getAuto("4N_Amp_Leave")
+            new ParallelCommandGroup(
+                drivetrain.getAuto("4N_Amp_Leave"),
+                IntakeCommands.intakeAuto()
+            )
         );
     }
 
@@ -578,6 +576,57 @@ public class Autos {
         );
     }
 
+    public static Command m_4note_alt() { //reliable four note from colorado
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intakeAuto(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_1"),
+                    drivetrain.getAuto("4NF_2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intakeAuto(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_5"),
+                    drivetrain.getAuto("4NF_6")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intakeAuto(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_3"), 
+                    drivetrain.getAuto("4NF_4")
+                )
+            ),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
+        );
+    }
+
 
 
     
@@ -686,43 +735,43 @@ public class Autos {
 
 
 
-    // public static Command m_3note_blue() {
-    //     return new SequentialCommandGroup(
+    public static Command m_3note_blue() {
+        return new SequentialCommandGroup(
 
-    //         //FIRST NOTE
-    //         CommandFactory.shootCenterCommand(),
-    //         ShooterCommands.spinUp(),
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
 
-    //         //SECOND NOTE
-    //         new ParallelCommandGroup(
-    //             new SequentialCommandGroup(
-    //                 IntakeCommands.intakeAuto(),
-    //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
-    //             ),
-    //             new SequentialCommandGroup(
-    //                 drivetrain.getAuto("4NF_1"),
-    //                 drivetrain.getAuto("4NF_2")
-    //             )
-    //         ),
-    //         ShooterCommands.shootAuto(),
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intakeAuto(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("4NF_1"),
+                    drivetrain.getAuto("4NF_2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
             
-    //         //THIRD NOTE
-    //         new ParallelCommandGroup(
-    //             new SequentialCommandGroup(
-    //                 IntakeCommands.intakeAuto(),
-    //                 ShooterCommands.setAngle(Positions.SUB_LEFT)
-    //             ),
-    //             new SequentialCommandGroup(
-    //                 drivetrain.getAuto("4NF_5"), 
-    //                 drivetrain.getAuto("4NF_6")
-    //             )
-    //         ),
-    //         ShooterCommands.shootAuto(),
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(
+                    IntakeCommands.intakeAuto(),
+                    ShooterCommands.setAngle(Positions.SUB_LEFT)
+                ),
+                new SequentialCommandGroup(
+                    drivetrain.getAuto("threenote"), 
+                    drivetrain.getAuto("threenote2")
+                )
+            ),
+            ShooterCommands.shootAuto(),
 
-    //         //END
-    //         ShooterCommands.stop()
-    //     );
-    // }
+            //END
+            ShooterCommands.stop()
+        );
+    }
 
     // public static Command m_3note_red() {
     //     return new SequentialCommandGroup(
