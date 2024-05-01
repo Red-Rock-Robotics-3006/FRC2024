@@ -63,6 +63,12 @@ public class ShooterCommands {
         );
     }
 
+    public static Command hahafunny() {
+        return new SequentialCommandGroup(
+
+        );
+    }
+
     public static Command trollSpinUp() {
         return new InstantCommand(
             () -> shooter.setShooterSpeed(0.1),
