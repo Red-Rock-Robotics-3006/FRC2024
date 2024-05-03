@@ -15,7 +15,7 @@ public class IntakeCommands {
     private static TOFSensor sensor = TOFSensor.getInstance();
     
     
-    public static Command start() {
+    public static Command start() {//this is a test
         return new InstantCommand(
             () -> intake.startIntake(),
             intake
