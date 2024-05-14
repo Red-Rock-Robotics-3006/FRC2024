@@ -431,6 +431,16 @@ public class RobotContainer {
     //   new InstantCommand(() -> drivetrain.toggleChrp(), drivetrain)
     // );
 
+    mechstick.povDown().onTrue(
+      new InstantCommand(
+        () -> {shooter.setShooterSpeed(-0.2);
+          index.setSpeed(-0.5);
+        },
+        shooter,
+        index
+      )
+    );
+
 
     if (Utils.isSimulation()) {
       drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
