@@ -17,50 +17,79 @@ public class ShooterCommands {
     private static LED led = LED.getInstance();
 
     public static Command shoot() {
-        return new FunctionalCommand(
-            () -> index.shootTransfer(), 
-            () -> {}, 
-            (interrupted) -> {shooter.stow(); index.stopTransfer(); led.setState(State.RESTING); led.setIsAmping(false);},
-            () -> !sensor.hasNote(), 
-            index, shooter, sensor
+        return new SequentialCommandGroup(
+            new FunctionalCommand(
+                () -> {
+                    if (Double.compare(shooter.getTopTarget() + shooter.getBottomTarget(), 0d) == 0){
+                        shooter.setShooterSpeed(0.55);
+                    }
+                },
+                () -> {},
+                (interrupted) -> {},
+                () -> shooter.atVelocity(),
+                shooter
+            ),
+            new FunctionalCommand(
+                    () -> index.shootTransfer(), 
+                    () -> {}, 
+                    (interrupted) -> {shooter.stow(); index.stopTransfer(); led.setState(State.RESTING); led.setIsAmping(false);},
+                    () -> !sensor.hasNote(), 
+                    index, shooter, sensor
+            )
+                
         );
     }
 
     public static Command shootAuto() {
         return new FunctionalCommand(
-            () -> index.shootTransfer(), 
-            () -> {}, 
-            (interrupted) -> {index.stopTransfer(); shooter.setHoming(false); led.setState(State.RESTING);},
-            () -> !sensor.hasNote(), 
-            index, shooter, sensor
-        );
+                () -> index.shootTransfer(),
+                () -> {
+                },
+                (interrupted) -> {
+                    index.stopTransfer();
+                    shooter.setHoming(false);
+                    led.setState(State.RESTING);
+                },
+                () -> !sensor.hasNote(),
+                index, shooter, sensor);
     }
 
     public static Command fullCourtLob() {
         return new FunctionalCommand(
-            () -> {shooter.runFullLobShot(); shooter.runFullLobAngle(); shooter.setRunningFullLob(true);}, 
-            () -> {}, 
-            (interrupted) -> {shooter.setRunningFullLob(false);},
-            () -> !sensor.hasNote(), 
-            shooter, sensor
-        );
+                () -> {
+                    shooter.runFullLobShot();
+                    shooter.runFullLobAngle();
+                    shooter.setRunningFullLob(true);
+                },
+                () -> {
+                },
+                (interrupted) -> {
+                    shooter.setRunningFullLob(false);
+                },
+                () -> !sensor.hasNote(),
+                shooter, sensor);
     }
 
     public static Command alternateLob() {
         return new FunctionalCommand(
-            () -> {shooter.runAltLobShot(); shooter.runFullLobAngle(); shooter.setRunningAltLob(true);}, 
-            () -> {}, 
-            (interrupted) -> {shooter.setRunningAltLob(false);},
-            () -> !sensor.hasNote(), 
-            shooter, sensor
-        );
+                () -> {
+                    shooter.runAltLobShot();
+                    shooter.runFullLobAngle();
+                    shooter.setRunningAltLob(true);
+                },
+                () -> {
+                },
+                (interrupted) -> {
+                    shooter.setRunningAltLob(false);
+                },
+                () -> !sensor.hasNote(),
+                shooter, sensor);
     }
 
     public static Command spinUp() {
         return new InstantCommand(
-            () -> shooter.setShooterSpeed(0.55),
-            shooter
-        );
+                () -> shooter.setShooterSpeed(0.55),
+                shooter);
     }
 
     public static Command hahafunny() {
@@ -71,108 +100,91 @@ public class ShooterCommands {
 
     public static Command trollSpinUp() {
         return new InstantCommand(
-            () -> shooter.setShooterSpeed(0.1),
-            shooter
-        );
+                () -> shooter.setShooterSpeed(0.1),
+                shooter);
     }
 
     public static Command ampSpinUp() {
         return new SequentialCommandGroup(
-            new InstantCommand(
-                () -> shooter.runAmpAngle(),
-                shooter
-            ),
-            new InstantCommand(
-                () -> shooter.runAmpShot(),
-                shooter
-            )
-        );
+                new InstantCommand(
+                        () -> shooter.runAmpAngle(),
+                        shooter),
+                new InstantCommand(
+                        () -> shooter.runAmpShot(),
+                        shooter));
     }
 
     public static Command setShooterSpeed(double speed) {
         return new InstantCommand(
-            () -> shooter.setShooterSpeed(speed),
-            shooter
-        );
+                () -> shooter.setShooterSpeed(speed),
+                shooter);
     }
 
     public static Command stop() {
         return new InstantCommand(
-            () -> shooter.setShooterSpeed(0),
-            shooter
-        );
+                () -> shooter.setShooterSpeed(0),
+                shooter);
     }
 
     public static Command stow() {
         return new InstantCommand(
-            () -> shooter.stow(),
-            shooter
-        );
+                () -> shooter.stow(),
+                shooter);
     }
 
     public static Command setAngle(Shooter.Positions e) {
         return new InstantCommand(
-            () -> shooter.presetShoot(e),
-            shooter
-        );
+                () -> shooter.presetShoot(e),
+                shooter);
     }
 
     public static Command setTarget(double angle) {
         return new InstantCommand(
-            () -> shooter.setTarget(angle),
-            shooter
-        );
+                () -> shooter.setTarget(angle),
+                shooter);
     }
 
     public static Command increaseTarget() {
         return new InstantCommand(
-            () -> shooter.incrementTarget(),
-            shooter
-        );
+                () -> shooter.incrementTarget(),
+                shooter);
     }
 
     public static Command decreaseTarget() {
         return new InstantCommand(
-            () -> shooter.decrementTarget(),
-            shooter
-        );
+                () -> shooter.decrementTarget(),
+                shooter);
     }
 
     public static Command setHoming(boolean e) {
         return new InstantCommand(
-            () -> shooter.setHoming(e),
-            shooter
-        );
+                () -> shooter.setHoming(e),
+                shooter);
     }
 
     public static Command increaseDistanceFeed() {
         return new InstantCommand(
-            () -> shooter.increaseDistanceFeed(),
-            shooter
-        );
+                () -> shooter.increaseDistanceFeed(),
+                shooter);
     }
 
     public static Command decreaseDistanceFeed() {
         return new InstantCommand(
-            () -> shooter.decreaseDistanceFeed(),
-            shooter
-        );
+                () -> shooter.decreaseDistanceFeed(),
+                shooter);
     }
 
     public static Command burnFlash() {
         return new SequentialCommandGroup(
-            new WaitCommand(0.15),
-            new InstantCommand(
-                () -> shooter.burnFlash(),
-                shooter
-            )
-        );
+                new WaitCommand(0.15),
+                new InstantCommand(
+                        () -> shooter.burnFlash(),
+                        shooter));
     }
 
     public static Command useNewEquation(boolean useNew) {
         return new InstantCommand(
-            () -> shooter.setNewEquation(useNew),
-            shooter
-        );
+                () -> shooter.setNewEquation(useNew),
+                shooter);
     }
 }

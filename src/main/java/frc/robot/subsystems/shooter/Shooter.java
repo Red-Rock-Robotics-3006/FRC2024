@@ -57,6 +57,10 @@ public class Shooter extends SubsystemBase {
     public static final double kFinalP = 6; //-5.5
     public static final double kFinalF = 0; //0.048
 
+    public static final double kTargetVelocityThreshold = 0.9;
+
+    private double targetVelocityThreshold;
+
     private PIDController controller = new PIDController(kP, kI, kD);
 
     private double[] blueSpeaker = { // All locations field relative
@@ -205,6 +209,8 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putNumber("full court lob heading", -40);
 
+        SmartDashboard.putNumber("shooter velocity threshold", kTargetVelocityThreshold);
+
     } 
 
 
@@ -219,6 +225,8 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         // Get robot pos from Localization
         this.updateLocation();
+
+        this.targetVelocityThreshold = SmartDashboard.getNumber("shooter velocity threshold", kTargetVelocityThreshold);
 
         // this.isInAuto = RobotModeTriggers.autonomous().getAsBoolean();
         
@@ -783,5 +791,19 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("bottom shooter calc", calc);
 
         this.bottomShooter.set(calc + bottomShooterTarget);
+    }
+
+    public boolean atVelocity(){
+        double measurement = this.topShooter.getEncoder().getVelocity() / kMaxRPM;
+        double measurement2 = this.bottomShooter.getEncoder().getVelocity() / kMaxRPM;
+        return this.targetVelocityThreshold * this.topShooterTarget <= measurement || this.targetVelocityThreshold * this.bottomShooterTarget <= measurement2;
+    }
+
+    public double getTopTarget(){
+        return this.topShooterTarget;
+    }
+
+    public double getBottomTarget(){
+        return this.bottomShooterTarget;
     }
 }
