@@ -51,4 +51,18 @@ public class IndexCommands {
             )
         );
     }
+
+    public static Command setServoShootCommand(){
+        return new InstantCommand(
+            () -> index.setServoShootPos(),
+            index
+        );
+    }
+
+    public static Command setServoRestCommand(){
+        return new InstantCommand(
+            () -> index.setServoRestPos(),
+            index
+        );
+    }
 }

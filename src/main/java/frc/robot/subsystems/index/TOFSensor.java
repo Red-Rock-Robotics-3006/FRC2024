@@ -12,8 +12,8 @@ public class TOFSensor extends SubsystemBase {
     
     private final TimeOfFlight indexTOFSensor = new TimeOfFlight(Constants.Index.INDEX_TOF_SENSOR_ID);
 
-    private double clearThresholdIndex = 300;
-    private double hasNoteThresholdDeviation = 100;
+    private double clearThresholdIndex = 400; // 300
+    private double hasNoteThresholdDeviation = 30; // 100
 
     private TOFSensor() {
         super("TOFSensor");

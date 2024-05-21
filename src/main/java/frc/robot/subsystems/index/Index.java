@@ -3,6 +3,7 @@ package frc.robot.subsystems.index;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
 
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -13,13 +14,18 @@ public class Index extends SubsystemBase{
     private static Index instance = null;
 
     private final CANSparkFlex m_indexMotor = new CANSparkFlex(Constants.Index.INDEX_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
-    private final CANSparkMax m_rollerMotor = new CANSparkMax(Constants.Index.ROLLER_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
+    // private final CANSparkMax m_rollerMotor = new CANSparkMax(Constants.Index.ROLLER_MOTOR_ID, CANSparkMax.MotorType.kBrushless);
     
     public static final double kReverseTime = 0.1;
 
     public static final double kIndexSpeed = 0.34;
     public static final double kIndexShootSpeed = 0.12;
     public static final double kRollerSpeed = 0.95;
+
+    public static final double kServoRestPos = 0.3;
+    public static final double kServoShootPos = 0;
+
+    private Servo servo = new Servo(8);
 
     private boolean isTransferring = false;
 
@@ -30,20 +36,23 @@ public class Index extends SubsystemBase{
         this.m_indexMotor.setInverted(true);
         this.m_indexMotor.setIdleMode(CANSparkFlex.IdleMode.kBrake);
 
-        this.m_rollerMotor.restoreFactoryDefaults();
-        this.m_rollerMotor.setInverted(true);
-        this.m_rollerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        // this.m_rollerMotor.restoreFactoryDefaults();
+        // this.m_rollerMotor.setInverted(true);
+        // this.m_rollerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         SmartDashboard.putNumber("index reverse time", kReverseTime);
 
         SmartDashboard.putNumber("index speed", kIndexSpeed);
         SmartDashboard.putNumber("roller speed", kRollerSpeed);
         SmartDashboard.putNumber("index shoot speed", kIndexShootSpeed);
+
+        SmartDashboard.putNumber("servo shoot pos", kServoShootPos);
+        SmartDashboard.putNumber("servo rest pos", kServoRestPos);
     }
 
     public void burnFlash() {
         this.m_indexMotor.burnFlash();
-        this.m_rollerMotor.burnFlash();
+        // this.m_rollerMotor.burnFlash();
     }
 
     public void setTransferring(boolean b) {
@@ -56,16 +65,16 @@ public class Index extends SubsystemBase{
 
     public void setSpeed(double speed) {
         this.m_indexMotor.set(speed);
-        this.m_rollerMotor.set(speed);
+        // this.m_rollerMotor.set(speed);
     }
 
     public void startTransfer() {
-        this.m_rollerMotor.set(SmartDashboard.getNumber("roller speed", kRollerSpeed));
+        // this.m_rollerMotor.set(SmartDashboard.getNumber("roller speed", kRollerSpeed));
         this.m_indexMotor.set(SmartDashboard.getNumber("index speed", kIndexSpeed));
     }
 
     public void shootTransfer(){
-        this.m_rollerMotor.set(SmartDashboard.getNumber("roller speed", kRollerSpeed));
+        // this.m_rollerMotor.set(SmartDashboard.getNumber("roller speed", kRollerSpeed));
         this.m_indexMotor.set(SmartDashboard.getNumber("index shoot speed", kIndexShootSpeed));
     }
 
@@ -82,4 +91,14 @@ public class Index extends SubsystemBase{
         if (instance == null) instance = new Index();
         return instance;
     }
+
+    public void setServoShootPos(){
+        servo.set(SmartDashboard.getNumber("servo shoot pos", kServoShootPos));
+    }
+
+    public void setServoRestPos(){
+        servo.set(SmartDashboard.getNumber("servo rest pos", kServoRestPos));
+    }
+
+
 }

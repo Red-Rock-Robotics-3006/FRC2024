@@ -88,7 +88,7 @@ public class ShooterCommands {
 
     public static Command spinUp() {
         return new InstantCommand(
-                () -> shooter.setShooterSpeed(0.55),
+                () -> shooter.setShooterSpeed(1),
                 shooter);
     }
 
@@ -186,5 +186,16 @@ public class ShooterCommands {
         return new InstantCommand(
                 () -> shooter.setNewEquation(useNew),
                 shooter);
+    }
+
+    public static Command sourceFeed()
+    {
+        return new FunctionalCommand(
+            () -> shooter.setShooterSpeed(-0.1),
+            () -> {},
+            (interrupted) -> {shooter.setShooterSpeed(0);},
+            () -> sensor.hasNote(),
+            shooter, sensor
+        );
     }
 }

@@ -711,7 +711,6 @@ public class Shooter extends SubsystemBase {
         this.targetPitch -= 0.5;
     }
     
-    
     public double getTarget() {
         return this.targetPitch;
     }

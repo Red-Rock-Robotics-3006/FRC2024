@@ -225,21 +225,36 @@ public class RobotContainer {
 
     //INTAKE PROCESS BINDINGS
 
-    drivestick.leftBumper().onTrue(
-      new SequentialCommandGroup(
-        IntakeCommands.intake()
-      )
+    // drivestick.leftBumper().onTrue(
+    //   new SequentialCommandGroup(
+    //     IntakeCommands.intake()
+    //   )
+    // );
+
+    drivestick.leftBumper().whileTrue(
+      ShooterCommands.increaseTarget()
     );
-    drivestick.rightBumper().onTrue(
-      new SequentialCommandGroup(
-        IntakeCommands.stop(),
-        IndexCommands.retract()
-      )
+
+    drivestick.rightBumper().whileTrue(
+      ShooterCommands.decreaseTarget()
     );
+
+    // drivestick.rightBumper().onTrue(
+    //   new SequentialCommandGroup(
+    //     IntakeCommands.stop(),
+    //     IndexCommands.retract()
+    //   )
+    // );
+    // drivestick.a().onTrue( // TODO COU
+    //   new SequentialCommandGroup(
+    //     IntakeCommands.reverse(),
+    //     IndexCommands.reverse()
+    //   )
+    // );
     drivestick.a().onTrue(
       new SequentialCommandGroup(
-        IntakeCommands.reverse(),
-        IndexCommands.reverse()
+        IndexCommands.setServoRestCommand(),
+        ShooterCommands.sourceFeed()
       )
     );
     mechstick.a().onTrue(
@@ -251,21 +266,22 @@ public class RobotContainer {
 
     //SHOOT PROCESS BINDINGS
 
-    mechstick.x().onTrue(
-      ShooterCommands.spinUp()
-    );
-    mechstick.y().onTrue(
+    // drivestick.povUp().onTrue( // TODO COU mechstick.x()
+    //   ShooterCommands.spinUp()
+    // );
+    drivestick.povDown().onTrue( // TODO COU mechstick.y()
       new SequentialCommandGroup(
         ShooterCommands.ampSpinUp(),
         LEDCommands.setState(State.SCORING_AMP)
       )
     );
+    // drivestick.x().onTrue(
+    //   ShooterCommands.shoot()
+    // );
     drivestick.x().onTrue(
-      ShooterCommands.shoot()
+      IndexCommands.setServoShootCommand()
     );
-    drivestick.y().onTrue(
-      new InstantCommand(() -> shooter.setShooterSpeed(SmartDashboard.getNumber("shooter test speed", kShooterSpeed)), shooter)
-    );
+
     drivestick.b().onTrue(
       new SequentialCommandGroup(
         ShooterCommands.stow(),
@@ -274,38 +290,69 @@ public class RobotContainer {
         IntakeCommands.stop(),
         ShooterCommands.setHoming(false),
         LEDCommands.setState(State.RESTING),
-        LEDCommands.setIsAmping(false)
+        LEDCommands.setIsAmping(false),
+        IndexCommands.setServoRestCommand()
       )
     );
     drivestick.rightTrigger(0.25).whileTrue(
         ShooterCommands.setHoming(true)
+
     ).whileFalse(
         ShooterCommands.setHoming(false)
     );
-    mechstick.povLeft().onTrue(
+    drivestick.povLeft().onTrue( // TODO COU mechstick
       new SequentialCommandGroup(
-        ShooterCommands.setShooterSpeed(SmartDashboard.getNumber("lob shot speed", 0.33)),
         new InstantCommand(
-          () -> shooter.setTarget(SmartDashboard.getNumber("lob shot angle", 20)),
+          () -> shooter.setShooterSpeed(SmartDashboard.getNumber("COU povLeft preset speed", 0.3)),
+          shooter
+        ),
+        new InstantCommand(
+          () -> shooter.setTarget(45),
           shooter
         )
       )
     );
 
-    mechstick.povRight().onTrue(
-      ShooterCommands.fullCourtLob()
+    drivestick.povRight().onTrue( // TODO COU mechstick
+      new SequentialCommandGroup(
+                new InstantCommand(
+          () -> shooter.setShooterSpeed(0.25),
+          shooter
+        ),
+        new InstantCommand(
+          () -> shooter.setTarget(53),
+          shooter
+        )
+      )
+    );
+
+    drivestick.povUp().onTrue( // TODO COU mechstick
+      new SequentialCommandGroup(
+                new InstantCommand(
+          () -> shooter.setShooterSpeed(0.20),
+          shooter
+        ),
+        new InstantCommand(
+          () -> shooter.setTarget(56),
+          shooter
+        )
+      )
+    );
+
+    drivestick.y().onTrue(
+      IndexCommands.setServoRestCommand()
     );
 
     //SHOOT SETTINGS BINDINGS
 
     
-    drivestick.povUp().onTrue(
-      ShooterCommands.useNewEquation(true)
-    );
+    // drivestick.povUp().onTrue(
+    //   ShooterCommands.useNewEquation(true)
+    // );
 
-    drivestick.povDown().onTrue(
-      ShooterCommands.useNewEquation(false)
-    );
+    // drivestick.povDown().onTrue(
+    //   ShooterCommands.useNewEquation(false)
+    // );
 
 
     
@@ -474,6 +521,10 @@ public class RobotContainer {
     SmartDashboard.getNumber("lob shot angle", 20);
 
     SmartDashboard.putNumber("drivetrain-pid tolerance", kHeadingTolerance);
+
+    SmartDashboard.putNumber("COU povLeft preset speed", 0.3);
+    SmartDashboard.putNumber("COU povRight preset speed", 0.7);
+    SmartDashboard.putNumber("COU povUp preset speed", 1);
   }
 
   public RobotContainer() {
