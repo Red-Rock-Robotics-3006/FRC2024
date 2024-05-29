@@ -6,7 +6,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.index.Index;
+import frc.robot.subsystems.index.IndexCommands;
 import frc.robot.subsystems.index.TOFSensor;
+import frc.robot.subsystems.intake.IntakeCommands;
 import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.led.State;
 
@@ -94,7 +96,9 @@ public class ShooterCommands {
 
     public static Command hahafunny() {
         return new SequentialCommandGroup(
-
+            ShooterCommands.spinUp(),
+            IntakeCommands.start(),
+            IndexCommands.start()
         );
     }
 

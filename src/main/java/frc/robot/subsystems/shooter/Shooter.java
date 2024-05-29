@@ -593,7 +593,7 @@ public class Shooter extends SubsystemBase {
         double speed = this.controller.calculate(ePos, eTarget) + feedForward;
         this.setAngleSpeed(speed);
 
-        if(Settings.SHOOTER_HOMING_ENABLED && this.seek && this.isInRange)
+        if(Settings.SHOOTER_SWERVE_HOMING_ENABLED && Settings.SHOOTER_HOMING_ENABLED && this.seek && this.isInRange)
             this.swerve.setTargetHeading(this.targetYaw);
 
 

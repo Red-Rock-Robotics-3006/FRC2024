@@ -307,6 +307,10 @@ public class RobotContainer {
       ShooterCommands.useNewEquation(false)
     );
 
+    drivestick.povRight().onTrue(
+      ShooterCommands.hahafunny()
+    );
+
 
     
     //CLIMB PROCESS BINDINGS
