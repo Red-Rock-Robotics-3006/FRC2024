@@ -2,6 +2,7 @@ package frc.robot.subsystems.led;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -50,6 +51,9 @@ public class LED extends SubsystemBase{
         this.control.setData(buffer);
         
         this.control.start();
+
+        SmartDashboard.putNumber("huecontrol", huethingcontrol);
+        SmartDashboard.putBoolean("policemode", policeModeEnabled);
     }
 
     public void setIsAmping(boolean b) {
@@ -124,7 +128,28 @@ public class LED extends SubsystemBase{
     public void togglePoliceModeEnabled() {
         if (policeModeEnabled) policeModeEnabled = false;
         else if (Constants.Settings.POLICE_MODE_ENABLED) policeModeEnabled = true;
+        SmartDashboard.putBoolean("policemode", policeModeEnabled);
     }
+
+    int huething = 0;
+    int huethingcontrol = 3;
+    private void rainbow() {
+        // For every pixel
+        for (var i = 0; i < buffer.getLength(); i++) {
+          // Calculate the hue - hue is easier for rainbows because the color
+          // shape is a circle so only one value needs to precess
+          final var hue = (huething + (i * 180 / buffer.getLength())) % 180;
+          // Set the value
+          buffer.setHSV(i, hue, 255, 128);
+        }
+        // Increase by to make the rainbow "move"
+        huething += huethingcontrol;
+        // Check bounds
+        huething %= 180;
+      }
+
+      public void increaseHueControl() {huethingcontrol++;SmartDashboard.putNumber("huecontrol", huethingcontrol);}
+      public void decreaseHueControl() {huethingcontrol--;SmartDashboard.putNumber("huecontrol", huethingcontrol);}
 
     int blinkControl = 0;
     @SuppressWarnings("unused")
@@ -139,7 +164,7 @@ public class LED extends SubsystemBase{
         if (!policeModeEnabled) {
             switch(this.RobotState) {
                 case RESTING:
-                    this.setLights(WHITE);
+                    rainbow();
                     break;
                 case HAS_NOTE:
                     blinkControl++;
@@ -181,7 +206,9 @@ public class LED extends SubsystemBase{
                 if (policeModeColorControl2 % 2 == 0) {
                     if (policeModeControl2 % 8 == 0) {
                         this.setLights(0, 7, BLUE);
-                        this.setLights(16, 24, BLUE);
+                        this.setLights(22, 29, RED);
+                        this.setLights(29, 34, BLUE);
+                        this.setLights(39, 44, BLUE);
                     }
                     else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
                     if (policeModeControl2 == 16) {
@@ -191,8 +218,10 @@ public class LED extends SubsystemBase{
                 }
                 else {
                     if (policeModeControl2 % 8 == 0) {
-                        this.setLights(8, 16, RED);
-                        this.setLights(24, 29, RED);
+                        this.setLights(14, 22, BLUE);
+                        this.setLights(7, 14, RED);
+                        this.setLights(34, 39, RED);
+                        this.setLights(44, 49, RED);
                     }
                     else if (policeModeControl2 % 4 == 0) this.setLights(OFF);
                     if (policeModeControl2 == 16) {
@@ -202,6 +231,8 @@ public class LED extends SubsystemBase{
                 }
             }
         }
+
+
          
         this.control.setData(this.buffer);
     }

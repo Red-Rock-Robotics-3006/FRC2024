@@ -18,8 +18,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -53,6 +55,7 @@ public class RobotContainer {
 
   private static final CommandXboxController drivestick = new CommandXboxController(Constants.Controller.DRIVESTICK_PORT);
   private static final CommandXboxController mechstick = new CommandXboxController(Constants.Controller.MECHSTICK_PORT);
+  private static final CommandXboxController ledstick = new CommandXboxController(2);
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -223,6 +226,61 @@ public class RobotContainer {
       ShooterCommands.setAngle(Shooter.Positions.INTAKE)
     );
 
+    ledstick.leftBumper().onTrue(
+      new InstantCommand(
+        () -> led.increaseHueControl(),
+        led
+      )
+    );
+    ledstick.rightBumper().onTrue(
+      new InstantCommand(
+        () -> led.decreaseHueControl(),
+        led
+      )
+    );
+    ledstick.x().onTrue(
+      LEDCommands.togglePoliceMode()
+    );
+    ledstick.povUp().onTrue(
+      LEDCommands.setPoliceMode(0)
+    );
+    ledstick.povRight().onTrue(
+      LEDCommands.setPoliceMode(1)
+    );
+    ledstick.povDown().onTrue(
+      LEDCommands.setPoliceMode(2)
+    );
+    // mechstick.a().onTrue(
+    //   new SequentialCommandGroup(
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3),
+    //       new StartEndCommand(() -> climber.move(-0.8), () -> climber.setSpeed(0), climber).withTimeout(0.3)
+    //   )
+    // );
+
     //INTAKE PROCESS BINDINGS
 
     // drivestick.leftBumper().onTrue(
@@ -257,19 +315,19 @@ public class RobotContainer {
         ShooterCommands.sourceFeed()
       )
     );
-    mechstick.a().onTrue(
-      new SequentialCommandGroup(
-        IntakeCommands.start(),
-        IndexCommands.start()
-      )
-    );
+    // mechstick.a().onTrue(
+    //   new SequentialCommandGroup(
+    //     IntakeCommands.start(),
+    //     IndexCommands.start()
+    //   )
+    // );
 
     //SHOOT PROCESS BINDINGS
 
     // drivestick.povUp().onTrue( // TODO COU mechstick.x()
     //   ShooterCommands.spinUp()
     // );
-    drivestick.povDown().onTrue( // TODO COU mechstick.y()
+    drivestick.povLeft().onTrue( // TODO COU mechstick.y()
       new SequentialCommandGroup(
         ShooterCommands.ampSpinUp(),
         LEDCommands.setState(State.SCORING_AMP)
@@ -300,14 +358,14 @@ public class RobotContainer {
     ).whileFalse(
         ShooterCommands.setHoming(false)
     );
-    drivestick.povLeft().onTrue( // TODO COU mechstick
+    drivestick.povUp().onTrue( // TODO COU mechstick
       new SequentialCommandGroup(
         new InstantCommand(
-          () -> shooter.setShooterSpeed(SmartDashboard.getNumber("COU povLeft preset speed", 0.3)),
+          () -> shooter.setShooterSpeed(0.8),
           shooter
         ),
         new InstantCommand(
-          () -> shooter.setTarget(45),
+          () -> shooter.setTarget(56),
           shooter
         )
       )
@@ -316,20 +374,20 @@ public class RobotContainer {
     drivestick.povRight().onTrue( // TODO COU mechstick
       new SequentialCommandGroup(
                 new InstantCommand(
-          () -> shooter.setShooterSpeed(0.25),
+          () -> shooter.setShooterSpeed(0.5),
           shooter
         ),
         new InstantCommand(
-          () -> shooter.setTarget(53),
+          () -> shooter.setTarget(56),
           shooter
         )
       )
     );
 
-    drivestick.povUp().onTrue( // TODO COU mechstick
+    drivestick.povDown().onTrue( // TODO COU mechstick
       new SequentialCommandGroup(
                 new InstantCommand(
-          () -> shooter.setShooterSpeed(0.20),
+          () -> shooter.setShooterSpeed(0.25),
           shooter
         ),
         new InstantCommand(
@@ -426,11 +484,55 @@ public class RobotContainer {
     mechstick.start().onTrue(
       drivetrain.resetOdo()
     );
-    mechstick.b().whileTrue(
-      drivetrain.applyRequest(() -> brake)
-    );
+    // mechstick.b().whileTrue(
+    //   drivetrain.applyRequest(() -> brake)
+    // );
     mechstick.povUp().onTrue(
       ShooterCommands.alternateLob()
+    );
+
+    // mechstick.y().onTrue(
+    //   new ParallelRaceGroup(
+    //     new FunctionalCommand(
+    //       () -> {}, 
+    //       () -> {}, 
+    //       (interrupted) -> {}, 
+    //       () -> Math.abs(drivestick.getLeftX()) > kDeadBand || Math.abs(drivestick.getLeftY()) > kDeadBand || Math.abs(drivestick.getRightX()) > kRotationDeadband
+    //       ),
+    //     drivetrain.goToPose(new Pose2d(14.7, 7.6, new Rotation2d()))
+    //   )
+    // );
+
+    mechstick.y().onTrue(
+      new SequentialCommandGroup(
+        drivetrain.findTagAndSetPoseCommand(),
+        new ParallelRaceGroup(
+          new FunctionalCommand(
+            () -> {}, 
+            () -> {}, 
+            (interrupted) -> {}, 
+            () -> Math.abs(drivestick.getLeftX()) > kDeadBand || Math.abs(drivestick.getLeftY()) > kDeadBand || Math.abs(drivestick.getRightX()) > kRotationDeadband
+            ),
+          drivetrain.goToPose(new Pose2d(14.7, 7.6, new Rotation2d()))
+        )
+
+      )
+    );
+
+    mechstick.a().onTrue(
+            new ParallelRaceGroup(
+        new FunctionalCommand(
+          () -> {}, 
+          () -> {}, 
+          (interrupted) -> {}, 
+          () -> Math.abs(drivestick.getLeftX()) > kDeadBand || Math.abs(drivestick.getLeftY()) > kDeadBand || Math.abs(drivestick.getRightX()) > kRotationDeadband
+          ),
+        drivetrain.goToPose(new Pose2d(14.7, 7.6, new Rotation2d()))
+      )
+    );
+
+    mechstick.b().onTrue(
+      drivetrain.findTagAndSetPoseCommand()
     );
     // mechstick.povDown().onTrue(
     //   ShooterCommands.decreaseTarget()
@@ -620,6 +722,8 @@ public class RobotContainer {
     m_chooser.addOption("EXPERIMENTAL: OFFSET STARTING POSITION SIX NOTE ALT WITH DEADLINE", Autos.m_6note_alt_offset_starting_with_deadline());
 
     m_chooser.addOption("DEBUG: AUTO AIM FOR 5 SECONDS", Autos.m_auto_aim_test());
+
+    m_chooser.addOption("to pose", drivetrain.goToPose(new Pose2d(0.5, 0, new Rotation2d())));
     
     SmartDashboard.putData("auto chooser", m_chooser);
   }

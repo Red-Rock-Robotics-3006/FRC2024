@@ -59,6 +59,13 @@ public class Localization extends SubsystemBase{
         LimelightHelpers.SetFiducialIDFiltersOverride("limelight-back", validIDs);
     }
 
+    public static void setValidIDS(int[] validIDs){
+        LimelightHelpers.SetFiducialIDFiltersOverride("limelight-front", validIDs);
+        LimelightHelpers.SetFiducialIDFiltersOverride("limelight-left", validIDs);
+        LimelightHelpers.SetFiducialIDFiltersOverride("limelight-right", validIDs);
+        LimelightHelpers.SetFiducialIDFiltersOverride("limelight-back", validIDs);
+    }
+
     @Override
     public void periodic()
     {

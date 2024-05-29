@@ -22,7 +22,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.math.Matrix;
+import edu.wpi.first.apriltag.AprilTagDetector;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -114,8 +114,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             tagPose3 = new Pose2d(1, 1, new Rotation2d());
 
     
-    public static final double kDriveSpeed = 1.0;
-    public static final double kTurnSpeed = 0.25;
+    public static final double kDriveSpeed = 1.3;
+    public static final double kTurnSpeed = 0.5;
 
     public enum DriveState{
         FIELD_CENTRIC,
@@ -449,6 +449,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     }
 
     public Command goToPose(Pose2d pose){
+        
         return AutoBuilder.pathfindToPose(pose, kConstraints);
     }
 
@@ -625,6 +626,27 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         
         // SmartDashboard.putNumber("drivetrain-encoder val", this.Modules[2].getDriveMotor().getRotorPosition().getValueAsDouble());
         
+    }
+
+    public Command findTagAndSetPoseCommand(){
+        return new FunctionalCommand(
+            () -> {}, 
+            () -> {}, 
+            (interrupted) -> {
+                for (AprilTagIO detector : aprilTagLL){
+                    if (detector.isValid()){
+                        this.seedFieldRelative(detector.getPoseEstimate());
+                        return;
+                    }
+                }
+            }, 
+            () -> {
+                if (!useAbsolute) return true;
+                for (AprilTagIO detector : aprilTagLL){
+                    return detector.isValid();
+                }
+                return false;
+            });
     }
 
 
