@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -35,7 +36,6 @@ import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.led.LEDCommands;
 import frc.robot.subsystems.led.State;
 import frc.robot.subsystems.shooter.*;
-import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.swerve.*;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain.DriveState;;
 
@@ -254,12 +254,12 @@ public class RobotContainer {
     mechstick.x().onTrue(
       ShooterCommands.spinUp()
     );
-    mechstick.y().onTrue(
-      new SequentialCommandGroup(
-        ShooterCommands.ampSpinUp(),
-        LEDCommands.setState(State.SCORING_AMP)
-      )
-    );
+    // mechstick.y().onTrue(
+    //   new SequentialCommandGroup(
+    //     ShooterCommands.ampSpinUp(),
+    //     LEDCommands.setState(State.SCORING_AMP)
+    //   )
+    // );
     drivestick.x().onTrue(
       ShooterCommands.shoot()
     );
@@ -375,14 +375,14 @@ public class RobotContainer {
 
     //MECH CONTROLLER SETTINGS BINDINGS
         
-    mechstick.back().onTrue(
-      new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC_NO_LOCK), drivetrain)
-    ).onFalse(
-      new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC), drivetrain)
-    );
-    mechstick.start().onTrue(
-      drivetrain.resetOdo()
-    );
+    // mechstick.back().onTrue(
+    //   new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC_NO_LOCK), drivetrain)
+    // ).onFalse(
+    //   new InstantCommand(() -> drivetrain.setDriveState(DriveState.FIELD_CENTRIC), drivetrain)
+    // );
+    // mechstick.start().onTrue(
+    //   drivetrain.resetOdo()
+    // );
     mechstick.b().whileTrue(
       drivetrain.applyRequest(() -> brake)
     );
@@ -434,6 +434,61 @@ public class RobotContainer {
     // mechstick.a().onTrue(
     //   new InstantCommand(() -> drivetrain.toggleChrp(), drivetrain)
     // );
+
+
+
+    mechstick.y().onTrue(
+      new SequentialCommandGroup(
+        ShooterCommands.ampSpinUp(),
+        LEDCommands.setState(State.SCORING_AMP),
+        new ParallelRaceGroup(
+          new FunctionalCommand(
+            () -> {}, 
+            () -> {}, 
+            (interrupted) -> {}, 
+            () -> Math.abs(drivestick.getLeftX()) > kDeadBand || Math.abs(drivestick.getLeftY()) > kDeadBand || Math.abs(drivestick.getRightX()) > kRotationDeadband
+            ),
+            drivetrain.findTagAndSetPoseCommand()
+          ),
+        new ParallelRaceGroup(
+          new FunctionalCommand(
+            () -> {}, 
+            () -> {}, 
+            (interrupted) -> {}, 
+            () -> Math.abs(drivestick.getLeftX()) > kDeadBand || Math.abs(drivestick.getLeftY()) > kDeadBand || Math.abs(drivestick.getRightX()) > kRotationDeadband
+            ),
+          drivetrain.goToPose(new Pose2d(1.9, 7.6, Rotation2d.fromDegrees(-90)))
+        ),
+        new InstantCommand(
+          () -> drivetrain.setTargetHeading(-90),
+          drivetrain
+        )
+        // drivetrain.setTargetHeadingDegreesCommand(-90)
+      )
+    );
+
+    mechstick.start().onTrue(
+      new SequentialCommandGroup(
+        new ParallelRaceGroup(
+          new FunctionalCommand(
+          () -> {}, 
+          () -> {}, 
+          (interrupted) -> {}, 
+          () -> Math.abs(drivestick.getLeftX()) > kDeadBand || Math.abs(drivestick.getLeftY()) > kDeadBand || Math.abs(drivestick.getRightX()) > kRotationDeadband
+          ),
+        drivetrain.goToPose(new Pose2d(1.9, 7.6, Rotation2d.fromDegrees(-90)))
+
+
+        // drivetrain.setTargetHeadingDegreesCommand(-90)
+        ),
+        drivetrain.setTargetHeadingDegreesCommand(-90)
+      )
+    );
+
+    mechstick.back().onTrue(
+      drivetrain.findTagAndSetPoseCommand()
+    );
+
 
     mechstick.povDown().onTrue(
       new InstantCommand(

@@ -114,7 +114,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
             tagPose3 = new Pose2d(1, 1, new Rotation2d());
 
     
-    public static final double kDriveSpeed = 6.0;
+    public static final double kDriveSpeed = 2;
     public static final double kTurnSpeed = 2;
 
     public enum DriveState{
@@ -625,6 +625,27 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         
         // SmartDashboard.putNumber("drivetrain-encoder val", this.Modules[2].getDriveMotor().getRotorPosition().getValueAsDouble());
         
+    }
+
+    public Command findTagAndSetPoseCommand(){
+        return new FunctionalCommand(
+            () -> {}, 
+            () -> {System.out.println("hi");}, 
+            (interrupted) -> {
+                for (AprilTagIO detector : aprilTagLL){
+                    if (detector.isValid()){
+                        this.seedFieldRelative(detector.getPoseEstimate());
+                        return;
+                    }
+                }
+            }, 
+            () -> {
+                // if (!useAbsolute) return true;
+                for (AprilTagIO detector : aprilTagLL){
+                    return detector.isValid();
+                }
+                return false;
+            });
     }
 
 

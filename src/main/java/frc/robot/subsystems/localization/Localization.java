@@ -52,7 +52,7 @@ public class Localization extends SubsystemBase{
          * 15: Blue Stage Amp
          * 16: Blue Stage Source
          */
-        int[] validIDs = {3,4,7,8};
+        int[] validIDs = {3,4,5,7,8};
         LimelightHelpers.SetFiducialIDFiltersOverride("limelight-front", validIDs);
         LimelightHelpers.SetFiducialIDFiltersOverride("limelight-left", validIDs);
         LimelightHelpers.SetFiducialIDFiltersOverride("limelight-right", validIDs);
