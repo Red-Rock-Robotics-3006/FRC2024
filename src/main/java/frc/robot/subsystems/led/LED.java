@@ -33,7 +33,6 @@ public class LED extends SubsystemBase{
     private final Color NOTE_ORANGE = new Color(255, 15, 0);
     private final Color INIT_YELLOW = new Color(255, 165, 0);
     private final Color GREEN = new Color(0, 255, 0);
-    private final Color WHITE = new Color(255, 255, 255);
     private final Color BLUE = new Color(0, 0, 255);
     private final Color RED = new Color(255, 0, 0);
     private final Color MAGENTA = new Color(255, 0, 255);
