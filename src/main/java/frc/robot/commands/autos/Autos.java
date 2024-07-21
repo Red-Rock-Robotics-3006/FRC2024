@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.autos;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.CommandFactory;
 import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.index.IndexCommands;
 import frc.robot.subsystems.index.TOFSensor;
@@ -67,6 +68,14 @@ public class Autos {
             drivetrain.getAuto("6N_4B"),
             drivetrain.getAuto("6N_5B"),
             drivetrain.getAuto("4N_Amp_Leave")
+        );
+    }
+
+    public static Command m_4note_ac_paths() { //4 note auto aim choreo paths
+        return new SequentialCommandGroup(
+            drivetrain.getAuto("4NA_1"),
+            drivetrain.getAuto("4NA_2"),
+            drivetrain.getAuto("4NA_3")
         );
     }
 
@@ -220,6 +229,45 @@ public class Autos {
                 drivetrain.getAuto("4N_Amp_Leave"),
                 IntakeCommands.intakeAuto()
             )
+        );
+    }
+
+    public static Command m_4note_ac() { //4 note auto aim choreo
+        return new SequentialCommandGroup(
+
+            //FIRST NOTE
+            CommandFactory.shootCenterCommand(),
+            ShooterCommands.spinUp(),
+
+            //SECOND NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("4NA_1"),
+                IntakeCommands.intakeAuto()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //THIRD NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("4NA_2"),
+                IntakeCommands.intakeAuto()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+            
+            //FOURTH NOTE
+            new ParallelCommandGroup(
+                drivetrain.getAuto("4NA_3"),
+                IntakeCommands.intakeAuto()
+            ),
+            ShooterCommands.setHoming(true),
+            drivetrain.holdAngleCommand(kAutoAimWaitTime),
+            ShooterCommands.shootAuto(),
+
+            //END
+            ShooterCommands.stop()
         );
     }
 

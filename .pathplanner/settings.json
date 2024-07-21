@@ -19,7 +19,8 @@
     "6 Note",
     "6 Note Alt",
     "Alternate Pathing Autos",
-    "DONOTRUNTHESEAUTOS"
+    "DONOTRUNTHESEAUTOS",
+    "4 Note AA Choreo"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

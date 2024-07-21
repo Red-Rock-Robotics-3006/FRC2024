@@ -25,8 +25,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
-import frc.robot.commands.Autos;
 import frc.robot.commands.CommandFactory;
+import frc.robot.commands.autos.Autos;
 import frc.robot.subsystems.*;
 import frc.robot.subsystems.index.Index;
 import frc.robot.subsystems.index.IndexCommands;
@@ -613,6 +613,9 @@ public class RobotContainer {
 
     m_chooser.addOption("FOUR NOTE AMP", Autos.m_4note_amp());
     m_chooser.addOption("FOUR NOTE AMP PATHS", Autos.m_4note_amp_paths());
+
+    m_chooser.addOption("FOUR NOTE AUTO AIM CHOREO", Autos.m_4note_ac());
+    m_chooser.addOption("FOUR NOTE AUTO AIM CHOREO PATHS", Autos.m_4note_ac_paths());
 
     m_chooser.addOption("THREE NOTE SOURCE", Autos.m_3note());
     m_chooser.addOption("THREE NOTE SOURCE PATHS", Autos.m_3note_paths());
