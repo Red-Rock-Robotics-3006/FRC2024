@@ -16,11 +16,10 @@
     "3 Note Source",
     "3 Note Source AA",
     "4 Note",
-    "4 Note Choreo",
     "6 Note",
     "6 Note Alt",
-    "DONOTRUNTHESEAUTOS",
-    "Alternate Pathing Autos"
+    "Alternate Pathing Autos",
+    "DONOTRUNTHESEAUTOS"
   ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,

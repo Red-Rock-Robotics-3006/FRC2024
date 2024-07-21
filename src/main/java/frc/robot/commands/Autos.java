@@ -46,31 +46,6 @@ public class Autos {
             drivetrain.getAuto("6N_7")
         );
     }
-    
-    @Deprecated
-    public static Command m_6note_paths_with_heading() { //paths for old six note
-        return new SequentialCommandGroup(
-            drivetrain.getAuto("6N_1"),
-            drivetrain.setTargetHeadingDegreesCommand(45d),
-            drivetrain.holdAngleCommand(1d),
-            drivetrain.getAuto("6N_2"),
-            drivetrain.setTargetHeadingDegreesCommand(90d),
-            drivetrain.holdAngleCommand(1d),
-            drivetrain.getAuto("6N_3"),
-            drivetrain.setTargetHeadingDegreesCommand(135d),
-            drivetrain.holdAngleCommand(1d),
-            drivetrain.getAuto("6N_4"),
-            drivetrain.setTargetHeadingDegreesCommand(180d),
-            drivetrain.holdAngleCommand(1d),
-            drivetrain.getAuto("6N_5"),
-            drivetrain.setTargetHeadingDegreesCommand(-45d),
-            drivetrain.holdAngleCommand(1d),
-            drivetrain.getAuto("6N_6"),
-            drivetrain.setTargetHeadingDegreesCommand(-90d),
-            drivetrain.holdAngleCommand(1d),
-            drivetrain.getAuto("6N_7")
-        );
-    }
 
     public static Command m_6note_alt_paths() { //centerline rush 6 note paths
         return new SequentialCommandGroup(
@@ -84,60 +59,17 @@ public class Autos {
         );
     }
 
-    public static Command m_4note_amp_paths() { //centerline rush 6 note paths
+    public static Command m_4note_amp_paths() { //amp side 4 note paths
         return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                if (shooter.isOnBlue())
-                    drivetrain.seedFieldRelative(kOffsetStartingPose);
-                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-            }, drivetrain),
             drivetrain.getAuto("6N_1B_Offset"),
-            drivetrain.getAuto("6N_2B"),
+            drivetrain.getAuto("6N_2B_Offset"),
             drivetrain.getAuto("6N_3B"),
             drivetrain.getAuto("6N_4B"),
             drivetrain.getAuto("6N_5B"),
             drivetrain.getAuto("4N_Amp_Leave")
         );
     }
-    
-    @Deprecated
-    public static Command m_6note_alt_offset_paths() { //centerline rush 6 note paths with offset starting position
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                if (shooter.isOnBlue())
-                    drivetrain.seedFieldRelative(kOffsetStartingPose);
-                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-            }, drivetrain),            drivetrain.getAuto("6N_1B_Offset"),
-            drivetrain.getAuto("6N_2B"),
-            drivetrain.getAuto("6N_3B"),
-            drivetrain.getAuto("6N_4B"),
-            drivetrain.getAuto("6N_5B"),
-            drivetrain.getAuto("6N_6B"),
-            drivetrain.getAuto("6N_7B")
-        );
-    }
-    
-    @Deprecated
-    public static Command m_6note_alt_offset_paths_with_heading() { //centerline rush 6 note paths with offset starting position
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                if (shooter.isOnBlue())
-                    drivetrain.seedFieldRelative(kOffsetStartingPose);
-                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-            }, drivetrain),            drivetrain.setTargetHeadingDegreesCommand(30),
-            drivetrain.holdAngleCommand(1),
-            drivetrain.getAuto("6N_1B_Offset"),
-            drivetrain.getAuto("6N_2B"),
-            drivetrain.getAuto("6N_3B"),
-            drivetrain.getAuto("6N_4B"),
-            drivetrain.getAuto("6N_5B"),
-            drivetrain.getAuto("6N_6B"),
-            drivetrain.getAuto("6N_7B")
-        );
-    }
+
     public static Command m_3note_paths() { //auto aim source side 3 note paths
         return new SequentialCommandGroup(
             drivetrain.getAuto("3N_SA_1"),
@@ -290,162 +222,6 @@ public class Autos {
             )
         );
     }
-
-    public static Command m_6note_alt_offset_starting() { //centerline rush 6 note
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                if (shooter.isOnBlue())
-                    drivetrain.seedFieldRelative(kOffsetStartingPose);
-                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-            }, drivetrain),
-            //FIRST NOTE
-            ShooterCommands.spinUp(),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //SECOND NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_1B_Offset"),
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //THIRD NOTE
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_2B"),
-                    drivetrain.getAuto("6N_3B")
-                ), 
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-            
-            //FOURTH NOTE
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_4B"),
-                    drivetrain.getAuto("6N_5B")
-                ), 
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //FIFTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_6B"),
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //SIXTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_7B"),
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //END
-            ShooterCommands.stop()
-        );
-    }
-    
-    public static Command m_6note_alt_offset_starting_with_deadline() { //centerline rush 6 note
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                if (shooter.isOnBlue())
-                    drivetrain.seedFieldRelative(kOffsetStartingPose);
-                else drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-                // drivetrain.seedFieldRelative(kOffsetStartingPoseRed);
-            }, drivetrain),
-            //FIRST NOTE
-            ShooterCommands.spinUp(),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //SECOND NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_1B_Offset"),
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //THIRD NOTE
-            new ParallelDeadlineGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_2B"),
-                    drivetrain.getAuto("6N_3B")
-                ), 
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-            
-            //FOURTH NOTE
-            new ParallelDeadlineGroup(
-                new SequentialCommandGroup(
-                    drivetrain.getAuto("6N_4B"),
-                    drivetrain.getAuto("6N_5B")
-                ), 
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //FIFTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_6B"),
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //SIXTH NOTE
-            new ParallelCommandGroup(
-                drivetrain.getAuto("6N_7B"),
-                IntakeCommands.intakeAuto()
-            ),
-            ShooterCommands.setHoming(true),
-            drivetrain.holdAngleCommand(kAutoAimWaitTime),
-            ShooterCommands.shootAuto(),
-
-            //END
-            ShooterCommands.stop()
-        );
-    }
-
-    // public static Command runThirdPath() {
-    //     if (sensor.hasNote()) {
-    //         return drivetrain.getAuto("6N_3B");
-    //     }
-    //     else {
-    //         return new SequentialCommandGroup(
-    //             new WaitCommand(0.3),
-    //             drivetrain.getAuto("6N_3B_Backup1")
-    //         );
-    //     }
-    // }
-
-    // public static Command runBackupThird() {
-
-    // }
 
     public static Command m_3note() { //auto aim source side 3 note
         return new SequentialCommandGroup(

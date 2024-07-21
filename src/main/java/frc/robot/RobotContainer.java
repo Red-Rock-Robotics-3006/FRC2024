@@ -624,9 +624,6 @@ public class RobotContainer {
     m_chooser.addOption("TROLL AUTO", Autos.m_trollauto());
     m_chooser.addOption("TROLL AUTO PATHS", Autos.m_trollauto_paths());
 
-    m_chooser.addOption("EXPERIMENTAL: OFFSET STARTING POSITION SIX NOTE ALT", Autos.m_6note_alt_offset_starting());
-    m_chooser.addOption("EXPERIMENTAL: OFFSET STARTING POSITION SIX NOTE ALT WITH DEADLINE", Autos.m_6note_alt_offset_starting_with_deadline());
-
     m_chooser.addOption("DEBUG: AUTO AIM FOR 5 SECONDS", Autos.m_auto_aim_test());
     
     SmartDashboard.putData("auto chooser", m_chooser);
