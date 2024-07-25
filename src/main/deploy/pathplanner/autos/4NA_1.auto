@@ -5,7 +5,7 @@
       "x": 1.3427300453186035,
       "y": 5.554024696350098
     },
-    "rotation": -1.0762737527583996e-25
+    "rotation": -3.824388826964653e-16
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4NA_1"
+            "pathName": "4NA_1.1"
           }
         }
       ]
     }
   },
-  "folder": "4 Note AA Choreo",
+  "folder": "4 Note Choreo",
   "choreoAuto": true
 }

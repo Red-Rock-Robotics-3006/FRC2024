@@ -11,7 +11,7 @@ public class Intake extends SubsystemBase{
 
     private final CANSparkFlex m_intakeMotor = new CANSparkFlex(Constants.Intake.INTAKE_MOTOR_ID, CANSparkFlex.MotorType.kBrushless);
 
-    private double kIntakeSpeed = 0.75;
+    private double kIntakeSpeed = 1;
     public static final double kRollForwardTime = 0.1;
 
     private Intake() {

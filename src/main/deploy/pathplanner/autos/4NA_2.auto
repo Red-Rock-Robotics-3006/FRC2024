@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2.6,
-      "y": 6.85
+      "x": 2.510018825531006,
+      "y": 6.814770221710205
     },
-    "rotation": 28.64788975654116
+    "rotation": 27.758519275463932
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "4NA_2"
+            "pathName": "4NA_1.2"
           }
         }
       ]
     }
   },
-  "folder": "4 Note AA Choreo",
+  "folder": null,
   "choreoAuto": true
 }

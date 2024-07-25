@@ -31,7 +31,7 @@ public class Autos {
     public static double kSpinUpTime = 2;
     public static double kShootTime = 2;
 
-    public static final double kAutoAimWaitTime = 1;
+    public static final double kAutoAimWaitTime = 0.3;
 
     public static final Pose2d kOffsetStartingPose = new Pose2d(1.15, 6.84, new Rotation2d());
     public static final Pose2d kOffsetStartingPoseRed = new Pose2d(15.39, 6.84, Rotation2d.fromDegrees(180));
